@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "374170873498",
+    "project_id": "vineburgapp",
+    "storage_bucket": "vineburgapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:374170873498:android:f55059425a7caab3d37923",
+        "android_client_info": {
+          "package_name": "com.example.vineburgapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBduR2YDF8UGFYPF3hpPEC7yYz9JJ3T4bA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
