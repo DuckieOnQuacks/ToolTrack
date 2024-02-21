@@ -5,7 +5,7 @@ import 'backend/auth_page.dart';
 
 Future<void> main() async {
   // Ensuring that the widgets are initialized
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   // Initializing Firebase
   await Firebase.initializeApp();
   // Running the MyApp widget

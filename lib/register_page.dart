@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,6 +17,7 @@ class RegisterPage extends StatefulWidget {
 //Register
 class _RegisterPageState extends State<RegisterPage> {
   // All code on this page was developed by the team using the flutter framework
+  TextEditingController idController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPassword = TextEditingController();
   TextEditingController firstName = TextEditingController();
@@ -29,7 +29,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String capitalize(String s) => s.isEmpty ? '' : s[0].toUpperCase() + s.substring(1).toLowerCase();
 
   void createAccount() async {
-    if (passwordController.text.isEmpty || confirmPassword.text.isEmpty || firstName.text.isEmpty || lastName.text.isEmpty) {
+    if (passwordController.text.isEmpty || confirmPassword.text.isEmpty || firstName.text.isEmpty || lastName.text.isEmpty || idController.text.isEmpty) {
       showMessage(context, 'Notice', 'Please complete all fields.');
       return;
     }
@@ -48,7 +48,7 @@ class _RegisterPageState extends State<RegisterPage> {
           String capitalizedFirstName = capitalize(firstName.text);
           String capitalizedLastName = capitalize(lastName.text);
 
-          addUserDetails(capitalizedFirstName, capitalizedLastName, tempTools, tempFavOrders);
+          addUserDetails(capitalizedFirstName, capitalizedLastName, tempTools, tempFavOrders, idController.text);
           Navigator.pop(context);
           Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
             return const LoginPage();
@@ -131,6 +131,29 @@ class _RegisterPageState extends State<RegisterPage> {
                             fontSize: 40,
                           )),
                       const SizedBox(height: 20),
+                      //Id text field
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.white),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 20.0),
+                            child: TextField(
+                              controller: idController,
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: 'EE Number',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10), //Create Space between both boxes
+
                       //firstname text field
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -202,7 +225,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 10), //Create Space between both boxes
 
-                      //email text field
+                      //Confirm password text field
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 25.0),
                         child: Container(

@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:vineburgapp/register_page.dart';
 import 'package:vineburgapp/user/bottom_bar.dart';
-//import 'package:vendi_app/register_page.dart';
-//import 'package:vendi_app/reset_password_page.dart';
+import 'admin/admin_bottom_bar.dart';
 import 'backend/message_helper.dart';
-import 'admin/bottom_bar.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -115,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(height: 30),
                           //Creates space between text
-                          Text('Welcome to ToolFinder',
+                          Text('Welcome to ToolSeeker',
                               style: GoogleFonts.bebasNeue(
                                 fontSize: 45,
                               )),

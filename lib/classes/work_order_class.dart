@@ -1,8 +1,10 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:vineburgapp/backend/user_helper.dart';
+
+String tableName = 'WorkOrders';
 
 class WorkOrder {
   final String id;
@@ -13,9 +15,9 @@ class WorkOrder {
   late String imagePath; // Path to the image of the work order
   late bool isFavorited;
   late String enteredBy;
+  late String status;
 
-  WorkOrder({required this.id, required this.po, required this.partNum, required this.partName, required this.imagePath, required this.isFavorited, this.tool, required this.enteredBy});
-
+  WorkOrder({required this.id, required this.po, required this.partNum, required this.partName, required this.imagePath, required this.isFavorited, this.tool, required this.enteredBy, required this.status});
 
 // Factory method to create a Machine object from JSON data
   factory WorkOrder.fromJson(Map<String, dynamic> json) => WorkOrder(
@@ -27,9 +29,10 @@ class WorkOrder {
         isFavorited: json['isFavorited'],
         tool: List<String>.from(json['Tools'] ?? []),
         enteredBy: json['Entered By'],
+        status: json['Status'],
   );
 
-// Method to convert a Machine object to JSON data
+  // Method to convert a Machine object to JSON data
   Map<String, dynamic> toJson() =>
       {
         'id': id,
@@ -40,38 +43,70 @@ class WorkOrder {
         'isFavorited': isFavorited,
         'Tools': tool,
         'Entered By': enteredBy,
+        'Status': status,
       };
 
   Future<void> deleteWorkorder(WorkOrder workOrder) async {
     final workOrderCollection = FirebaseFirestore.instance.collection('WorkOrders');
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User? currentUser = auth.currentUser;
+
+    if (currentUser == null) {
+      if (kDebugMode) {
+        print('No user signed in.');
+      }
+      return;
+    }
 
     try {
       // Fetch the work order document
       DocumentSnapshot workOrderDoc = await workOrderCollection.doc(workOrder.id).get();
 
       if (workOrderDoc.exists) {
-        String? imagePath = workOrderDoc.get('ImagePath');
+        List<dynamic> toolsList = workOrderDoc.get('Tools') ?? []; // Assuming 'Tools' is the field with tool IDs/names
 
         // Delete the image from Firebase Storage if the image path exists
+        String? imagePath = workOrderDoc.get('ImagePath');
         if (imagePath != null && imagePath.isNotEmpty) {
           await FirebaseStorage.instance.refFromURL(imagePath).delete();
-          print('Image associated with Workorder ${workOrder.id} has been successfully deleted.');
+          if (kDebugMode) {
+            print('Image associated with Workorder ${workOrder.id} has been successfully deleted.');
+          }
         }
 
         // Delete the work order document
         await workOrderCollection.doc(workOrder.id).delete();
-        print('Workorder ${workOrder.id} has been successfully deleted from the Workorder collection.');
+        if (kDebugMode) {
+          print('Workorder ${workOrder.id} has been successfully deleted from the Workorder collection.');
+        }
+
+        // Remove the tools from the current user's tools list
+        final userDocRef = FirebaseFirestore.instance.collection('Users').doc(currentUser.uid);
+        DocumentSnapshot userDoc = await userDocRef.get();
+        if (userDoc.exists && userDoc.data() != null) {
+          List<dynamic> userToolsList = userDoc.get('Tools') ?? [];
+          for (var tool in toolsList) {
+            userToolsList.remove(tool); // Assuming you're storing tool IDs or names directly in the user's Tools list
+          }
+
+          await userDocRef.update({'Tools': userToolsList});
+          if (kDebugMode) {
+            print('Tools associated with Workorder ${workOrder.id} have been successfully removed from the current user\'s tools list.');
+          }
+        }
       } else {
-        print('Work Order ${workOrder.id} not found.');
+        if (kDebugMode) {
+          print('Work Order ${workOrder.id} not found.');
+        }
       }
     } catch (e) {
-      print('Error deleting workorder ${workOrder.id}: $e');
+      if (kDebugMode) {
+        print('Error deleting workorder ${workOrder.id} and updating user\'s tools list: $e');
+      }
     }
   }
 
 }
-
-String tableName = 'WorkOrders';
 
 Future<List<String>> getToolIdsFromWorkOrder(String workOrderId) async {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -87,12 +122,16 @@ Future<List<String>> getToolIdsFromWorkOrder(String workOrderId) async {
       return toolIds;
     } else {
       // The 'Tools' field is absent or is not a list
-      print('The work order does not have a valid \'Tools\' field or it is empty.');
+      if (kDebugMode) {
+        print('The work order does not have a valid \'Tools\' field or it is empty.');
+      }
       return [];
     }
   } else {
     // The work order document does not exist
-    print('The specified work order does not exist.');
+    if (kDebugMode) {
+      print('The specified work order does not exist.');
+    }
     return [];
   }
 }
@@ -109,47 +148,20 @@ Future<void> addWorkOrder(WorkOrder order) async {
     isFavorited: order.isFavorited,
     tool: order.tool,
     enteredBy: order.enteredBy,
+    status: order.status,
   );
   final json = orderTable.toJson();
   // Create document and write data to Firestore
   await docOrder.set(json);
 }
 
-// Function to mark a WorkOrder as favorite in Firestore
-Future<void> favoriteWorkOrder(String docId, bool state) async {
-  final docOrder = FirebaseFirestore.instance.collection(tableName).doc(docId);
-
-  // Update only the isFavorited field in the document
-  await docOrder.update({'isFavorited': state});
-}
-
-// Function to get the favorite status of a WorkOrder from Firestore
-Future<bool> getFavoriteStatus(String docId) async {
-  final docOrder = FirebaseFirestore.instance.collection(tableName).doc(docId);
-
-  try {
-    // Get the document
-    DocumentSnapshot docSnapshot = await docOrder.get();
-    if (docSnapshot.exists && docSnapshot.data() != null) {
-      // Extract the isFavorited field value
-      bool isFavorited = docSnapshot.get('isFavorited') ?? false;
-      return isFavorited;
-    } else {
-      // If the document does not exist, return false or handle as appropriate
-      return false;
-    }
-  } catch (e) {
-    // Handle errors, such as network issues or permission errors
-    print("Error fetching favorite status: $e");
-    return false; // Return false or handle as appropriate
-  }
-}
-
 // Function to add a work order with individual parameters and an image
-Future<void> addWorkOrderWithParams(String partName, String po, String partNum, String imagePath, bool isFavorited, List<String> tools) async {
+Future<void> addWorkOrderWithParams(String partName, String po, String partNum, String imagePath, bool isFavorited, List<String> tools, String status) async {
   final currentUser = FirebaseAuth.instance.currentUser;
   if (currentUser == null) {
-    print('No user signed in.');
+    if (kDebugMode) {
+      print('No user signed in.');
+    }
     return;
   }
 
@@ -162,7 +174,8 @@ Future<void> addWorkOrderWithParams(String partName, String po, String partNum, 
     isFavorited: isFavorited,
     tool: tools,
     imagePath: imagePath, // Add the image URL here
-    enteredBy: await getUserFullName()
+    enteredBy: await getUserFullName(),
+    status: status,
   );
   final json = orderTable.toJson();
 
@@ -178,4 +191,49 @@ Future<List<WorkOrder>> getAllWorkOrders() async {
   return querySnapshot.docs.map((doc) => WorkOrder.fromJson(doc.data())).toList();
 }
 
+
+
+//
+Future<void> updateWorkOrder(String workOrderId, {String? partName, String? po, String? partNum, String? enteredBy}) async {
+  final currentUser = FirebaseAuth.instance.currentUser;
+  if (currentUser == null) {
+    if (kDebugMode) {
+      print('No user signed in.');
+    }
+    return;
+  }
+
+  final docOrder = FirebaseFirestore.instance.collection(tableName).doc(workOrderId);
+
+  // Fetch the current data of the work order
+  final currentData = await docOrder.get();
+  if (!currentData.exists) {
+    if (kDebugMode) {
+      print('Work order not found.');
+    }
+    return;
+  }
+
+  // Create a map for the updates
+  Map<String, dynamic> updates = {};
+
+  // Only add the fields to the update map if they are not null
+  if (partName != null) updates['PartName'] = partName;
+  if (po != null) updates['PONumber'] = po;
+  if (partNum != null) updates['PartNumber'] = partNum;
+  if (enteredBy != null) updates['Entered By'] = enteredBy;
+
+  // Check if there are any updates to be made
+  if (updates.isNotEmpty) {
+    // Update the document with the new data
+    await docOrder.update(updates);
+    if (kDebugMode) {
+      print('Work order updated successfully.');
+    }
+  } else {
+    if (kDebugMode) {
+      print('No updates provided.');
+    }
+  }
+}
 

@@ -1,10 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
-Future<void> addUserDetails(String firstName, String lastName, List<String>? tools, List<String>? favOrders ) async {
+import '../classes/work_order_class.dart';
+
+
+Future<void> addUserDetails(String firstName, String lastName, List<String>? tools, List<String>? workOrders, String id) async {
   final user = FirebaseAuth.instance.currentUser;
   if (user == null) {
-    print('No user signed in.');
+    if (kDebugMode) {
+      print('No user signed in.');
+    }
     return;
   }
   final userDocRef = FirebaseFirestore.instance.collection('Users').doc(user.uid);
@@ -14,7 +20,8 @@ Future<void> addUserDetails(String firstName, String lastName, List<String>? too
     'Last Name': lastName.trim(),
     'Email': username,
     'Tools': tools,
-    'Favorite Workorders': favOrders,
+    'Workorders': workOrders,
+    'Id': id,
   });
 }
 
@@ -38,6 +45,48 @@ Future<String> getUserFullName() async {
     return 'No user signed in.';
   }
 }
+
+Future<List<WorkOrder>> getUserWorkOrders() async {
+  final user = FirebaseAuth.instance.currentUser;
+  final List<WorkOrder> workOrders = [];
+
+  if (user == null) {
+    return workOrders; // Return empty list if no user is logged in.
+  }
+
+  try {
+    final userDocSnapshot = await FirebaseFirestore.instance.collection('Users').doc(user.uid).get();
+
+    if (!userDocSnapshot.exists || userDocSnapshot.data() == null) {
+      return workOrders; // Return empty list if user document doesn't exist or is empty.
+    }
+
+    final List<dynamic> workOrderIds = userDocSnapshot.data()!['Workorders'] ?? [];
+
+    for (var workOrderId in workOrderIds) {
+      try {
+        final workOrderDocSnapshot = await FirebaseFirestore.instance
+            .collection('WorkOrders')
+            .doc(workOrderId.toString())
+            .get();
+
+        if (workOrderDocSnapshot.exists) {
+          workOrders.add(WorkOrder.fromJson(workOrderDocSnapshot.data()!));
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print("Error fetching work order with ID $workOrderId: $e");
+        }
+      }
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print("Error fetching user's work orders: $e");
+    }
+  }
+  return workOrders;
+}
+
 
 String createUsername(String firstName, String lastName) {
   String formattedFirstName = firstName.trim().replaceAll(' ', '_').toLowerCase();

@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:vineburgapp/user/Workorder/work_order.dart';
-
-import 'Tools/tools.dart';
+import 'package:vineburgapp/admin/Tools/tools.dart';
+import 'package:vineburgapp/admin/Workorder/work_order.dart';
 
 // All code on this page was developed by the team using the flutter framework
-class BottomBar extends StatefulWidget {
-  const BottomBar({super.key});
+class AdminBottomBar extends StatefulWidget {
+  const AdminBottomBar({super.key});
 
   @override
-  State<BottomBar> createState() => _BottomBarState();
+  State<AdminBottomBar> createState() => _AdminBottomBarState();
 }
 
-class _BottomBarState extends State<BottomBar> {
+class _AdminBottomBarState extends State<AdminBottomBar> {
   int selectedIndex = 0;
   // What pages to load depending on the bottom bar index
   final Map<int, Widget> widgetOptions = {
-    0: const UserWorkOrderPage(),
-    1: const UserToolsPage()
+    0: const WorkOrderPage(),
+    1: const AdminToolsPage(),
   };
 
   void _onItemTapped(int index) {
@@ -35,19 +34,14 @@ class _BottomBarState extends State<BottomBar> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.build),
-            label: 'Work Orders',
+            label: 'All Work Orders',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.work),
-            label: 'Your Tools',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            label: 'All Tools',
           ),
         ],
         currentIndex: selectedIndex,
-        backgroundColor: Colors.white,
         unselectedItemColor: Colors.grey,
         selectedItemColor: Colors.black,
         showSelectedLabels: true,
@@ -56,4 +50,4 @@ class _BottomBarState extends State<BottomBar> {
       ),
     );
   }
-}
+  }

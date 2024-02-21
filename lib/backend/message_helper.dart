@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-//Message widget that can be used to show pop up messages throughout the app
-//Pass in context and the message you want on the pop up
+/*Message widget that can be used to show pop up messages throughout the app
+Pass in context and the message you want on the pop up*/
+
 void showMessage(BuildContext context, String title, String message) {
   showDialog(
     context: context,
@@ -30,7 +31,7 @@ void showMessage(BuildContext context, String title, String message) {
                     style: const TextStyle(
                       fontSize: 23,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey,
+                      color: Colors.black,
                     ),
                   ),
                 ],
@@ -48,7 +49,7 @@ void showMessage(BuildContext context, String title, String message) {
                 alignment: Alignment.bottomRight,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.grey,
+                    foregroundColor: Colors.white, backgroundColor: Colors.blue,
                   ),
                   onPressed: () {
                     Navigator.of(dialogContext).pop();
@@ -88,7 +89,7 @@ void showWarning(BuildContext context, String message) {
                 children: [
                   Icon(
                     Icons.warning_amber_outlined,
-                    color: Colors.grey,
+                    color: Colors.redAccent,
                     size: 24.0,
                   ),
                   SizedBox(width: 10),
@@ -97,7 +98,7 @@ void showWarning(BuildContext context, String message) {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey,
+                      color: Colors.redAccent,
                     ),
                   ),
                 ],
@@ -115,7 +116,7 @@ void showWarning(BuildContext context, String message) {
                 alignment: Alignment.bottomRight,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.grey,
+                    foregroundColor: Colors.white, backgroundColor: Colors.blue,
                   ),
                   onPressed: () {
                     Navigator.of(dialogContext).pop();

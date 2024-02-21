@@ -1,8 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../admin/bottom_bar.dart';
+import '../admin/admin_bottom_bar.dart';
 import '../login_page.dart';
 import '../user/bottom_bar.dart';
+
+/*
+* Authorization page responsible for checking to see
+* if the current user is signed in or not. The auto login is
+* reset if the app is removed and then installed again
+*
+* Also checks if the current user is an admin or not.
+*/
 
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
