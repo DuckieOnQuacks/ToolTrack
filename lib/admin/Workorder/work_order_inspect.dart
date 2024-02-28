@@ -16,6 +16,7 @@ class _AdminInspectOrderScreenState extends State<AdminInspectOrderScreen> {
   late TextEditingController poNumberController;
   late TextEditingController partNumberController;
   late TextEditingController enteredByController;
+  late TextEditingController statusController;
 
   @override
   void initState() {
@@ -24,6 +25,7 @@ class _AdminInspectOrderScreenState extends State<AdminInspectOrderScreen> {
     poNumberController = TextEditingController(text: widget.workOrder.po);
     partNumberController = TextEditingController(text: widget.workOrder.partNum);
     enteredByController = TextEditingController(text: widget.workOrder.enteredBy);
+    statusController = TextEditingController(text: widget.workOrder.status);
   }
 
   @override
@@ -32,6 +34,7 @@ class _AdminInspectOrderScreenState extends State<AdminInspectOrderScreen> {
     poNumberController.dispose();
     partNumberController.dispose();
     enteredByController.dispose();
+    statusController.dispose();
     super.dispose();
   }
 
@@ -89,6 +92,30 @@ class _AdminInspectOrderScreenState extends State<AdminInspectOrderScreen> {
           ),
           const SizedBox(height: 20),
           const Text(
+            'Status',
+            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+          ),
+          DropdownButton<String>(
+            value: widget.workOrder.status, // Assuming this is a string. Adjust if your implementation differs.
+            icon: const Icon(Icons.arrow_drop_down), // Customizable icon
+            elevation: 16, // Shadow elevation for the dropdown menu
+            style: const TextStyle(color: Colors.black, fontSize: 18.0, fontWeight: FontWeight.normal), // Text style
+            underline: Container( // Custom underline styling
+              height: 1,
+              color: Colors.grey,
+            ),
+            onChanged: (String? newValue) {
+              setState(() {
+                widget.workOrder.status = newValue!; // Update the status
+              });
+            },
+            items: <String>['Active', 'Completed'] // Dropdown menu items
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(value: value, child: Text(value));
+            }).toList(),
+          ),
+          const SizedBox(height: 20),
+          const Text(
             'Tools Used:',
             style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
           ),
@@ -104,7 +131,7 @@ class _AdminInspectOrderScreenState extends State<AdminInspectOrderScreen> {
               ));
             },
           ),
-          const SizedBox(height: 50),
+          const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.only(left: 50, right: 50),
             child: ElevatedButton (
@@ -194,6 +221,24 @@ class _AdminInspectOrderScreenState extends State<AdminInspectOrderScreen> {
 
               TextSpan(
                   text: '${widget.workOrder.enteredBy} -> ${enteredByController.text}',
+                  style: const TextStyle(fontWeight: FontWeight.normal)
+              ),
+            ]
+        ),
+      ));
+    }
+
+    const SizedBox(height: 10);
+    if (statusController.text != widget.workOrder.status) {
+      changesWidgets.add(RichText(
+        text: TextSpan(
+            text: 'Status: ',
+            style: const TextStyle(
+                fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black),
+            children: <TextSpan>[
+
+              TextSpan(
+                  text: '${statusController.text} -> ${widget.workOrder.status} ',
                   style: const TextStyle(fontWeight: FontWeight.normal)
               ),
             ]

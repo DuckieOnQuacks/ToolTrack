@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -28,6 +30,31 @@ class Tool{
     required this.personAddedTool,
     this.workOrderId,
   });
+
+  final List<Color> pastelColors = [
+    const Color(0xFFFFDFD3), // Pastel Peach
+    const Color(0xFFE2F0CB), // Pastel Tea Green
+    const Color(0xFFB5EAD7), // Pastel Keppel
+    const Color(0xFFECEAE4), // Pastel Bone
+    const Color(0xFFF9D5A7), // Pastel Orange
+    const Color(0xFFBDE0FE), // Pastel Light Blue
+    const Color(0xFFA9DEF9), // Pastel Cerulean
+    const Color(0xFFFCF5C7), // Pastel Lemon
+    const Color(0xFFC5CAE9), // Pastel indigo
+    const Color(0xFFBBDEFB), // Pastel blue
+    const Color(0xFFB2EBF2), // Pastel cyan
+    const Color(0xFFB2DFDB), // Pastel teal
+    const Color(0xFFC8E6C9), // Pastal green
+    const Color(0xFFA1C3D1), // Pastel Blue Green
+    const Color(0xFFF4E1D2), // Pastel Almond
+    const Color(0xFFD3E0EA), // Pastel Blue Fog
+    const Color(0xFFD6D2D2), // Pastel Gray
+    const Color(0xFFF6EAC2), // Pastel Olive
+    const Color(0xFFB5EAD7), // Pastel Mint
+    const Color(0xFFC7CEEA), // Pastel Lavender
+    const Color(0xFFA2D2FF), // Pastel Sky Blue
+
+  ];
 
   // Factory method to create a Machine object from JSON data
   factory Tool.fromJson(Map<String, dynamic> json) => Tool(

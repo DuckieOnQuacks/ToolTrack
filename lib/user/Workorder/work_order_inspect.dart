@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vineburgapp/admin/Workorder/work_order_inspect_tools.dart';
+import 'package:vineburgapp/user/Workorder/work_order_inspect_tools.dart';
 import '../../classes/work_order_class.dart';
 
 class UserInspectOrderScreen extends StatefulWidget {
@@ -96,7 +97,7 @@ class _UserInspectOrderScreenState extends State<UserInspectOrderScreen> {
             onPressed: () async {
               final List<String> toolIds = await getToolIdsFromWorkOrder(widget.workOrder.id);
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => ToolsListScreen(toolIds: toolIds),
+                builder: (context) => UserToolsListScreen(toolIds: toolIds),
               ));
             },
           ),

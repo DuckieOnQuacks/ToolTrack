@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vineburgapp/profile_page.dart';
 import 'package:vineburgapp/user/Workorder/work_order.dart';
 
 import 'Tools/tools.dart';
@@ -16,7 +17,8 @@ class _BottomBarState extends State<BottomBar> {
   // What pages to load depending on the bottom bar index
   final Map<int, Widget> widgetOptions = {
     0: const UserWorkOrderPage(),
-    1: const UserToolsPage()
+    1: const UserToolsPage(),
+    2: ProfilePage(),
   };
 
   void _onItemTapped(int index) {

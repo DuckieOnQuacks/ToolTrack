@@ -23,34 +23,6 @@ class _WorkOrderState extends State<WorkOrderPage> {
   String imagePath = '';
   int pictureTaken = 0;
 
-  // Define a list of pastel colors
-  final List<Color> pastelColors = [
-    const Color(0xFFE2F0CB), // Pastel Tea Green
-    const Color(0xFFB5EAD7), // Pastel Keppel
-    const Color(0xFFECEAE4), // Pastel Bone
-    const Color(0xFFFAD0C4), // Pastel Salmon
-    const Color(0xFFF9D5A7), // Pastel Orange
-    const Color(0xFFF6EAC2), // Pastel Olive
-    const Color(0xFFB5EAD7), // Pastel Mint
-    const Color(0xFFC7CEEA), // Pastel Lavender
-    const Color(0xFFA2D2FF), // Pastel Sky Blue
-    const Color(0xFFBDE0FE), // Pastel Light Blue
-    const Color(0xFFA9DEF9), // Pastel Cerulean
-    const Color(0xFFFCF5C7), // Pastel Lemon
-    const Color(0xFFC5CAE9), // Pastel indigo
-    const Color(0xFFBBDEFB), // Pastel blue
-    const Color(0xFFB3E5FC), // Lighter pastel blue
-    const Color(0xFFB2EBF2), // Pastel cyan
-    const Color(0xFFB2DFDB), // Pastel teal
-    const Color(0xFFC8E6C9), // Pastal green
-    const Color(0xFFA1C3D1), // Pastel Blue Green
-    const Color(0xFFF4BFBF), // Pastel Red Pink
-    const Color(0xFFF4E1D2), // Pastel Almond
-    const Color(0xFFD3E0EA), // Pastel Blue Fog
-    const Color(0xFFD6D2D2), // Pastel Gray
-    const Color(0xFFFEC8D8), // Pastel Watermelon
-    const Color(0xFFFFDFD3), // Pastel Peach
-  ];
 
   @override
   void initState() {
@@ -153,7 +125,7 @@ class _WorkOrderState extends State<WorkOrderPage> {
                     itemCount: workOrderData.length,
                     itemBuilder: (context, index) {
                       Color tileColor =
-                          pastelColors[index % pastelColors.length];
+                          workOrderData[index].pastelColors[index % workOrderData[index].pastelColors.length];
                       return Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),

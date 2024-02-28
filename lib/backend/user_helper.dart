@@ -70,7 +70,9 @@ Future<List<WorkOrder>> getUserWorkOrders() async {
             .doc(workOrderId.toString())
             .get();
 
-        if (workOrderDocSnapshot.exists) {
+        final status = workOrderDocSnapshot.data()?['Status'] ?? 'Unknown';
+
+        if (workOrderDocSnapshot.exists && status == 'Active') {
           workOrders.add(WorkOrder.fromJson(workOrderDocSnapshot.data()!));
         }
       } catch (e) {
@@ -86,7 +88,6 @@ Future<List<WorkOrder>> getUserWorkOrders() async {
   }
   return workOrders;
 }
-
 
 String createUsername(String firstName, String lastName) {
   String formattedFirstName = firstName.trim().replaceAll(' ', '_').toLowerCase();

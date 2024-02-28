@@ -2,17 +2,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../classes/tool_class.dart';
 
-class ToolsListScreen extends StatefulWidget {
+class UserToolsListScreen extends StatefulWidget {
   final List<String> toolIds;
 
-  const ToolsListScreen({super.key, required this.toolIds});
+  const UserToolsListScreen({super.key, required this.toolIds});
 
   @override
-  _ToolsListScreenState createState() => _ToolsListScreenState();
+  _UserToolsListScreenState createState() => _UserToolsListScreenState();
 }
 
 
-class _ToolsListScreenState extends State<ToolsListScreen> {
+class _UserToolsListScreenState extends State<UserToolsListScreen> {
   TextEditingController searchController = TextEditingController();
   List<Tool> tools = []; // List to store all tools
   List<Tool> filteredTools = []; // List to store filtered tools
@@ -52,21 +52,6 @@ class _ToolsListScreenState extends State<ToolsListScreen> {
     }
   }
 
-  void onDeletePressed(Tool toolRemove) async {
-    bool? result = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) =>
-          DeleteMachineDialog(tool: toolRemove),
-    );
-    if (result != null && result) {
-      setState(() {
-        tools.removeWhere((tool) => tool.toolName == toolRemove.toolName);
-        filteredTools.removeWhere((tool) => tool.toolName == toolRemove.toolName);
-      });
-    }
-  }
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,6 +87,7 @@ class _ToolsListScreenState extends State<ToolsListScreen> {
               ),
             )
                 : ListView.builder(
+              padding: const EdgeInsets.all(10),
               itemCount: filteredTools.length,
               itemBuilder: (context, index) {
                 Tool tool = filteredTools[index];
@@ -111,12 +97,6 @@ class _ToolsListScreenState extends State<ToolsListScreen> {
                   ),
                   elevation: 4,
                   child: ListTile(
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        onDeletePressed(tool);
-                      },// Assuming toolName is not nullable
-                    ),
                     title: Text(
                       tool.toolName,
                       style: const TextStyle(
@@ -148,59 +128,4 @@ class _ToolsListScreenState extends State<ToolsListScreen> {
   }
 }
 
-class DeleteMachineDialog extends StatelessWidget {
-  final Tool tool;
 
-  const DeleteMachineDialog({super.key, required this.tool});
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      buttonPadding: const EdgeInsets.all(15),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      elevation: 10,
-      title: const Row(
-        children: [
-          Icon(
-            Icons.warning_amber_rounded,
-            color: Colors.redAccent,
-          ),
-          SizedBox(width: 10),
-          Text(
-            'Confirm Delete',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-        ],
-      ),
-      content: const Text(
-          'Are you sure you want to remove this tool from this workorder?'),
-      actions: <Widget>[
-        ElevatedButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.black54,
-            backgroundColor: Colors.grey[300],
-          ),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            await tool.deleteToolFromWorkorder(tool);
-            Navigator.of(context).pop(true);
-          },
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.redAccent,
-          ),
-          child: const Text('Delete'),
-        ),
-      ],
-    );
-  }
-}
