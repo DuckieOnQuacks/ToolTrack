@@ -260,7 +260,7 @@ class _ImageAndQRDataScreenState extends State<ImageAndQRDataScreen> {
                               parts[2].trim(), // partNum
                               imageUrl,
                               false,
-                              [""],
+                              [],
                               "Active"
                           );
                           if (!mounted) return;

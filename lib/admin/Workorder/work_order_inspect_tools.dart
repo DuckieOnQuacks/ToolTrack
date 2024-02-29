@@ -102,6 +102,7 @@ class _ToolsListScreenState extends State<ToolsListScreen> {
               ),
             )
                 : ListView.builder(
+              padding: const EdgeInsets.all(10.0),
               itemCount: filteredTools.length,
               itemBuilder: (context, index) {
                 Tool tool = filteredTools[index];

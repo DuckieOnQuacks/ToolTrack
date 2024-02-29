@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
-import 'package:vineburgapp/backend/user_helper.dart';
+import 'package:vineburgapp/classes/user_class.dart';
 
 class Tool{
   late final String toolName;
@@ -108,7 +108,7 @@ class Tool{
 
     await toolDocRef.update({
       'Check Out Date': checkedOut,
-      'Person Checked Tool': await getUserFullName(),
+      'Person Checked Tool': await getCurrentUser(),
       "Machine Where Used": machineNum,
       "Checked Out To Workorder": workOrderId,
     }).then((_) {
@@ -152,7 +152,6 @@ class Tool{
       }
     });
   }
-
 
   //Helpers for admin
   Future<void> deleteToolEverywhere(Tool tool) async {
@@ -379,15 +378,11 @@ Future<List<Tool>> getAllTools() async {
   }
   return toolDetails;
 }
-Future<void> updateTool(String toolId, String toolName, String whereBeingUsed , String personCheckedOut, String dateCheckedOut) async {
+Future<void> updateTool(String toolId, String toolName, String whereBeingUsed, String personCheckedOut, String dateCheckedOut) async {
+  final docRef = FirebaseFirestore.instance.collection("Tools").doc(toolId);
 
-  final docOrder = FirebaseFirestore.instance.collection("Tools").doc(toolId);
-  if (kDebugMode) {
-    print(toolId);
-  }
-
-  // Fetch the current data of the work order
-  final currentData = await docOrder.get();
+  // Fetch the current data of the tool
+  final currentData = await docRef.get();
   if (!currentData.exists) {
     if (kDebugMode) {
       print('Tool not found.');
@@ -395,25 +390,33 @@ Future<void> updateTool(String toolId, String toolName, String whereBeingUsed , 
     return;
   }
 
-  // Create a map for the updates
-  Map<String, dynamic> updates = {};
+  Map<String, dynamic> newData = currentData.data()!;
 
-  // Only add the fields to the update map if they are not null
-  if (toolName != null) updates['Tool Name'] = toolName;
-  if (whereBeingUsed != null) updates['Machine Where Used'] = whereBeingUsed;
-  if (personCheckedOut != null) updates['Person Checked Tool'] = personCheckedOut;
-  if (dateCheckedOut != null) updates['Check Out Date'] = dateCheckedOut;
+  // Update "Tool Name" field in the newData map if toolName is provided
+  if (toolName != null && toolName.isNotEmpty) {
+    newData['Tool Name'] = toolName; // Ensure the "Tool Name" field is updated in the new document
+  }
 
-  // Check if there are any updates to be made
-  if (updates.isNotEmpty) {
-    // Update the document with the new data
-    await docOrder.update(updates);
+  // Add other updates to the newData map
+  if (whereBeingUsed != null) newData['Machine Where Used'] = whereBeingUsed;
+  if (personCheckedOut != null) newData['Person Checked Tool'] = personCheckedOut;
+  if (dateCheckedOut != null) newData['Check Out Date'] = dateCheckedOut;
+
+  // If the toolName is provided and different from the current ID, proceed to create a new document and delete the old one
+  if (toolName != null && toolName != toolId) {
+    final newDocRef = FirebaseFirestore.instance.collection("Tools").doc(toolName);
+    await newDocRef.set(newData); // Create the new document with the updated data
+    await docRef.delete(); // Delete the old document
+
     if (kDebugMode) {
-      print('Tool updated successfully.');
+      print('Tool updated with new ID and Tool Name successfully.');
     }
   } else {
+    // If no new toolName is provided or it's the same as the current ID, just update the existing document
+    await docRef.update(newData);
+
     if (kDebugMode) {
-      print('No updates provided.');
+      print('Tool updated successfully.');
     }
   }
 }

@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import '../../backend/user_helper.dart';
-import '../../classes/tool_class.dart';
+import '../../classes/user_class.dart';
 import '../../classes/work_order_class.dart';
 
 

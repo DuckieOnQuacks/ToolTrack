@@ -1,14 +1,23 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:vineburgapp/backend/user_helper.dart';
-
+import 'classes/user_class.dart';
 import 'login_page.dart';
 
-class ProfilePage extends StatelessWidget {
+
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
   @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  UserClass? currentUser;
+
+
+  @override
   Widget build(BuildContext context) {
+    String fullname = createUsername(currentUser!.firstName, currentUser!.lastName);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile Page'),
@@ -24,15 +33,15 @@ class ProfilePage extends StatelessWidget {
             ),
             const SizedBox(height: 20.0),
             RichText(
-              text: const TextSpan(
+              text: TextSpan(
                 children: <TextSpan>[
-                  TextSpan(
+                  const TextSpan(
                     text: "User Name: ",
                     style:
                         TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                   ),
                   TextSpan(
-                    text: "name",
+                    text: fullname,
                   ),
                 ],
               ),
@@ -122,5 +131,12 @@ class ProfilePage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String createUsername(String firstName, String lastName) {
+    String formattedFirstName = firstName.trim().replaceAll(' ', '_').toLowerCase();
+    String formattedLastName = lastName.trim().replaceAll(' ', '_').toLowerCase();
+
+    return '$formattedFirstName$formattedLastName@vineburg.com';
   }
 }

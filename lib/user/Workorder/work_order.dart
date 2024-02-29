@@ -6,17 +6,17 @@ import 'package:vineburgapp/admin/Workorder/work_order_QR_scan.dart';
 import 'package:vineburgapp/classes/work_order_class.dart';
 import 'package:vineburgapp/user/Workorder/work_order_inspect.dart';
 import '../../backend/message_helper.dart';
-import '../../backend/user_helper.dart';
+import '../../classes/user_class.dart';
 
 // All code on this page was developed by the team using the flutter framework
 class UserWorkOrderPage extends StatefulWidget {
   const UserWorkOrderPage({super.key});
 
   @override
-  State<UserWorkOrderPage> createState() => _ToolsPageState();
+  State<UserWorkOrderPage> createState() => _UserWorkOrderState();
 }
 
-class _ToolsPageState extends State<UserWorkOrderPage> {
+class _UserWorkOrderState extends State<UserWorkOrderPage> {
   late List<CameraDescription> cameras;
   Future<List<WorkOrder>>? allworkorder;
   TextEditingController searchController = TextEditingController();
@@ -64,7 +64,7 @@ class _ToolsPageState extends State<UserWorkOrderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Work Order Search'),
+        title: const Text('Your Work Orders'),
         automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
@@ -116,7 +116,12 @@ class _ToolsPageState extends State<UserWorkOrderPage> {
                   final workOrderData = snapshot.data!;
                   if (workOrderData.isEmpty) {
                     return const Center(
-                      child: Text("No Workorders"),
+                      child: Text("No Workorders",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.grey,
+                        ),),
                     );
                   }
                   return ListView.builder(
@@ -139,7 +144,6 @@ class _ToolsPageState extends State<UserWorkOrderPage> {
                                 onSelected: (String value) {
                                   if (value == 'Finish') {
                                     onFinishPressed(workOrderData[index]);
-
                                   }
                                   if (value == "Add Tool") {
                                     String data = workOrderData[index].id;
@@ -350,6 +354,7 @@ class FinishedWorkOrderDialog extends StatelessWidget {
         ElevatedButton(
           onPressed: () async {
             await updateWorkOrder(workOrder.id, status: "Completed");
+            await removeUserWorkOrder(workOrder.id);
             Navigator.of(context).pop(true);
           },
           style: ElevatedButton.styleFrom(

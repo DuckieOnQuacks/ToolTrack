@@ -9,7 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import '../../backend/camera_preview_helper.dart';
 import '../../backend/message_helper.dart';
-import '../../backend/user_helper.dart';
+import '../../classes/user_class.dart';
 import '../../classes/work_order_class.dart';
 
 class AdminWorkOrderManualEntry extends StatefulWidget {

@@ -1,12 +1,11 @@
+import 'dart:developer';
 import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
-import 'package:vineburgapp/backend/user_helper.dart';
+import 'package:vineburgapp/classes/user_class.dart';
 
-String tableName = 'WorkOrders';
 
 class WorkOrder {
   final String id;
@@ -20,7 +19,6 @@ class WorkOrder {
   late String status;
 
   WorkOrder({required this.id, required this.po, required this.partNum, required this.partName, required this.imagePath, required this.isFavorited, this.tool, required this.enteredBy, required this.status});
-
 
   final List<Color> pastelColors = [
     const Color(0xFFC5CAE9), // Pastel indigo
@@ -132,9 +130,16 @@ class WorkOrder {
       }
     }
   }
-
 }
 
+/// Retrieves a list of tool IDs associated with a specific work order.
+///
+/// This function fetches a work order document from the 'WorkOrders' collection
+/// using the provided workOrderId. It then extracts and returns the list of
+/// tool IDs stored in the 'Tools' field of the document.
+///
+/// Returns a list of strings representing tool IDs. Returns an empty list if
+/// the work order does not exist or does not contain a 'Tools' field.
 Future<List<String>> getToolIdsFromWorkOrder(String workOrderId) async {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   DocumentReference workOrderRef = firestore.collection('WorkOrders').doc(workOrderId);
@@ -163,26 +168,11 @@ Future<List<String>> getToolIdsFromWorkOrder(String workOrderId) async {
   }
 }
 
-//Creates a machine table that is to be sent to the firebase database, before it is sent it converts it to JSON format
-Future<void> addWorkOrder(WorkOrder order) async {
-  final docOrder = FirebaseFirestore.instance.collection(tableName).doc();
-  final orderTable = WorkOrder(
-    id: docOrder.id,
-    partName: order.partName,
-    po: order.po,
-    partNum: order.partNum,
-    imagePath: order.imagePath,
-    isFavorited: order.isFavorited,
-    tool: order.tool,
-    enteredBy: order.enteredBy,
-    status: order.status,
-  );
-  final json = orderTable.toJson();
-  // Create document and write data to Firestore
-  await docOrder.set(json);
-}
-
-// Function to add a work order with individual parameters and an image
+/// Creates a new work order document in the 'WorkOrders' collection.
+///
+/// This function constructs a new WorkOrder object with the provided parameters,
+/// converts it to a JSON representation, and creates a new document in Firestore.
+/// The ID of the new document is automatically generated.
 Future<void> addWorkOrderWithParams(String partName, String po, String partNum, String imagePath, bool isFavorited, List<String> tools, String status) async {
   final currentUser = FirebaseAuth.instance.currentUser;
   if (currentUser == null) {
@@ -192,7 +182,7 @@ Future<void> addWorkOrderWithParams(String partName, String po, String partNum, 
     return;
   }
 
-  final docOrder = FirebaseFirestore.instance.collection(tableName).doc();
+  final docOrder = FirebaseFirestore.instance.collection("WorkOrders").doc();
   final orderTable = WorkOrder(
     id: docOrder.id,
     partName: partName,
@@ -200,26 +190,44 @@ Future<void> addWorkOrderWithParams(String partName, String po, String partNum, 
     partNum: partNum,
     isFavorited: isFavorited,
     tool: tools,
-    imagePath: imagePath, // Add the image URL here
-    enteredBy: await getUserFullName(),
+    imagePath: imagePath,
+    enteredBy: await getUserFullName(), // Assuming this function exists and fetches the current user's full name
     status: status,
   );
   final json = orderTable.toJson();
 
   // Create document and write data to Firestore
   await docOrder.set(json);
+
+  // Add the work order ID to the current user's Workorders array
+  final userDocRef = FirebaseFirestore.instance.collection('Users').doc(currentUser.uid);
+  await userDocRef.update({
+    'Workorders': FieldValue.arrayUnion([docOrder.id])
+  }).catchError((error) {
+    if (kDebugMode) {
+      print("Error updating user's work orders: $error");
+    }
+  });
 }
 
-//Makes a Firestore instance, gets a snapshot fo the data inside the Machine collection
-//Returns a list of machines and the data inside them
+
+/// Fetches all work order documents from the 'WorkOrders' collection.
+///
+/// This function retrieves all documents from the specified collection and
+/// converts each document to a WorkOrder object.
+///
+/// Returns a list of WorkOrder objects representing all work orders in the collection.
 Future<List<WorkOrder>> getAllWorkOrders() async {
-  final machinesCollection = FirebaseFirestore.instance.collection(tableName);
+  final machinesCollection = FirebaseFirestore.instance.collection('WorkOrders');
   final querySnapshot = await machinesCollection.get();
   return querySnapshot.docs.map((doc) => WorkOrder.fromJson(doc.data())).toList();
 }
 
-
-//
+/// Updates specific fields of an existing work order document.
+///
+/// This function allows for selectively updating the fields of a work order document
+/// identified by [workOrderId] with new values provided via optional parameters.
+/// Only fields that are provided will be updated.
 Future<void> updateWorkOrder(String workOrderId, {String? partName, String? po, String? partNum, String? enteredBy, String? status}) async {
   final currentUser = FirebaseAuth.instance.currentUser;
   if (currentUser == null) {
@@ -229,7 +237,7 @@ Future<void> updateWorkOrder(String workOrderId, {String? partName, String? po, 
     return;
   }
 
-  final docOrder = FirebaseFirestore.instance.collection(tableName).doc(workOrderId);
+  final docOrder = FirebaseFirestore.instance.collection("WorkOrders").doc(workOrderId);
 
   // Fetch the current data of the work order
   final currentData = await docOrder.get();
@@ -264,3 +272,28 @@ Future<void> updateWorkOrder(String workOrderId, {String? partName, String? po, 
   }
 }
 
+/// Removes a work order ID from the current user's `Workorders` array field in Firestore.
+///
+/// This function updates the document of the currently signed-in user in the 'Users' collection,
+/// removing the provided work order ID from the 'Workorders' array field using Firestore's arrayRemove.
+Future<void> removeUserWorkOrder(String workOrderId) async {
+  final currentUser = FirebaseAuth.instance.currentUser;
+  if (currentUser == null) {
+    if (kDebugMode) {
+      print('No user signed in.');
+    }
+    return;
+  }
+
+  // Reference to the current user's document in the "Users" collection
+  final userDocRef = FirebaseFirestore.instance.collection('Users').doc(currentUser.uid);
+
+  // Use Firestore's arrayRemove to remove the workOrderId from the `Workorders` field
+  await userDocRef.update({
+    'Workorders': FieldValue.arrayRemove([workOrderId])
+  }).catchError((error) {
+    if (kDebugMode) {
+      print("Error removing work order from user's document: $error");
+    }
+  });
+}

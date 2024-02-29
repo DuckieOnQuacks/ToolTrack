@@ -2,7 +2,7 @@
     package="com.example.vineburgapp">
    <application
         android:enableOnBackInvokedCallback="true"
-        android:label="vineburgapp"
+        android:label="Tool Tracker"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

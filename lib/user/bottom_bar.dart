@@ -18,7 +18,7 @@ class _BottomBarState extends State<BottomBar> {
   final Map<int, Widget> widgetOptions = {
     0: const UserWorkOrderPage(),
     1: const UserToolsPage(),
-    2: ProfilePage(),
+    2: const ProfilePage(),
   };
 
   void _onItemTapped(int index) {

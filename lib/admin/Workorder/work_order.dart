@@ -117,7 +117,12 @@ class _WorkOrderState extends State<WorkOrderPage> {
                   final workOrderData = snapshot.data!;
                   if (workOrderData.isEmpty) {
                     return const Center(
-                      child: Text("No Workorders"),
+                      child: Text("No Workorders",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.grey,
+                        ),),
                     );
                   }
                   return ListView.builder(

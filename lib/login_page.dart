@@ -21,7 +21,8 @@ class _LoginPageState extends State<LoginPage> {
   String? passwordErrorMessage;
 
   String createUsername(String username) {
-    String formattedUsername = username.trim().replaceAll(' ', '_').toLowerCase();
+    String formattedUsername =
+        username.trim().replaceAll(' ', '_').toLowerCase();
     return '$username@vineburg.com';
   }
 
@@ -40,14 +41,16 @@ class _LoginPageState extends State<LoginPage> {
     try {
       if (validateFields()) {
         await FirebaseAuth.instance.signInWithEmailAndPassword(
-            email: createUsername(usernameController.text), password: passwordController.text);
+            email: createUsername(usernameController.text),
+            password: passwordController.text);
 
         String userEmail = FirebaseAuth.instance.currentUser!.email!;
         MaterialPageRoute newPage;
 
         // Check if the user is an admin
         if (userEmail == 'admin123@vineburg.com') {
-          newPage = MaterialPageRoute(builder: (context) => const AdminBottomBar());
+          newPage =
+              MaterialPageRoute(builder: (context) => const AdminBottomBar());
         } else {
           newPage = MaterialPageRoute(builder: (context) => const BottomBar());
         }
@@ -78,7 +81,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-
   bool validateFields() {
     bool valid = true;
     setState(() {
@@ -88,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
       if (passwordController.text.isEmpty ||
           passwordController.text.length < 6) {
         passwordErrorMessage =
-        'Please enter a password with at least 6 characters';
+            'Please enter a password with at least 6 characters';
         valid = false;
       }
     });
@@ -100,152 +102,179 @@ class _LoginPageState extends State<LoginPage> {
     // The login page scaffold
     return Scaffold(
         resizeToAvoidBottomInset: true,
-        backgroundColor: Colors.grey[200],
+        backgroundColor: Colors.white,
         body: SafeArea(
+            top: true,
             child: Center(
                 child: SingleChildScrollView(
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset(
-                            'assets/images/drilling.png',
-                            scale: 3,
-                          ),
-                          const SizedBox(height: 30),
-                          //Creates space between text
-                          Text('Welcome to ToolSeeker',
-                              style: GoogleFonts.bebasNeue(
-                                fontSize: 45,
-                              )),
-                          const SizedBox(height: 30),
-                          //email text field
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(color: Colors.white),
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
-                                child: TextField(
-                                  controller: usernameController,
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Username',
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          //Create Space between both boxes
-                          //Password text field
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(color: Colors.white),
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
-                                child: TextField(
-                                  controller: passwordController,
-                                  obscureText: true, //Hides password
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Password',
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                   // Navigator.push(context,
-                                        //MaterialPageRoute(builder: (context) {
-                                          //return ResetPasswordPage();
-                                        //}));
-                                  },
-                                  child: const Text(
-                                    'Forgot Password',
-                                    style: TextStyle(
-                                      color: Colors.blueAccent,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 30),
-                          //sign in button
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  signUserIn();
-                                });
-                              },
-                              style: ButtonStyle(
-                                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                                      const EdgeInsets.all(25)),
-                                  backgroundColor:
-                                  MaterialStateProperty.all<Color>(Colors.grey),
-                                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                          side: BorderSide(
-                                              color: Colors.grey[900]!, width: 2)))),
-                              child: const Center(
-                                child: Text(
-                                  'Sign In',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                'Dont have an account?',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                      MaterialPageRoute(builder: (BuildContext context) {
-                                        return const RegisterPage();
-                                      }));
-                                },
-                                child: const Text(
-                                  'Sign Up',
-                                  style: TextStyle(
-                                    color: Colors.blueAccent,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ])))));
+              Image.asset(
+                'assets/images/drilling.png',
+                scale: 3,
+              ),
+              const SizedBox(height: 50),
+              //Creates space between text
+               Text(
+                'Welcome to Tool Tracker',
+                style: GoogleFonts.signika(fontSize: 35.0, fontWeight: FontWeight.bold)
+                  //TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 30),
+              //email text field
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.white),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: TextField(
+                      controller: usernameController,
+                      decoration: InputDecoration(
+                        labelText: 'Username',
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        labelStyle: const TextStyle(
+                          fontSize: 18, // Change the font size as needed
+                          color: Colors.black, // You can also change the color, weight, etc.
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.black, width: 1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.blueAccent, width: 2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        // Rest of your decoration like hintText if needed
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              //Create Space between both boxes
+              //Password text field
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.white),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: TextField(
+                      controller: passwordController,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        labelStyle: const TextStyle(
+                          fontSize: 18, // Change the font size as needed
+                          color: Colors.black, // You can also change the color, weight, etc.
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.black, width: 1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.blueAccent, width: 2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        // Rest of your decoration like hintText if needed
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        // Navigator.push(context,
+                        //MaterialPageRoute(builder: (context) {
+                        //return ResetPasswordPage();
+                        //}));
+                      },
+                      child: const Text(
+                        'Forgot Password',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(height: 30),
+              //sign in button
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      signUserIn();
+                    });
+                  },
+                  style: ButtonStyle(
+                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                          const EdgeInsets.all(20)),
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.black87),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              side: BorderSide(
+                                  color: Colors.black!, width: 1)))),
+                  child: const Center(
+                    child: Text(
+                      'Log In',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 5),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Dont have an account?',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (BuildContext context) {
+                        return const RegisterPage();
+                      }));
+                    },
+                    child: const Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ])))));
   }
 }

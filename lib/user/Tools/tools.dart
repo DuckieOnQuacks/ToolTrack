@@ -48,7 +48,7 @@ class _UserToolsPage extends State<UserToolsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tool Search'),
+        title: const Text('Your Tools'),
         automaticallyImplyLeading: false,
       ),
       body: Column(
