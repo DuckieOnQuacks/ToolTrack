@@ -16,9 +16,10 @@ class WorkOrder {
   late String imagePath; // Path to the image of the work order
   late bool isFavorited;
   late String enteredBy;
+  late String enteredByID;
   late String status;
 
-  WorkOrder({required this.id, required this.po, required this.partNum, required this.partName, required this.imagePath, required this.isFavorited, this.tool, required this.enteredBy, required this.status});
+  WorkOrder({required this.id, required this.po, required this.partNum, required this.partName, required this.imagePath, required this.isFavorited, this.tool, required this.enteredBy, required this.enteredByID, required this.status});
 
   final List<Color> pastelColors = [
     const Color(0xFFC5CAE9), // Pastel indigo
@@ -54,6 +55,7 @@ class WorkOrder {
         isFavorited: json['isFavorited'],
         tool: List<String>.from(json['Tools'] ?? []),
         enteredBy: json['Entered By'],
+        enteredByID: json['Entered By ID'],
         status: json['Status'],
   );
 
@@ -68,6 +70,7 @@ class WorkOrder {
         'isFavorited': isFavorited,
         'Tools': tool,
         'Entered By': enteredBy,
+        'Entered By ID': enteredByID,
         'Status': status,
       };
 
@@ -192,6 +195,7 @@ Future<void> addWorkOrderWithParams(String partName, String po, String partNum, 
     tool: tools,
     imagePath: imagePath,
     enteredBy: await getUserFullName(), // Assuming this function exists and fetches the current user's full name
+    enteredByID: currentUser.uid,
     status: status,
   );
   final json = orderTable.toJson();
@@ -263,6 +267,7 @@ Future<void> updateWorkOrder(String workOrderId, {String? partName, String? po, 
     // Update the document with the new data
     await docOrder.update(updates);
     if (kDebugMode) {
+      print(status);
       print('Work order updated successfully.');
     }
   } else {
@@ -294,6 +299,27 @@ Future<void> removeUserWorkOrder(String workOrderId) async {
   }).catchError((error) {
     if (kDebugMode) {
       print("Error removing work order from user's document: $error");
+    }
+  });
+}
+
+Future<void> addWorkorderToUser(String userId, String workOrderId) async {
+  if (userId.isEmpty) {
+    if (kDebugMode) {
+      print('User ID is empty.');
+    }
+    return;
+  }
+
+  // Reference to the specified user's document in the "Users" collection
+  final userDocRef = FirebaseFirestore.instance.collection('Users').doc(userId);
+
+  // Use Firestore's arrayUnion to add the workOrderId to the `Workorders` field
+  await userDocRef.update({
+    'Workorders': FieldValue.arrayUnion([workOrderId])
+  }).catchError((error) {
+    if (kDebugMode) {
+      print("Error adding work order to user's document: $error");
     }
   });
 }

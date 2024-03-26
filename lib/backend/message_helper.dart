@@ -116,7 +116,7 @@ void showWarning(BuildContext context, String message) {
                 alignment: Alignment.bottomRight,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white, backgroundColor: Colors.black,
                   ),
                   onPressed: () {
                     Navigator.of(dialogContext).pop();

@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 import 'package:vineburgapp/classes/user_class.dart';
 
 class Tool{
@@ -105,10 +106,10 @@ class Tool{
 
     // Update the specific tool's "Check Out Date" and "Person Checked Tool" in the Tools collection
     final toolDocRef = toolsCollection.doc(tool.toolName); // Assuming toolName is used as the document ID
-
+    String fullName = await getUserFullName();
     await toolDocRef.update({
       'Check Out Date': checkedOut,
-      'Person Checked Tool': await getCurrentUser(),
+      'Person Checked Tool': fullName,
       "Machine Where Used": machineNum,
       "Checked Out To Workorder": workOrderId,
     }).then((_) {
@@ -151,6 +152,71 @@ class Tool{
         print('Error updating work order: $error');
       }
     });
+  }
+  Future<void> returnToolAndUpdateUser(Tool tool) async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      if (kDebugMode) {
+        print('No user signed in.');
+      }
+      return;
+    }
+
+    final toolsCollection = FirebaseFirestore.instance.collection('Tools');
+    final toolDocRef = toolsCollection.doc(tool.toolName); // Assuming toolName is used as the document ID
+    final userDocRef = FirebaseFirestore.instance.collection('Users').doc(currentUser.uid);
+
+    String fullName = await getUserFullName(); // Retrieve the full name of the current user
+    DateTime now = DateTime.now(); // Current date and time for the "Check In Date"
+    String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now); // Formatting the date
+
+    await toolDocRef.update({
+      'Machine Where Used': "",
+      "Checked Out To Workorder": "",
+      'Check Out Date': "",
+      'Person Checked Tool': "",
+      'Person Returned Tool': fullName,
+      'Check In Date': formattedDate,
+    }).then((_) {
+      if (kDebugMode) {
+        print('Tool updated with return information.');
+      }
+    }).catchError((error) {
+      if (kDebugMode) {
+        print('Error updating tool: $error');
+      }
+    });
+
+    // Remove the tool from the user's document
+    final userSnapshot = await userDocRef.get();
+    if (userSnapshot.exists) {
+      var userData = userSnapshot.data() as Map<String, dynamic>;
+      List<dynamic> userToolsArray = userData['Tools'] ?? [];
+
+      // Check if the tool is in the user's list and remove it
+      if (userToolsArray.contains(tool.toolName)) {
+        userToolsArray.remove(tool.toolName);
+        await userDocRef.update({
+          'Tools': userToolsArray,
+        }).then((_) {
+          if (kDebugMode) {
+            print('Tool removed from user\'s list.');
+          }
+        }).catchError((error) {
+          if (kDebugMode) {
+            print('Error removing tool from user: $error');
+          }
+        });
+      } else {
+        if (kDebugMode) {
+          print('Tool not found in user\'s list.');
+        }
+      }
+    } else {
+      if (kDebugMode) {
+        print('User document does not exist or has no data.');
+      }
+    }
   }
 
   //Helpers for admin

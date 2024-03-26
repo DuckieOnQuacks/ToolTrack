@@ -34,7 +34,6 @@ class _QRScan extends State<QRScan> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
-            // Navigator.of(context).pushReplacementNamed('/desiredRoute');
           },
         ),
       ),
@@ -261,7 +260,7 @@ class _ImageAndQRDataScreenState extends State<ImageAndQRDataScreen> {
                               imageUrl,
                               false,
                               [],
-                              "Active"
+                              "Active",
                           );
                           if (!mounted) return;
                           Navigator.of(context).pop();

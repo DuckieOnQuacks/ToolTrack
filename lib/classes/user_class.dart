@@ -133,7 +133,7 @@ Future<List<WorkOrder>> getUserWorkOrders() async {
             .doc(workOrderId.toString())
             .get();
 
-        final status = workOrderDocSnapshot.data()?['Status'] ?? 'Unknown';
+        final status = workOrderDocSnapshot.data()?['Status'];
 
         if (workOrderDocSnapshot.exists && status == 'Active') {
           workOrders.add(WorkOrder.fromJson(workOrderDocSnapshot.data()!));

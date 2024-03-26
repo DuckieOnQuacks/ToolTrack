@@ -4,6 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:vineburgapp/admin/Workorder/scan_tool_workOrder.dart';
 import 'package:vineburgapp/admin/Workorder/work_order_QR_scan.dart';
 import 'package:vineburgapp/classes/work_order_class.dart';
+import 'package:vineburgapp/user/Workorder/scan_tool_workOrder.dart';
 import 'package:vineburgapp/user/Workorder/work_order_inspect.dart';
 import '../../backend/message_helper.dart';
 import '../../classes/user_class.dart';
@@ -151,8 +152,7 @@ class _UserWorkOrderState extends State<UserWorkOrderPage> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            AdminScanToolWorkOrderPage(
-                                                workId: data),
+                                            UserScanToolPage(workOrder: data),
                                       ),
                                     );
                                   }

@@ -273,7 +273,12 @@ class _AdminInspectOrderScreenState extends State<AdminInspectOrderScreen> {
                     partName: partNameController.text,
                     po: poNumberController.text,
                     partNum: partNumberController.text,
-                    enteredBy: enteredByController.text);
+                    enteredBy: enteredByController.text,
+                    status: widget.workOrder.status);
+                if(widget.workOrder.status == "Active")
+                  {
+                    addWorkorderToUser(widget.workOrder.enteredByID, widget.workOrder.id);
+                  }
                 Navigator.of(context).pop();
                 Navigator.pop(context, true);
               },

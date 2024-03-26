@@ -3,20 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import '../../backend/message_helper.dart';
+import '../../classes/tool_class.dart';
 import '../../classes/user_class.dart';
-import '../../classes/work_order_class.dart';
 
 
-class QRScanToolPage extends StatefulWidget {
-  final WorkOrder workOrder;
+class UserScanToolPage extends StatefulWidget {
+  final String workOrder;
 
-  const QRScanToolPage({super.key, required this.workOrder});
+  const UserScanToolPage({super.key, required this.workOrder});
 
   @override
-  State<StatefulWidget> createState() => _QRScanPageState();
+  State<StatefulWidget> createState() => _UserScanToolPageState();
 }
 
-class _QRScanPageState extends State<QRScanToolPage> {
+class _UserScanToolPageState extends State<UserScanToolPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   late final User user = FirebaseAuth.instance.currentUser!; // Get current user
   Barcode? result;
@@ -160,12 +161,27 @@ class _QRScanPageState extends State<QRScanToolPage> {
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
                   onPressed: () async {
-
-                    Navigator.pop(context);
+                    if (machineNumber.isNotEmpty) {
+                      Tool? toolExists = await getToolByToolName(toolName);
+                      if (toolExists != null) {
+                        // Proceed with whatever needs to be done if the tool exists
+                        await toolExists.addToolToUserAndWorkOrder(toolExists, widget.workOrder, currentDate, machineNumber);
+                        Navigator.pop(context);
+                      } else {
+                        // Show a message if the tool does not exist
+                        showMessage(context, 'Tool Not Found', 'The tool "$toolName" does not exist in the database.');
+                      }
+                    } else {
+                      showMessage(context, 'Machine Number Required', 'Please enter the machine number.');
+                    }
                   },
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    minimumSize: const Size.fromHeight(50), // set the size
+                    primary: Colors.blue, // Button color
+                    onPrimary: Colors.white, // Text color
+                    elevation: 5, // Button shadow
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10), // Rounded corners
+                    ),
                   ),
                   child: const Text('Submit'),
                 ),

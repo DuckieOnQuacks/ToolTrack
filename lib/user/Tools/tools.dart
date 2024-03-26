@@ -1,12 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:vineburgapp/user/Tools/tool_inspect.dart';
+import 'package:vineburgapp/user/Tools/tool_return.dart';
 import '../../classes/tool_class.dart';
-import '../../login_page.dart';
-import '../Workorder/scan_tool_workOrder.dart';
 
-
-// All code on this page was developed by the team using the flutter framework
 // All code on this page was developed by the team using the flutter framework
 class UserToolsPage extends StatefulWidget {
   const UserToolsPage({super.key});
@@ -19,7 +15,6 @@ class _UserToolsPage extends State<UserToolsPage> {
   Future<List<Tool>>? tools;
   TextEditingController searchController = TextEditingController();
   late Future<List<Tool>> filteredTools;
-
 
   @override
   void initState() {
@@ -55,7 +50,7 @@ class _UserToolsPage extends State<UserToolsPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField( // 2. Add TextField
+            child: TextField(
               onChanged: (value) {
                 filterSearchResults(value);
               },
@@ -104,8 +99,15 @@ class _UserToolsPage extends State<UserToolsPage> {
                         child: ListTile(
                             trailing: IconButton(
                               icon: const Icon(Icons.restart_alt_outlined),
-                              onPressed: () {
-                                //onDeletePressed(tools[index]),
+                              onPressed: () async {
+                                bool? shouldRefresh = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => ToolReturnPage(toolToReturn: tools[index])),
+                                );
+                                if (shouldRefresh == true) {
+                                  // Call your refreshTools function here
+                                  refreshToolsList();
+                                }
                               }
                             ),
                             title: Text(
@@ -149,76 +151,7 @@ class _UserToolsPage extends State<UserToolsPage> {
       filteredTools = tools!;
     });
   }
-
- /* void onDeletePressed(Tool tool) async {
-    bool? result = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) => DeleteMachineDialog(tool: tool),
-    );
-    if (result != null && result) {
-      await tool.deleteToolEverywhere(tool);
-      setState(() {
-        //Scan for favorites again after deletion
-        tools = getUserTools();
-        refreshToolsList();
-      });
-    }
-  }*/
 }
-
-/*class DeleteMachineDialog extends StatelessWidget {
-  final Tool tool;
-
-  const DeleteMachineDialog({super.key, required this.tool});
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      buttonPadding: const EdgeInsets.all(15),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      elevation: 10,
-      title: const Row(
-        children: [
-          Icon(
-            Icons.warning_amber_rounded,
-            color: Colors.redAccent,
-          ),
-          SizedBox(width: 10),
-          Text(
-            'Confirm Delete',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-        ],
-      ),
-      content: const Text('Are you sure you want to remove this tool from the database?'),
-      actions: <Widget>[
-        ElevatedButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.black54, backgroundColor: Colors.grey[300],
-          ),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            await tool.deleteToolEverywhere(tool);
-            Navigator.of(context).pop(true);
-          },
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white, backgroundColor: Colors.redAccent,
-          ),
-          child: const Text('Delete'),
-        ),
-      ],
-    );
-  }
-}*/
 
 
 

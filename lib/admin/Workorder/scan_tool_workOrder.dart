@@ -154,7 +154,7 @@ class _AdminScanToolWorkOrderPage extends State<AdminScanToolWorkOrderPage> {
                       Tool? toolExists = await getToolByToolName(toolName);
                       if (toolExists != null) {
                         // Proceed with whatever needs to be done if the tool exists
-                        toolExists.addToolToUserAndWorkOrder(toolExists, widget.workId, currentDate, machineNumber);
+                        await toolExists.addToolToUserAndWorkOrder(toolExists, widget.workId, currentDate, machineNumber);
                         Navigator.pop(context);
                       } else {
                         // Show a message if the tool does not exist
