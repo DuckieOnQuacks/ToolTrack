@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:vineburgapp/register_page.dart';
-import 'package:vineburgapp/user/bottom_bar.dart';
-import 'admin/admin_bottom_bar.dart';
-import 'backend/message_helper.dart';
+import 'package:vineburgapp/user/home.dart';
+import 'admin/adminBottomBar.dart';
+import 'backend/messageHelper.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -49,10 +48,9 @@ class _LoginPageState extends State<LoginPage> {
 
         // Check if the user is an admin
         if (userEmail == 'admin123@vineburg.com') {
-          newPage =
-              MaterialPageRoute(builder: (context) => const AdminBottomBar());
+          newPage = MaterialPageRoute(builder: (context) => const AdminBottomBar());
         } else {
-          newPage = MaterialPageRoute(builder: (context) => const BottomBar());
+          newPage = MaterialPageRoute(builder: (context) => const HomePage());
         }
 
         if (mounted) {
@@ -250,28 +248,13 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 5),
-              Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     'Dont have an account?',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (BuildContext context) {
-                        return const RegisterPage();
-                      }));
-                    },
-                    child: const Text(
-                      'Sign Up',
-                      style: TextStyle(
-                        color: Colors.blueAccent,
-                        fontWeight: FontWeight.bold,
-                      ),
                     ),
                   ),
                 ],

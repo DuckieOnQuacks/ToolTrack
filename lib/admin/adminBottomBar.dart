@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:vineburgapp/profile_page.dart';
-import 'package:vineburgapp/user/Workorder/work_order.dart';
+import 'package:vineburgapp/admin/Tools/tools.dart';
 
-import 'Tools/tools.dart';
+import 'package:vineburgapp/backend/parsingCSV.dart';
 
 // All code on this page was developed by the team using the flutter framework
-class BottomBar extends StatefulWidget {
-  const BottomBar({super.key});
+class AdminBottomBar extends StatefulWidget {
+  const AdminBottomBar({super.key});
 
   @override
-  State<BottomBar> createState() => _BottomBarState();
+  State<AdminBottomBar> createState() => _AdminBottomBarState();
 }
 
-class _BottomBarState extends State<BottomBar> {
+class _AdminBottomBarState extends State<AdminBottomBar> {
   int selectedIndex = 0;
   // What pages to load depending on the bottom bar index
   final Map<int, Widget> widgetOptions = {
-    0: const UserWorkOrderPage(),
-    1: const UserToolsPage(),
-    2: const ProfilePage(),
+    //0: const AdminToolsPage(),
   };
 
   void _onItemTapped(int index) {
@@ -36,20 +33,16 @@ class _BottomBarState extends State<BottomBar> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.build),
-            label: 'Work Orders',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.work),
-            label: 'Your Tools',
+            label: 'All Tools',
           ),
+
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
+            icon: Icon(Icons.build),
+            label: 'All Work Orders',
           ),
-        ],
+      ],
         currentIndex: selectedIndex,
-        backgroundColor: Colors.white,
         unselectedItemColor: Colors.grey,
         selectedItemColor: Colors.black,
         showSelectedLabels: true,
@@ -58,4 +51,4 @@ class _BottomBarState extends State<BottomBar> {
       ),
     );
   }
-}
+  }

@@ -1,7 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
+/*import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:vineburgapp/admin/Tools/tool_inspect.dart';
-import '../../classes/tool_class.dart';
+import '../../classes/tool_class_new.dart';
+import '../../classes/tools_class.dart';
 import '../../login_page.dart';
 import 'add_tool.dart';
 
@@ -32,8 +33,7 @@ class _ToolsPageState extends State<AdminToolsPage> {
     if (query.isNotEmpty) {
       setState(() {
         filteredTools = tools!.then((allTools) => allTools.where((tool) {
-          return tool.toolName.toLowerCase().contains(query.toLowerCase()) ||
-              tool.personCheckedTool.toLowerCase().contains(query.toLowerCase());
+          return tool.gageType.toLowerCase().contains(query.toLowerCase()) || tool.gageID.toLowerCase().contains(query.toLowerCase());
         }).toList());
       });
     } else {
@@ -188,7 +188,7 @@ class _ToolsPageState extends State<AdminToolsPage> {
                                 onDeletePressed(tools[index]),
                           ),
                           title: Text(
-                            tools[index].toolName,
+                            tools[index].gageType,
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -197,8 +197,7 @@ class _ToolsPageState extends State<AdminToolsPage> {
                           subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text('Checked Out To: ${tools[index].personCheckedTool}'),
-                            Text('Located At Machine: ${tools[index].whereBeingUsed}'),
+                            Text('Gage ID: ${tools[index].gageID}'),
                           ],
                         ),
                           onTap: () async {
@@ -240,7 +239,7 @@ class _ToolsPageState extends State<AdminToolsPage> {
       builder: (BuildContext context) => DeleteMachineDialog(tool: tool),
     );
     if (result != null && result) {
-      await tool.deleteToolEverywhere(tool);
+      //await tool.deleteToolEverywhere(tool);
       setState(() {
         //Scan for favorites again after deletion
         tools = getAllTools();
@@ -291,7 +290,7 @@ class DeleteMachineDialog extends StatelessWidget {
         ),
         ElevatedButton(
           onPressed: () async {
-            await tool.deleteToolEverywhere(tool);
+            //await tool.deleteToolEverywhere(tool);
             Navigator.of(context).pop(true);
           },
           style: ElevatedButton.styleFrom(
@@ -304,3 +303,4 @@ class DeleteMachineDialog extends StatelessWidget {
   }
 }
 
+*/

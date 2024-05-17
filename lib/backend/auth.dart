@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../admin/admin_bottom_bar.dart';
-import '../login_page.dart';
-import '../user/bottom_bar.dart';
+import 'package:vineburgapp/user/home.dart';
+import '../admin/adminBottomBar.dart';
+import '../login.dart';
 
 /*
 * Authorization page responsible for checking to see
@@ -26,7 +26,7 @@ class AuthPage extends StatelessWidget {
             if (snapshot.data!.email == 'admin123@vineburg.com') {
               return const AdminBottomBar();
             } else {
-              return const BottomBar();
+              return const HomePage();
             }
           } else {
             // If the user is not signed in, show the login screen

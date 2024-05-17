@@ -1,6 +1,9 @@
-import 'package:flutter/foundation.dart';
+/*import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import '../../classes/tool_class.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:vineburgapp/backend/camera_preview_helper.dart';
+import '../../backend/message_helper.dart';
+import '../../classes/tools_class.dart';
 
 class AdminInspectToolScreen extends StatefulWidget {
   final Tool tool;
@@ -12,34 +15,34 @@ class AdminInspectToolScreen extends StatefulWidget {
 }
 
 class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
-
+  late List<CameraDescription> cameras;
   late TextEditingController toolNameController;
-  late TextEditingController whereBeingUsedController;
-  late TextEditingController personCheckedOutController;
-  late TextEditingController dateCheckedOutController;
+  String imagePath = '';
+  //late TextEditingController whereBeingUsedController;
+  //late TextEditingController personCheckedOutController;
+  //late TextEditingController dateCheckedOutController;
 
   @override
   void initState() {
     super.initState();
-    toolNameController = TextEditingController(text: widget.tool.toolName);
-    whereBeingUsedController = TextEditingController(text: widget.tool.whereBeingUsed);
-    personCheckedOutController = TextEditingController(text: widget.tool.personCheckedTool);
-    dateCheckedOutController = TextEditingController(text: widget.tool.dateCheckedOut);
+    availableCameras().then((availableCameras) {
+      cameras = availableCameras;
+    });
+    toolNameController = TextEditingController(text: widget.tool.gageType);//whereBeingUsedController = TextEditingController(text: widget.tool.whereBeingUsed);
+    //personCheckedOutController = TextEditingController(text: widget.tool.personCheckedTool);
+    //dateCheckedOutController = TextEditingController(text: widget.tool.dateCheckedOut);
   }
   @override
   void dispose() {
     toolNameController.dispose();
-    whereBeingUsedController.dispose();
-    personCheckedOutController.dispose();
-    dateCheckedOutController.dispose();
+    //whereBeingUsedController.dispose();
+    //personCheckedOutController.dispose();
+    //dateCheckedOutController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-  if (kDebugMode) {
-    print(widget.tool.whereBeingUsed);
-  }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Tool Details'),
@@ -53,6 +56,14 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             iconSize: 100.0,
             onPressed: () =>
                 _showImageFullscreen(context, widget.tool.imagePath),
+          ),
+          IconButton(
+            icon: const Icon(Icons.camera_alt_outlined),
+            color: Colors.blueAccent,
+            iconSize: 100.0,
+            onPressed: () async {
+             imagePath = await openCamera(context);
+            }
           ),
           const SizedBox(height: 20),
           const Text(
@@ -68,7 +79,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             'Located At Machine: ',
             style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
           ),
-          TextFormField(
+         /* TextFormField(
             controller: whereBeingUsedController,
             decoration: const InputDecoration(border: UnderlineInputBorder()),
           ),
@@ -90,14 +101,14 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             controller: dateCheckedOutController,
             decoration: const InputDecoration(border: UnderlineInputBorder()),
           ),
+          */
           const SizedBox(height: 50),
           Padding(
             padding: const EdgeInsets.only(left: 50, right: 50),
             child: ElevatedButton (
               onPressed: () => _confirmChanges(context),
               style: ElevatedButton.styleFrom(
-                primary: Colors.blue, // Button color
-                onPrimary: Colors.white, // Text color
+                foregroundColor: Colors.white, backgroundColor: Colors.blue, // Text color
                 elevation: 5, // Button shadow
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10), // Rounded corners
@@ -117,10 +128,66 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     );
   }
 
+  Future<String> openCamera(BuildContext context) async {
+    // Ensure that there is a camera available on the device
+    if (cameras.isEmpty) {
+      showMessage(context, 'Uh Oh!', 'Camera not available');
+      return 'null';
+    }
+
+    // Check if the user has granted camera permission
+    PermissionStatus cameraPermission = await Permission.camera.status;
+    if (cameraPermission != PermissionStatus.granted) {
+      // Request camera permission
+      PermissionStatus permissionStatus = await Permission.camera.request();
+      if (permissionStatus == PermissionStatus.denied) {
+        // Permission denied show warning
+        showWarning2(context,
+            "App require access to camera... Press allow camera to allow the camera.");
+        // Request camera permission again
+        PermissionStatus permissionStatus2 = await Permission.camera.request();
+        if (permissionStatus2 != PermissionStatus.granted) {
+          // Permission still not granted, return null
+          showMessage(context, 'Uh Oh!', 'Camera permission denied');
+          return 'null';
+        }
+      } else if (permissionStatus != PermissionStatus.granted) {
+        // Permission not granted, return null
+        showMessage(context, 'Uh Oh!', 'Camera permission denied');
+        return 'null';
+      }
+    }
+
+    // Take the first camera in the list
+    CameraDescription camera = cameras[0];
+
+    // Open the camera and store the resulting CameraController
+    CameraController controller = CameraController(
+      camera,
+      ResolutionPreset.high,
+      enableAudio: false,
+    );
+    await controller.initialize();
+
+    // Navigate to the CameraScreen and pass the CameraController to it
+    String? imagePath = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CameraPreviewHelper(
+          controller,
+        ),
+      ),
+    );
+    if (imagePath == null || imagePath.isEmpty) {
+      return 'null';
+    }
+    return imagePath;
+  }
+
   void _confirmChanges(BuildContext context) {
     // Compare current values with original values and create a list of changes
     List<Widget> changesWidgets = [];
-    if (toolNameController.text != widget.tool.toolName) {
+    if (toolNameController.text != widget.tool.gageType) {
       changesWidgets.add(RichText(
         text: TextSpan(
           text: 'Tool Name: ',
@@ -128,7 +195,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
               fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black),
           children: <TextSpan>[
             TextSpan(
-              text: '${widget.tool.toolName} -> ${toolNameController.text}',
+              text: '${widget.tool.gageType} -> ${toolNameController.text}',
               style: const TextStyle(fontWeight: FontWeight.normal),
             ),
           ],
@@ -136,6 +203,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
       ),
       );
     }
+    /*
     const SizedBox(height: 10);
     if (whereBeingUsedController.text != widget.tool.whereBeingUsed) {
       changesWidgets.add(RichText(
@@ -184,7 +252,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
         ),
       ));
     }
-
+*/
     // Show confirmation dialog
     showDialog(
       context: context,
@@ -208,7 +276,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             TextButton(
               child: const Text('Submit'),
               onPressed: () async {
-                await updateTool(widget.tool.toolName, toolNameController.text, whereBeingUsedController.text, personCheckedOutController.text, dateCheckedOutController.text,);
+                await updateToolImagePath(widget.tool.gageID, imagePath);
                 Navigator.pop(context);
                 Navigator.pop(context, true);
               },
@@ -235,6 +303,5 @@ void _showImageFullscreen(BuildContext context, String imageUrl) {
     ),
   ));
 }
-
-
+*/
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-import 'backend/auth_page.dart';
+import 'backend/auth.dart';
 
 Future<void> main() async {
   // Ensuring that the widgets are initialized

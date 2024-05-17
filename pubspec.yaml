@@ -42,11 +42,17 @@ dependencies:
   image:
 
   qr_code_scanner:
+  csv: ^5.0.1
+
+  path_provider:
 
   permission_handler:
 
   google_fonts:
   google_mlkit_barcode_scanning:
+
+  # Snackbar for top of screen
+  another_flushbar:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -80,6 +86,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/drilling.png
+    - assets/images/data.csv
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
