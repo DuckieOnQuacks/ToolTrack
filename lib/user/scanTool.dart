@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:vineburgapp/user/returnConfirmation.dart';
 import '../backend/cameraManager.dart';
-import '../classes/toolClass.dart';
 import 'checkoutConfirmation.dart';
 
 class ScanToolPage extends StatefulWidget {
@@ -163,6 +162,58 @@ class _ScanToolPageState extends State<ScanToolPage> {
     }
   }
 
+  void showManualEntryDialog(BuildContext context) {
+    TextEditingController controller = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Enter Tool ID"),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(hintText: "Tool ID"),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.red,  // Text color
+              ),
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.green,  // Text color
+              ),
+              child: const Text("Confirm"),
+              onPressed: () async {
+                String toolId = controller.text.trim();
+                if (toolId.isNotEmpty) {
+                  final toolDoc = await getToolDocument(toolId);
+                  if (toolDoc != null) {
+                    final storageUrl = toolDoc['Tool Image Path'] ?? '';
+                    setState(() {
+                      _associatedImageUrl = storageUrl;
+                    });
+                    Navigator.of(context).pop(); // Dismiss the dialog
+                    showConfirmationDialog(context, toolId);
+                  } else {
+                    showTopSnackBar(context, "Tool ID not found in the database.");
+                  }
+                } else {
+                  showTopSnackBar(context, "Please enter a valid Tool ID.");
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void showTopSnackBar(BuildContext context, String message) {
     Flushbar(
       message: message,
@@ -189,42 +240,53 @@ class _ScanToolPageState extends State<ScanToolPage> {
         backgroundColor: Colors.grey[900],
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              showManualEntryDialog(context);
+            },
+            tooltip: 'Enter Tool ID Manually',
+          ),
+        ],
       ),
       body: Center(
         child: !_isCameraInitialized
             ? const CircularProgressIndicator()
-            : Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16.0),
-                child: SizedBox(
-                  width: 350,
-                  height: 500,
-                  child: CameraPreview(_cameraManager.controller!),
+            : SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16.0),
+                  child: SizedBox(
+                    width: 350,
+                    height: 500,
+                    child: CameraPreview(_cameraManager.controller!),
+                  ),
                 ),
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: Icon(_flashMode == FlashMode.torch ? Icons.flash_on : Icons.flash_off),
-                  onPressed: _toggleFlashMode,
-                  color: Colors.yellow,
-                  iconSize: 36,
-                ),
-                const SizedBox(width: 20),
-                IconButton(
-                  icon: const Icon(Icons.camera_alt),
-                  iconSize: 50.0,
-                  onPressed: handleToolBarcodeScanning,
-                ),
-              ],
-            ),
-          ],
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: Icon(_flashMode == FlashMode.torch ? Icons.flash_on : Icons.flash_off),
+                    onPressed: _toggleFlashMode,
+                    color: Colors.yellow,
+                    iconSize: 36,
+                  ),
+                  const SizedBox(width: 20),
+                  IconButton(
+                    icon: const Icon(Icons.camera_alt),
+                    iconSize: 50.0,
+                    onPressed: handleToolBarcodeScanning,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

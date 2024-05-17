@@ -98,6 +98,53 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
     );
   }
 
+  void showManualEntryDialog(BuildContext context) {
+    TextEditingController controller = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Enter Workorder ID"),
+          content: SingleChildScrollView(
+            child: TextField(
+              controller: controller,
+              decoration: const InputDecoration(hintText: "Workorder ID"),
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.red,  // Text color
+              ),
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.green,  // Text color
+              ),
+              child: const Text("Confirm"),
+              onPressed: () {
+                String workOrderId = controller.text.trim();
+                if (workOrderId.isNotEmpty) {
+                  Navigator.of(context).pop(); // Dismiss the dialog
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ScanToolPage(widget.cameras, workOrderId, '', widget.inOrOut)),
+                  );
+                } else {
+                  showTopSnackBar(context, "Please enter a valid Workorder ID.");
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void showTopSnackBar(BuildContext context, String message) {
     Flushbar(
@@ -125,45 +172,55 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
         backgroundColor: Colors.grey[900], // Consistent with the other page
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              showManualEntryDialog(context);
+            },
+            tooltip: 'Enter Workorder ID Manually',
+          ),
+        ],
       ),
       body: Center(
         child: !_isCameraInitialized
             ? const CircularProgressIndicator()
-            : Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16.0),
-                child: Container(
-                  width: 350,
-                  height: 500,
-                  child: CameraPreview(_cameraManager.controller!),
+            : SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16.0),
+                  child: SizedBox(
+                    width: 350,
+                    height: 500,
+                    child: CameraPreview(_cameraManager.controller!),
+                  ),
                 ),
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: Icon(_flashMode == FlashMode.torch ? Icons.flash_on : Icons.flash_off),
-                  onPressed: _toggleFlashMode,
-                  color: Colors.yellow,
-                  iconSize: 36,
-                ),
-                const SizedBox(width: 20),
-                IconButton(
-                  icon: const Icon(Icons.camera_alt),
-                  iconSize: 50.0,
-                  onPressed: handleBarcodeScanning,
-                ),
-              ],
-            ),
-          ],
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon: Icon(_flashMode == FlashMode.torch ? Icons.flash_on : Icons.flash_off),
+                    onPressed: _toggleFlashMode,
+                    color: Colors.yellow,
+                    iconSize: 36,
+                  ),
+                  const SizedBox(width: 20),
+                  IconButton(
+                    icon: const Icon(Icons.camera_alt),
+                    iconSize: 50.0,
+                    onPressed: handleBarcodeScanning,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
-
