@@ -1,6 +1,7 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:vineburgapp/user/scanTool.dart';
 import '../backend/cameraManager.dart';
 
@@ -17,6 +18,7 @@ class ScanWorkorderPage extends StatefulWidget {
 class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
   late CameraManager _cameraManager;
   bool _isCameraInitialized = false;
+  bool _isLoading = false;
   FlashMode _flashMode = FlashMode.off;
 
   @override
@@ -26,10 +28,14 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
   }
 
   Future<void> _initializeCamera() async {
+    setState(() {
+      _isLoading = true;
+    });
     _cameraManager = CameraManager(widget.cameras);
     await _cameraManager.initializeCamera();
     setState(() {
       _isCameraInitialized = true;
+      _isLoading = false;
     });
   }
 
@@ -40,14 +46,27 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
   }
 
   void handleBarcodeScanning() async {
+    setState(() {
+      _isLoading = true;
+    });
     final imagePath = await _cameraManager.takePicture();
     if (imagePath != null) {
       final barcodeData = await _cameraManager.scanBarcode(imagePath);
       if (barcodeData != null) {
+        setState(() {
+          _isLoading = false;
+        });
         showConfirmationDialog(context, barcodeData, imagePath);
       } else {
+        setState(() {
+          _isLoading = false;
+        });
         showTopSnackBar(context, "No barcode found, try again.");
       }
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -59,7 +78,7 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
           title: Text("Confirm Barcode", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey[900])),
           content: RichText(
             text: TextSpan(
-              style: TextStyle(color: Colors.grey[800], fontSize: 16.0), // Default style for TextSpans
+              style: TextStyle(color: Colors.grey[800], fontSize: 16.0),
               children: <TextSpan>[
                 const TextSpan(text: "Barcode data: ", style: TextStyle(fontWeight: FontWeight.bold)),
                 TextSpan(text: barcodeData, style: const TextStyle(fontWeight: FontWeight.normal)),
@@ -183,8 +202,18 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
         ],
       ),
       body: Center(
-        child: !_isCameraInitialized
-            ? const CircularProgressIndicator()
+        child: _isLoading
+            ? Lottie.asset(
+          'assets/lottie/loading.json',
+          width: 200,
+          height: 200,
+        )
+            : !_isCameraInitialized
+            ? Lottie.asset(
+          'assets/lottie/loading.json',
+          width: 200,
+          height: 200,
+        )
             : SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

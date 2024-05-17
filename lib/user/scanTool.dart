@@ -2,6 +2,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:vineburgapp/user/returnConfirmation.dart';
 import '../backend/cameraManager.dart';
 import 'checkoutConfirmation.dart';
@@ -22,6 +23,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
   late CameraManager _cameraManager;
   FlashMode _flashMode = FlashMode.off;
   bool _isCameraInitialized = false;
+  bool _isLoading = false;
   String _associatedImageUrl = '';
 
   @override
@@ -31,10 +33,14 @@ class _ScanToolPageState extends State<ScanToolPage> {
   }
 
   Future<void> _initializeCamera() async {
+    setState(() {
+      _isLoading = true;
+    });
     _cameraManager = CameraManager(widget.cameras);
     await _cameraManager.initializeCamera();
     setState(() {
       _isCameraInitialized = true;
+      _isLoading = false;
     });
   }
 
@@ -138,6 +144,9 @@ class _ScanToolPageState extends State<ScanToolPage> {
   }
 
   void handleToolBarcodeScanning() async {
+    setState(() {
+      _isLoading = true;
+    });
     final imagePath = await _cameraManager.takePicture();
     if (imagePath != null) {
       final barcodeData = await _cameraManager.scanBarcode(imagePath);
@@ -149,16 +158,27 @@ class _ScanToolPageState extends State<ScanToolPage> {
           final storageUrl = toolDoc['Tool Image Path'] ?? '';
           setState(() {
             _associatedImageUrl = storageUrl;
+            _isLoading = false;
           });
           // Show the confirmation dialog with the associated image URL
           showConfirmationDialog(context, barcodeData);
         } else {
+          setState(() {
+            _isLoading = false;
+          });
           // Tool ID does not exist, show error snackbar
           showTopSnackBar(context, "Tool ID not found in the database.");
         }
       } else {
+        setState(() {
+          _isLoading = false;
+        });
         showTopSnackBar(context, "No tool QR code found, try again.");
       }
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -192,15 +212,22 @@ class _ScanToolPageState extends State<ScanToolPage> {
               onPressed: () async {
                 String toolId = controller.text.trim();
                 if (toolId.isNotEmpty) {
+                  setState(() {
+                    _isLoading = true;
+                  });
                   final toolDoc = await getToolDocument(toolId);
                   if (toolDoc != null) {
                     final storageUrl = toolDoc['Tool Image Path'] ?? '';
                     setState(() {
                       _associatedImageUrl = storageUrl;
+                      _isLoading = false;
                     });
                     Navigator.of(context).pop(); // Dismiss the dialog
                     showConfirmationDialog(context, toolId);
                   } else {
+                    setState(() {
+                      _isLoading = false;
+                    });
                     showTopSnackBar(context, "Tool ID not found in the database.");
                   }
                 } else {
@@ -251,8 +278,18 @@ class _ScanToolPageState extends State<ScanToolPage> {
         ],
       ),
       body: Center(
-        child: !_isCameraInitialized
-            ? const CircularProgressIndicator()
+        child: _isLoading
+            ? Lottie.asset(
+          'assets/lottie/loading.json',
+          width: 200,
+          height: 200,
+        )
+            : !_isCameraInitialized
+            ? Lottie.asset(
+          'assets/lottie/loading.json',
+          width: 200,
+          height: 200,
+        )
             : SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
