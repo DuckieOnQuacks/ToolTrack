@@ -32,16 +32,62 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future<void> logout() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => LoginPage()), // Navigate to LoginPage
-      );
-    } catch (e) {
-      print('Error logging out: $e');
-      // Optionally, show an error message to the user
-    }
+  void showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          buttonPadding: const EdgeInsets.all(15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 10,
+          title: const Row(
+            children: [
+              Icon(
+                Icons.warning_amber_rounded,
+                color: Colors.redAccent,
+              ),
+              SizedBox(width: 10),
+              Text(
+                'Confirm Logout',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          content: const Text('Are you sure you want to log out of your account?'),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.black54,
+                backgroundColor: Colors.grey[300],
+              ),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => const LoginPage(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.redAccent,
+              ),
+              child: const Text('Sign Out'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -106,9 +152,9 @@ class _HomePageState extends State<HomePage> {
             top: 25,
             right: 5,
             child: IconButton(
-              icon: const Icon(Icons.logout, size: 24), // Increased by 50%
+              icon: const Icon(Icons.logout, size: 24),
               tooltip: 'Logout',
-              onPressed: logout,
+              onPressed: (){showLogoutConfirmationDialog(context);}
             ),
           ),
         ],

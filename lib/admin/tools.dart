@@ -45,6 +45,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
       appBar: AppBar(
         title: const Text('Tool Search', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900],
+        automaticallyImplyLeading: false,
         centerTitle: true,
         actions: <Widget>[
           IconButton(
@@ -121,7 +122,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                         color: tileColor,
                         child: ListTile(
                           trailing: IconButton(
-                            icon: const Icon(Icons.delete),
+                            icon: const Icon(Icons.delete, color: Colors.black),
                             onPressed: () => onDeletePressed(tools[index]),
                           ),
                           title: Text(
@@ -129,9 +130,10 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
+                              color: Colors.black
                             ),
                           ),
-                          subtitle: Text('Gage ID: ${tools[index].gageID}'),
+                          subtitle: Text('Gage ID: ${tools[index].gageID}', style: const TextStyle(color: Colors.black87),),
                           onTap: () async {
                             var result = await Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => AdminInspectToolScreen(tool: tools[index]),
@@ -147,7 +149,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                 } else {
                   return Center(
                     child: Lottie.asset(
-                      'assets/lottie/error.json', // An error animation (make sure you have this asset)
+                      'assets/lottie/error.json',
                       width: 200,
                       height: 200,
                     ),
@@ -201,7 +203,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: Colors.white,
                 ),
               ),
             ],
@@ -249,6 +251,7 @@ class DeleteToolDialog extends StatelessWidget {
       buttonPadding: const EdgeInsets.all(15),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
+
       ),
       elevation: 10,
       title: const Row(

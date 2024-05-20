@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:vineburgapp/admin/tools.dart';
+import 'package:vineburgapp/register.dart';
 import 'package:vineburgapp/user/home.dart';
 import 'backend/messageHelper.dart';
 
@@ -202,31 +203,32 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 5),
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      'Don\'t have an account?',
+                    const Text(
+                      'Dont have an account?',
                       style: TextStyle(
-                        color: Colors.white70,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(width: 5),
-                    Text(
-                      'Sign Up',
-                      style: TextStyle(
-                        color: Colors.orange,
-                        fontWeight: FontWeight.bold,
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (BuildContext context) {
+                              return const RegisterPage();
+                            }));
+                      },
+                      child: const Text(
+                        'Sign Up',
+                        style: TextStyle(
+                          color: Colors.orange,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+              ])))));
   }
 }

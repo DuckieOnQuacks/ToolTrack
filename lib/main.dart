@@ -18,7 +18,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Dark Mode Demo',
       theme: ThemeData.dark().copyWith(
         primaryColor: Colors.blueGrey,
         hintColor: Colors.grey,

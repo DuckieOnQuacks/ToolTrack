@@ -54,7 +54,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.image),
-            color: Colors.blueAccent,
+            color: Colors.orange[800],
             iconSize: 100.0,
             onPressed: () =>
                 _showImageFullscreen(context, widget.tool.imagePath),
@@ -102,7 +102,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
               onPressed: () => _confirmChanges(context),
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor: Colors.blue,
+                backgroundColor: Colors.orange[800],
                 // Text color
                 elevation: 5,
                 // Button shadow

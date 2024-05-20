@@ -14,14 +14,11 @@ Future<void> addUserDetails(String firstName, String lastName, List<String>? too
     return;
   }
   final userDocRef = FirebaseFirestore.instance.collection('Users').doc(user.uid);
-  String username = createUsername(firstName, lastName);
+  String username = createUsername(firstName);
   await userDocRef.set({
     'First Name': firstName.trim(),
-    'Last Name': lastName.trim(),
     'Email': username,
-    'Tools': tools,
-    'Workorders': workOrders,
-    'Id': id,
+
   });
 }
 
@@ -89,9 +86,8 @@ Future<List<WorkOrder>> getUserWorkOrders() async {
   return workOrders;
 }
 
-String createUsername(String firstName, String lastName) {
+String createUsername(String firstName) {
   String formattedFirstName = firstName.trim().replaceAll(' ', '_').toLowerCase();
-  String formattedLastName = lastName.trim().replaceAll(' ', '_').toLowerCase();
 
-  return '$formattedFirstName$formattedLastName@vineburg.com';
+  return '$formattedFirstName@vineburg.com';
 }
