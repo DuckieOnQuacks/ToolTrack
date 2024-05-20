@@ -44,8 +44,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
           // Capitalize first and last name before storing
           String capitalizedFirstName = capitalize(firstName.text);
-
-          //addUserDetails(capitalizedFirstName, capitalizedLastName, tempTools, tempFavOrders);
+          addUserDetails(capitalizedFirstName);
           Navigator.pop(context);
           Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
             return const LoginPage();
