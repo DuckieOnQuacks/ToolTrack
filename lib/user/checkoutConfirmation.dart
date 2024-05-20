@@ -54,7 +54,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
           showTopSnackBar(context, "Already Checked Out.", Colors.red);
         }
         else {
-          updateToolStatus(widget.toolId, "Checked Out To ${_nameController.text}");
+          updateToolStatus(widget.toolId, "Checked Out");
           // Navigate back to the first route and show the snackbar
           Navigator.popUntil(context, (route) => route.isFirst);
           Future.delayed(const Duration(milliseconds: 100), () {
@@ -170,8 +170,8 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                       ),
                       Text(
                         widget.workorderId,
-                        style: TextStyle(
-                            fontSize: 18, color: Colors.blueGrey[800]),
+                        style: const TextStyle(
+                            fontSize: 18, color: Colors.grey),
                       ),
                       const SizedBox(height: 10),
                       Row(children: [
@@ -190,8 +190,8 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                       ]),
                       Text(
                         widget.toolId,
-                        style: TextStyle(
-                            fontSize: 18, color: Colors.blueGrey[800]),
+                        style: const TextStyle(
+                            fontSize: 18, color: Colors.grey),
                       ),
                       const SizedBox(height: 20),
                       TextField(
@@ -213,7 +213,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                 onPressed: confirmCheckout,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.black,
+                  backgroundColor: Colors.orange[800],
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),

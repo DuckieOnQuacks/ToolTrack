@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:vineburgapp/admin/tools.dart';
 import 'package:vineburgapp/user/home.dart';
 import 'backend/messageHelper.dart';
@@ -13,16 +14,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // All code on this page was developed by the team using the flutter framework
   late final TextEditingController usernameController = TextEditingController();
   late final TextEditingController passwordController = TextEditingController();
   String? usernameErrorMessage;
   String? passwordErrorMessage;
 
   String createUsername(String username) {
-    String formattedUsername =
-        username.trim().replaceAll(' ', '_').toLowerCase();
-    return '$username@vineburg.com';
+    String formattedUsername = username.trim().replaceAll(' ', '_').toLowerCase();
+    return '$formattedUsername@vineburg.com';
   }
 
   void signUserIn() async {
@@ -32,8 +31,13 @@ class _LoginPageState extends State<LoginPage> {
     showDialog(
       context: context,
       builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(),
+        return Center(
+          child: Lottie.asset(
+            'assets/lottie/loading.json',
+            width: 150,
+            height: 150,
+            fit: BoxFit.fill,
+          ),
         );
       },
     );
@@ -46,7 +50,6 @@ class _LoginPageState extends State<LoginPage> {
         String userEmail = FirebaseAuth.instance.currentUser!.email!;
         MaterialPageRoute newPage;
 
-        // Check if the user is an admin
         if (userEmail == 'admin@vineburg.com') {
           newPage = MaterialPageRoute(builder: (context) => const AdminToolsPage());
         } else {
@@ -70,8 +73,7 @@ class _LoginPageState extends State<LoginPage> {
         } else if (e.code == 'wrong-password') {
           showMessage(context, 'Error', 'Wrong password');
         } else if (e.code == 'user-not-found') {
-          showMessage(context, 'Error',
-              'This email address entered is not registered.');
+          showMessage(context, 'Error', 'This email address entered is not registered.');
         } else {
           showMessage(context, 'Error', 'An unexpected error occurred');
         }
@@ -85,10 +87,8 @@ class _LoginPageState extends State<LoginPage> {
       usernameErrorMessage = null;
       passwordErrorMessage = null;
 
-      if (passwordController.text.isEmpty ||
-          passwordController.text.length < 6) {
-        passwordErrorMessage =
-            'Please enter a password with at least 6 characters';
+      if (passwordController.text.isEmpty || passwordController.text.length < 6) {
+        passwordErrorMessage = 'Please enter a password with at least 6 characters';
         valid = false;
       }
     });
@@ -97,144 +97,99 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    // The login page scaffold
     return Scaffold(
-        resizeToAvoidBottomInset: true,
-        backgroundColor: Colors.white,
-        body: SafeArea(
-            top: true,
-            child: Center(
-                child: SingleChildScrollView(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-              Image.asset(
-                'assets/images/drilling.png',
-                scale: 3,
-              ),
-              const SizedBox(height: 50),
-              //Creates space between text
-               Text(
-                'Welcome to Tool Tracker',
-                style: GoogleFonts.signika(fontSize: 35.0, fontWeight: FontWeight.bold)
-                  //TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 30),
-              //email text field
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Container(
-                  decoration: BoxDecoration(
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 25.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/images/drilling.png',
+                  scale: 2.5,
+                ),
+                const SizedBox(height: 50),
+                Text(
+                  'Welcome To Tool Tracker',
+                  style: GoogleFonts.signika(
+                    fontSize: 50.0,
+                    fontWeight: FontWeight.bold,
                     color: Colors.white,
-                    border: Border.all(color: Colors.white),
-                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 30),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[900],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     child: TextField(
                       controller: usernameController,
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                         labelText: 'Username',
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         labelStyle: const TextStyle(
-                          fontSize: 18, // Change the font size as needed
-                          color: Colors.black, // You can also change the color, weight, etc.
+                          fontSize: 18,
+                          color: Colors.white70,
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.black, width: 1),
+                        border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.blueAccent, width: 2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        // Rest of your decoration like hintText if needed
+                        filled: true,
+                        fillColor: Colors.grey[800],
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              //Create Space between both boxes
-              //Password text field
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.white),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(5.0),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[900],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     child: TextField(
                       controller: passwordController,
                       obscureText: true,
+                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                         labelText: 'Password',
                         floatingLabelBehavior: FloatingLabelBehavior.always,
                         labelStyle: const TextStyle(
-                          fontSize: 18, // Change the font size as needed
-                          color: Colors.black, // You can also change the color, weight, etc.
+                          fontSize: 18,
+                          color: Colors.white70,
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.black, width: 1),
+                        border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.blueAccent, width: 2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        // Rest of your decoration like hintText if needed
+                        filled: true,
+                        fillColor: Colors.grey[800],
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        // Navigator.push(context,
-                        //MaterialPageRoute(builder: (context) {
-                        //return ResetPasswordPage();
-                        //}));
-                      },
-                      child: const Text(
-                        'Forgot Password',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              const SizedBox(height: 30),
-              //sign in button
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      signUserIn();
-                    });
-                  },
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: signUserIn,
                   style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                          const EdgeInsets.all(20)),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.black87),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: BorderSide(
-                                  color: Colors.black!, width: 1)))),
+                    padding: MaterialStateProperty.all<EdgeInsetsGeometry>(const EdgeInsets.all(20)),
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.orange.shade800),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
                   child: const Center(
                     child: Text(
                       'Log In',
@@ -246,19 +201,32 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 5),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Dont have an account?',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                const SizedBox(height: 5),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Don\'t have an account?',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ])))));
+                    SizedBox(width: 5),
+                    Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        color: Colors.orange,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -12,17 +12,30 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-// The main widget of the app
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Returning a MaterialApp widget with the debug banner turned off
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      // The home page of the app is the AuthPage widget
-      home: AuthPage(),
+    return MaterialApp(
+      title: 'Flutter Dark Mode Demo',
+      theme: ThemeData.dark().copyWith(
+        primaryColor: Colors.blueGrey,
+        hintColor: Colors.grey,
+        scaffoldBackgroundColor: Colors.black54,
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.white),
+          bodyMedium: TextStyle(color: Colors.white70),
+        ),
+        appBarTheme: AppBarTheme(
+          color: Colors.blueGrey[900],
+        ),
+        buttonTheme: const ButtonThemeData(
+          buttonColor: Colors.grey,
+          textTheme: ButtonTextTheme.primary,
+        ),
+      ),
+      home: const AuthPage(),  // Updated to navigate to AuthPage
     );
   }
 }
