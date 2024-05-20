@@ -3,20 +3,22 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
-class ToolNew {
-  late final String calibrationFreq;
-  late final String calibrationLast;
-  late final String calibrationNextDue;
-  late final String creationDate;
-  late final String gageID;
-  late final String gageType;
-  late final String imagePath;
-  late final String gageDesc;
-  late final String dayRemain;
-  late final String status;
-  late final String lastCheckedOutBy;
+class Tool {
+  final String calibrationFreq;
+  final String calibrationLast;
+  final String calibrationNextDue;
+  final String creationDate;
+  final String gageID;
+  final String gageType;
+  final String imagePath;
+  final String gageDesc;
+  final String dayRemain;
+  final String status;
+  final String? lastCheckedOutBy;
+  final String atMachine;
+  final String dateCheckedOut;
 
-  ToolNew({
+  Tool({
     required this.calibrationFreq,
     required this.calibrationLast,
     required this.calibrationNextDue,
@@ -28,7 +30,10 @@ class ToolNew {
     required this.dayRemain,
     required this.status,
     required this.lastCheckedOutBy,
+    required this.atMachine,
+    required this.dateCheckedOut
   });
+
 
   final List<Color> pastelColors = [
     const Color(0xFFFFDFD3), // Pastel Peach
@@ -55,22 +60,23 @@ class ToolNew {
 
   ];
 
-  // Factory method to create a Machine object from JSON data
-  factory ToolNew.fromJson(Map<String, dynamic> json) =>
-      ToolNew(
-        calibrationFreq: json['Calibration Frequency'] as String,
-        calibrationLast: json["Last Calibrated"] as String,
-        calibrationNextDue: json['Calibration Due Date'] as String,
-        creationDate: json['Date Created'] as String,
-        gageID: json['Gage ID'] as String,
-        gageType: json['Type Of Gage'] as String,
-        imagePath: json['Tool Image Path'] as String,
-        gageDesc: json['Tool Description'] as String,
-        dayRemain: json['Days Remaining Until Calibration: '] as String,
-        status: json['Status: '] as String,
-        lastCheckedOutBy: json['Last Checked Out By: '] as String,
-      );
-
+  // Factory method to create a Tool object from JSON data
+  factory Tool.fromJson(Map<String, dynamic> json) =>
+      Tool(
+        calibrationFreq: json['Calibration Frequency'] as String? ?? '' ,
+        calibrationLast: json["Last Calibrated"] as String? ?? '',
+        calibrationNextDue: json['Calibration Due Date'] as String? ?? '',
+        creationDate: json['Date Created'] as String? ?? '',
+        gageID: json['Gage ID'] as String? ?? '',
+        gageType: json['Type of Gage'] as String? ?? '',
+        imagePath: json['Tool Image Path'] as String? ?? '',
+        gageDesc: json['Gage Description'] as String? ?? '',
+        dayRemain: json['Days Remaining Until Calibration'] as String? ?? '',
+        status: json['Status'] as String? ?? '',
+        lastCheckedOutBy: json['Last Checked Out By'] as String? ?? '',
+        atMachine: json["Located At Machine"] as String? ?? '',
+        dateCheckedOut: json["Date Checked Out"] as String? ?? '',
+    );
   // Method to convert a Machine object to JSON data
   Map<String, dynamic> toJson() =>
       {
@@ -83,7 +89,9 @@ class ToolNew {
         'Tool Image Path': imagePath,
         'Gage Description': gageDesc,
         'Days Remaining Until Calibration': dayRemain,
-        'Status': status
+        'Status': status,
+        'Last Checked Out By': lastCheckedOutBy,
+        'Located At Machine': atMachine
       };
 }
 
@@ -97,7 +105,7 @@ Future<void> addToolWithParams(String calFreq, String calLast, String calNextDue
   }
 
   final docOrder = FirebaseFirestore.instance.collection("Tools").doc(gageID);
-  final orderTable = ToolNew(
+  final orderTable = Tool(
       calibrationFreq: calFreq,
       calibrationLast: calLast,
       calibrationNextDue: calNextDue,
@@ -109,6 +117,8 @@ Future<void> addToolWithParams(String calFreq, String calLast, String calNextDue
       dayRemain: daysRemain,
       status: "Available",
       lastCheckedOutBy: "",
+      atMachine: "",
+      dateCheckedOut: "",
   );
   final json = orderTable.toJson();
   // Create document and write data to Firestore
@@ -234,3 +244,28 @@ Future<bool> isToolInWorkOrder(String workOrderId, String toolId) async {
     return false;
   }
 }
+
+//Admin helper functions.
+Future<List<Tool>> getAllTools() async {
+  List<Tool> toolDetails = [];
+  final toolsCollection = FirebaseFirestore.instance.collection('Tools');
+
+  try {
+    final querySnapshot = await toolsCollection.get();
+    for (var doc in querySnapshot.docs) {
+      if (doc.exists && doc.data() != null) {
+        toolDetails.add(Tool.fromJson(doc.data()!));
+      } else {
+        print('Tool ${doc.id} does not exist in the Tools collection.');
+      }
+    }
+  } catch (e) {
+    print('Error fetching tools: $e');
+  }
+
+  return toolDetails;
+}
+
+
+
+

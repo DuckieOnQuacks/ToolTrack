@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:vineburgapp/classes/toolClass.dart';
 import '../login.dart';
 import 'scanWorkorder.dart';
 

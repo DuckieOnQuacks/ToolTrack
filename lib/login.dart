@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:vineburgapp/admin/tools.dart';
 import 'package:vineburgapp/user/home.dart';
-import 'admin/adminBottomBar.dart';
 import 'backend/messageHelper.dart';
 
 class LoginPage extends StatefulWidget {
@@ -47,8 +47,8 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute newPage;
 
         // Check if the user is an admin
-        if (userEmail == 'admin123@vineburg.com') {
-          newPage = MaterialPageRoute(builder: (context) => const AdminBottomBar());
+        if (userEmail == 'admin@vineburg.com') {
+          newPage = MaterialPageRoute(builder: (context) => const AdminToolsPage());
         } else {
           newPage = MaterialPageRoute(builder: (context) => const HomePage());
         }

@@ -48,13 +48,14 @@ dependencies:
 
   permission_handler:
 
-  google_fonts:
+  google_fonts: 6.1.0
   google_mlkit_barcode_scanning:
 
   # Snackbar for top of screen
   another_flushbar:
   font_awesome_flutter: ^10.1.0
   lottie: ^1.2.1
+  image_picker: ^0.8.4+3
 
 
   # The following adds the Cupertino Icons font to your application.
