@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:vineburgapp/classes/toolClass.dart';
 import '../login.dart';
 import 'scanWorkorder.dart';
 
@@ -99,8 +100,8 @@ class _HomePageState extends State<HomePage> {
             child: isLoadingCameras
                 ? Lottie.asset(
               'assets/lottie/loading.json',
-              width: 200,
-              height: 200,
+              width: 150,
+              height: 150,
             ) // Show Lottie animation while cameras are being initialized
                 : Column(
               mainAxisAlignment: MainAxisAlignment.center,

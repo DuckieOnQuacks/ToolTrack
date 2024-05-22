@@ -5,17 +5,18 @@ import 'package:vineburgapp/classes/toolClass.dart';
 import 'dart:io';
 
 import 'package:vineburgapp/classes/workOrderClass.dart';
+import 'package:lottie/lottie.dart';
 
 class CheckoutConfirmationPage extends StatefulWidget {
   final String workorderId;
-  final String toolId;
+  final Tool tool;
   final String workOrderImagePath;
   final String toolImagePath;
 
   const CheckoutConfirmationPage({
     super.key,
     required this.workorderId,
-    required this.toolId,
+    required this.tool,
     required this.workOrderImagePath,
     required this.toolImagePath,
   });
@@ -46,15 +47,15 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
         await addWorkOrder(
           id: widget.workorderId,
           imagePath: widget.workOrderImagePath,
-          toolId: widget.toolId,
+          toolId: widget.tool.gageID,
           enteredBy: _nameController.text,
         );
-        String? status = await getToolStatus(widget.toolId);
-        if(status == "Checked Out") {
-          showTopSnackBar(context, "Already Checked Out.", Colors.red);
-        }
-        else {
-          updateToolStatus(widget.toolId, "Checked Out");
+        String? status = await getToolStatus(widget.tool.gageID);
+        if (status == "Checked Out") {
+          showTopSnackBar(
+              context, "Already Checked Out To ${widget.tool.lastCheckedOutBy}.", Colors.red);
+        } else {
+          updateToolStatus(widget.tool.gageID, "Checked Out");
           // Navigate back to the first route and show the snackbar
           Navigator.popUntil(context, (route) => route.isFirst);
           Future.delayed(const Duration(milliseconds: 100), () {
@@ -73,11 +74,11 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.black,
       builder: (BuildContext context) {
         return Container(
           decoration: const BoxDecoration(
-            color: Colors.white,
+            color: Colors.black,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(16),
               topRight: Radius.circular(16),
@@ -89,14 +90,28 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (description != null) ...[
-                  Text(description, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(description,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 10),
                 ],
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: _isNetworkUrl(imagePath)
-                      ? Image.network(imagePath)
-                      : Image.file(File(imagePath)),
+                  child: FutureBuilder(
+                    future: _loadImage(imagePath),
+                    builder: (BuildContext context, AsyncSnapshot<ImageProvider<Object>> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return const Center(child: Icon(Icons.error));
+                      } else {
+                        return Image(
+                          image: snapshot.data!,
+                          fit: BoxFit.cover,
+                        );
+                      }
+                    },
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Container(
@@ -107,7 +122,8 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                       Navigator.of(context).pop();
                     },
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.orange[800],
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -122,6 +138,14 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
         );
       },
     );
+  }
+
+  Future<ImageProvider<Object>> _loadImage(String path) async {
+    if (_isNetworkUrl(path)) {
+      return NetworkImage(path);
+    } else {
+      return FileImage(File(path));
+    }
   }
 
   bool _isNetworkUrl(String path) {
@@ -145,26 +169,20 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
           children: [
             Expanded(
               child: Card(
-                elevation: 4,
+                color: Colors.black45,
+                elevation: 5,
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      const Row(
                         children: [
-                          const Text(
+                          Text(
                             'Work Order ID:',
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          const Spacer(),
-                          IconButton(
-                            icon: const Icon(Icons.image),
-                            onPressed: () {
-                              _showImage(widget.workOrderImagePath);
-                            },
+                                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                           ),
                         ],
                       ),
@@ -178,7 +196,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                         const Text(
                           'Tool ID:',
                           style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                         ),
                         const Spacer(),
                         IconButton(
@@ -189,7 +207,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                         ),
                       ]),
                       Text(
-                        widget.toolId,
+                        widget.tool.gageID,
                         style: const TextStyle(
                             fontSize: 18, color: Colors.grey),
                       ),
@@ -200,6 +218,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                           labelText: 'Enter Employee ID',
                           border: OutlineInputBorder(),
                         ),
+                        textCapitalization: TextCapitalization.words,
                       ),
                     ],
                   ),

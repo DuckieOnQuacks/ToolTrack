@@ -19,7 +19,7 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
   late CameraManager _cameraManager;
   bool _isCameraInitialized = false;
   bool _isLoading = false;
-  FlashMode _flashMode = FlashMode.off;
+  bool _flashEnabled = false;
 
   @override
   void initState() {
@@ -49,7 +49,11 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
     setState(() {
       _isLoading = true;
     });
+    if (_flashEnabled) {
+      await _cameraManager.controller?.setFlashMode(FlashMode.torch);
+    }
     final imagePath = await _cameraManager.takePicture();
+    await _cameraManager.controller?.setFlashMode(FlashMode.off);
     if (imagePath != null) {
       final barcodeData = await _cameraManager.scanBarcode(imagePath);
       if (barcodeData != null) {
@@ -178,8 +182,7 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
 
   void _toggleFlashMode() {
     setState(() {
-      _flashMode = _flashMode == FlashMode.off ? FlashMode.torch : FlashMode.off;
-      _cameraManager.controller?.setFlashMode(_flashMode);
+      _flashEnabled = !_flashEnabled;
     });
   }
 
@@ -233,7 +236,7 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    icon: Icon(_flashMode == FlashMode.torch ? Icons.flash_on : Icons.flash_off),
+                    icon: Icon(_flashEnabled ? Icons.flash_on : Icons.flash_off),
                     onPressed: _toggleFlashMode,
                     color: Colors.yellow,
                     iconSize: 36,

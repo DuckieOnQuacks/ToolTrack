@@ -4,19 +4,18 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 
 import 'package:vineburgapp/classes/workOrderClass.dart';
-
 import '../classes/toolClass.dart';
 
 class ReturnConfirmationPage extends StatefulWidget {
   final String workorderId;
-  final String toolId;
+  final Tool tool;
   final String workOrderImagePath;
   final String toolImagePath;
 
   const ReturnConfirmationPage({
     super.key,
     required this.workorderId,
-    required this.toolId,
+    required this.tool,
     required this.workOrderImagePath,
     required this.toolImagePath,
   });
@@ -44,13 +43,13 @@ class _ReturnConfirmationPageState extends State<ReturnConfirmationPage> {
     String name = _nameController.text.trim();
     if (name.isNotEmpty) {
       try {
-        bool toolIsInWorkOrder =  await isToolInWorkOrder(widget.workorderId, widget.toolId);
+        bool toolIsInWorkOrder =  await isToolInWorkOrder(widget.workorderId, widget.tool.gageID);
         if(toolIsInWorkOrder == false) {
-            showTopSnackBar(context, "Tool Not Checked Out To WorkOrder ${widget.workorderId}", Colors.red);
-          }
+          showTopSnackBar(context, "Tool Not Checked Out To WorkOrder ${widget.workorderId}", Colors.red);
+        }
         else {
-          updateToolStatus(widget.toolId, "Available");
-          updateLastCheckedOutStatus(widget.toolId, _nameController.text);
+          updateToolStatus(widget.tool.gageID, "Available");
+          updateLastCheckedOutStatus(widget.tool.gageID, _nameController.text);
           // Navigate back to the first route and show the snackbar
           Navigator.popUntil(context, (route) => route.isFirst);
           Future.delayed(const Duration(milliseconds: 100), () {
@@ -69,11 +68,11 @@ class _ReturnConfirmationPageState extends State<ReturnConfirmationPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.black,
       builder: (BuildContext context) {
         return Container(
           decoration: const BoxDecoration(
-            color: Colors.white,
+            color: Colors.black,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(16),
               topRight: Radius.circular(16),
@@ -85,7 +84,7 @@ class _ReturnConfirmationPageState extends State<ReturnConfirmationPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (description != null) ...[
-                  Text(description, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(description, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
                   const SizedBox(height: 10),
                 ],
                 ClipRRect(
@@ -103,7 +102,8 @@ class _ReturnConfirmationPageState extends State<ReturnConfirmationPage> {
                       Navigator.of(context).pop();
                     },
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.orange[800],
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -141,60 +141,62 @@ class _ReturnConfirmationPageState extends State<ReturnConfirmationPage> {
           children: [
             Expanded(
               child: Card(
-                elevation: 4,
+                color: Colors.black45,
+                elevation: 5,
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      const Row(
                         children: [
-                          const Text(
+                          Text(
                             'Work Order ID:',
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          const Spacer(),
-                          IconButton(
-                            icon: const Icon(Icons.image),
-                            onPressed: () {
-                              _showImage(widget.workOrderImagePath);
-                            },
+                                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                           ),
                         ],
                       ),
                       Text(
                         widget.workorderId,
-                        style: TextStyle(
-                            fontSize: 18, color: Colors.blueGrey[800]),
+                        style: const TextStyle(
+                            fontSize: 18, color: Colors.grey),
                       ),
                       const SizedBox(height: 10),
-                      Row(children: [
-                        const Text(
-                          'Tool ID:',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        const Spacer(),
-                        IconButton(
-                          icon: const Icon(Icons.image),
-                          onPressed: () {
-                            _showImage(widget.toolImagePath);
-                          },
-                        ),
-                      ]),
+                      Row(
+                        children: [
+                          const Text(
+                            'Tool ID:',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(Icons.image),
+                            onPressed: () {
+                              if (widget.toolImagePath.isEmpty) {
+                                showTopSnackBar(context, "No image available for this tool.", Colors.orange);
+                              } else {
+                                _showImage(widget.toolImagePath);
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                       Text(
-                        widget.toolId,
-                        style: TextStyle(
-                            fontSize: 18, color: Colors.blueGrey[800]),
+                        widget.tool.gageID,
+                        style: const TextStyle(
+                            fontSize: 18, color: Colors.grey),
                       ),
                       const SizedBox(height: 20),
                       TextField(
+                        style: const TextStyle(color: Colors.white),
                         controller: _nameController,
                         decoration: const InputDecoration(
                           labelText: 'Enter Employee ID',
-                          border: OutlineInputBorder(),
+                          labelStyle: TextStyle(color: Colors.white),
+                          border: UnderlineInputBorder(),
                         ),
                       ),
                     ],
@@ -209,7 +211,7 @@ class _ReturnConfirmationPageState extends State<ReturnConfirmationPage> {
                 onPressed: confirmReturn,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.black,
+                  backgroundColor: Colors.orange[800],
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),

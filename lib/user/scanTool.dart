@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:vineburgapp/user/returnConfirmation.dart';
 import '../backend/cameraManager.dart';
+import '../classes/toolClass.dart';
 import 'checkoutConfirmation.dart';
 
 class ScanToolPage extends StatefulWidget {
@@ -21,9 +22,9 @@ class ScanToolPage extends StatefulWidget {
 
 class _ScanToolPageState extends State<ScanToolPage> {
   late CameraManager _cameraManager;
-  FlashMode _flashMode = FlashMode.off;
   bool _isCameraInitialized = false;
   bool _isLoading = false;
+  bool _flashEnabled = false;
   String _associatedImageUrl = '';
 
   @override
@@ -60,7 +61,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
     }
   }
 
-  void showConfirmationDialog(BuildContext context, String toolBarcodeData) {
+  void showConfirmationDialog(BuildContext context, String toolBarcodeData, Tool tool) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -105,28 +106,27 @@ class _ScanToolPageState extends State<ScanToolPage> {
                     foregroundColor: Colors.white, backgroundColor: Colors.green,
                   ),
                   child: const Text("Confirm"),
-                  onPressed: () {
+                  onPressed: () async {
+                    Navigator.of(context).pop();
                     if (widget.inOrOut == 'return') {
-                      Navigator.of(context).pop();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ReturnConfirmationPage(
                             workorderId: widget.workorderData,
-                            toolId: toolBarcodeData,
+                            tool: tool,
                             toolImagePath: _associatedImageUrl,
                             workOrderImagePath: widget.workOrderImagePath,
                           ),
                         ),
                       );
                     } else if (widget.inOrOut == 'checkout') {
-                      Navigator.of(context).pop();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => CheckoutConfirmationPage(
                             workorderId: widget.workorderData,
-                            toolId: toolBarcodeData,
+                            tool: tool,
                             toolImagePath: _associatedImageUrl,
                             workOrderImagePath: widget.workOrderImagePath,
                           ),
@@ -143,11 +143,15 @@ class _ScanToolPageState extends State<ScanToolPage> {
     );
   }
 
-  void handleToolBarcodeScanning() async {
+  Future<void> handleToolBarcodeScanning() async {
     setState(() {
       _isLoading = true;
     });
+    if (_flashEnabled) {
+      await _cameraManager.controller?.setFlashMode(FlashMode.torch);
+    }
     final imagePath = await _cameraManager.takePicture();
+    await _cameraManager.controller?.setFlashMode(FlashMode.off);
     if (imagePath != null) {
       final barcodeData = await _cameraManager.scanBarcode(imagePath);
       if (barcodeData != null) {
@@ -155,13 +159,29 @@ class _ScanToolPageState extends State<ScanToolPage> {
         final toolDoc = await getToolDocument(barcodeData);
         if (toolDoc != null) {
           // Tool ID exists, get the associated image URL
-          final storageUrl = toolDoc['Tool Image Path'] ?? '';
-          setState(() {
-            _associatedImageUrl = storageUrl;
-            _isLoading = false;
-          });
-          // Show the confirmation dialog with the associated image URL
-          showConfirmationDialog(context, barcodeData);
+          final data = toolDoc.data();
+          if (data != null && data is Map<String, dynamic>) {
+            final storageUrl = data['Tool Image Path'] ?? '';
+            final tool = Tool.fromJson(data);
+
+            setState(() {
+              _associatedImageUrl = storageUrl;
+              _isLoading = false;
+            });
+
+            // If checking out, ensure the tool is not already checked out
+            if (widget.inOrOut == 'checkout' && tool.status != 'Available') {
+              showTopSnackBar(context, "Tool ${tool.gageID} is currently checked out to ${tool.lastCheckedOutBy}. Try A Different Tool!");
+            } else {
+              // Show the confirmation dialog with the associated image URL
+              showConfirmationDialog(context, barcodeData, tool);
+            }
+          } else {
+            setState(() {
+              _isLoading = false;
+            });
+            showTopSnackBar(context, "Tool data is invalid.");
+          }
         } else {
           setState(() {
             _isLoading = false;
@@ -217,13 +237,29 @@ class _ScanToolPageState extends State<ScanToolPage> {
                   });
                   final toolDoc = await getToolDocument(toolId);
                   if (toolDoc != null) {
-                    final storageUrl = toolDoc['Tool Image Path'] ?? '';
-                    setState(() {
-                      _associatedImageUrl = storageUrl;
-                      _isLoading = false;
-                    });
-                    Navigator.of(context).pop(); // Dismiss the dialog
-                    showConfirmationDialog(context, toolId);
+                    final data = toolDoc.data();
+                    if (data != null && data is Map<String, dynamic>) {
+                      final storageUrl = data['Tool Image Path'] ?? '';
+                      final tool = Tool.fromJson(data);
+
+                      setState(() {
+                        _associatedImageUrl = storageUrl;
+                        _isLoading = false;
+                      });
+                      Navigator.of(context).pop(); // Dismiss the dialog
+
+                      // If checking out, ensure the tool is not already checked out
+                      if (widget.inOrOut == 'checkout' && tool.status != 'Available') {
+                        showTopSnackBar(context, "Tool is currently checked out.");
+                      } else {
+                        showConfirmationDialog(context, toolId, tool);
+                      }
+                    } else {
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      showTopSnackBar(context, "Tool data is invalid.");
+                    }
                   } else {
                     setState(() {
                       _isLoading = false;
@@ -254,8 +290,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
 
   void _toggleFlashMode() {
     setState(() {
-      _flashMode = _flashMode == FlashMode.off ? FlashMode.torch : FlashMode.off;
-      _cameraManager.controller?.setFlashMode(_flashMode);
+      _flashEnabled = !_flashEnabled;
     });
   }
 
@@ -281,14 +316,14 @@ class _ScanToolPageState extends State<ScanToolPage> {
         child: _isLoading
             ? Lottie.asset(
           'assets/lottie/loading.json',
-          width: 200,
-          height: 200,
+          width: 150,
+          height: 150,
         )
             : !_isCameraInitialized
             ? Lottie.asset(
           'assets/lottie/loading.json',
-          width: 200,
-          height: 200,
+          width: 150,
+          height: 150,
         )
             : SingleChildScrollView(
           child: Column(
@@ -309,7 +344,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    icon: Icon(_flashMode == FlashMode.torch ? Icons.flash_on : Icons.flash_off),
+                    icon: Icon(_flashEnabled ? Icons.flash_on : Icons.flash_off),
                     onPressed: _toggleFlashMode,
                     color: Colors.yellow,
                     iconSize: 36,
