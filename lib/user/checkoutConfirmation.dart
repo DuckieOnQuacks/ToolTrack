@@ -44,17 +44,17 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
     String name = _nameController.text.trim();
     if (name.isNotEmpty) {
       try {
-        await addWorkOrder(
-          id: widget.workorderId,
-          imagePath: widget.workOrderImagePath,
+        await handleWorkOrderAndCheckout(
+          workorderId: widget.workorderId,
           toolId: widget.tool.gageID,
+          imagePath: widget.workOrderImagePath,
           enteredBy: _nameController.text,
         );
-        String? status = await getToolStatus(widget.tool.gageID);
-        if (status == "Checked Out") {
-          showTopSnackBar(
-              context, "Already Checked Out To ${widget.tool.lastCheckedOutBy}.", Colors.red);
-        } else {
+        if (widget.tool.status == "Checked Out" && widget.tool.lastCheckedOutBy == "Has Not Been Checked Out Yet") {
+          showTopSnackBar(context,"Already Checked Out.", Colors.red);
+        }else if (widget.tool.status == "Checked Out" && widget.tool.lastCheckedOutBy != "Has Not Been Checked Out Yet"){
+          showTopSnackBar(context, "Already Checked Out To ${widget.tool.lastCheckedOutBy}.", Colors.red);
+        }else {
           updateToolStatus(widget.tool.gageID, "Checked Out");
           // Navigate back to the first route and show the snackbar
           Navigator.popUntil(context, (route) => route.isFirst);

@@ -198,6 +198,7 @@ class _ReturnConfirmationPageState extends State<ReturnConfirmationPage> {
                           labelStyle: TextStyle(color: Colors.white),
                           border: UnderlineInputBorder(),
                         ),
+                        textCapitalization: TextCapitalization.words,
                       ),
                     ],
                   ),

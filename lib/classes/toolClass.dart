@@ -19,6 +19,7 @@ class Tool {
   final String? lastCheckedOutBy;
   final String atMachine;
   final String dateCheckedOut;
+  final String checkedOutTo;
 
   Tool({
     required this.calibrationFreq,
@@ -33,7 +34,8 @@ class Tool {
     required this.status,
     required this.lastCheckedOutBy,
     required this.atMachine,
-    required this.dateCheckedOut
+    required this.dateCheckedOut,
+    required this.checkedOutTo,
   });
 
 
@@ -78,6 +80,7 @@ class Tool {
         lastCheckedOutBy: json['Last Checked Out By'] as String? ?? '',
         atMachine: json["Located At Machine"] as String? ?? '',
         dateCheckedOut: json["Date Checked Out"] as String? ?? '',
+        checkedOutTo: json["Checked Out To"] as String? ?? '',
     );
   // Method to convert a Machine object to JSON data
   Map<String, dynamic> toJson() =>
@@ -93,7 +96,8 @@ class Tool {
         'Days Remaining Until Calibration': dayRemain,
         'Status': status,
         'Last Checked Out By': lastCheckedOutBy,
-        'Located At Machine': atMachine
+        'Located At Machine': atMachine,
+        'Checked Out To': checkedOutTo
       };
 }
 
@@ -121,6 +125,7 @@ Future<void> addToolWithParams(String calFreq, String calLast, String calNextDue
       lastCheckedOutBy: "",
       atMachine: "",
       dateCheckedOut: "",
+      checkedOutTo: "",
   );
   final json = orderTable.toJson();
   // Create document and write data to Firestore
@@ -255,19 +260,49 @@ Future<List<Tool>> getAllTools() async {
   try {
     final querySnapshot = await toolsCollection.get();
     for (var doc in querySnapshot.docs) {
-      if (doc.exists && doc.data() != null) {
-        toolDetails.add(Tool.fromJson(doc.data()!));
+      if (doc.exists) {
+        toolDetails.add(Tool.fromJson(doc.data()));
       } else {
         print('Tool ${doc.id} does not exist in the Tools collection.');
       }
     }
   } catch (e) {
-    print('Error fetching tools: $e');
+    if (kDebugMode) {
+      print('Error fetching tools: $e');
+    }
   }
 
   return toolDetails;
 }
 
+Future<void> addCheckedOutToFieldToTools() async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  CollectionReference toolsCollection = firestore.collection('Tools');
 
+  try {
+    QuerySnapshot querySnapshot = await toolsCollection.get();
+    WriteBatch batch = firestore.batch();
 
+    for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+      // Get the current data of the tool
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
+      // Check if the field already exists to avoid overwriting existing data
+      if (!data.containsKey('Checked Out To')) {
+        // Add "Checked Out To" field with an empty string or default value
+        batch.update(doc.reference, {'Checked Out To': ''});
+      }
+    }
+
+    // Commit the batch update
+    await batch.commit();
+
+    if (kDebugMode) {
+      print('Successfully added "Checked Out To" field to all tools.');
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print('Error updating tools: $e');
+    }
+  }
+}
