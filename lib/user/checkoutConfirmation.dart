@@ -1,11 +1,8 @@
 import 'package:another_flushbar/flushbar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:vineburgapp/classes/toolClass.dart';
 import 'dart:io';
-
 import 'package:vineburgapp/classes/workOrderClass.dart';
-import 'package:lottie/lottie.dart';
 
 class CheckoutConfirmationPage extends StatefulWidget {
   final String workorderId;
