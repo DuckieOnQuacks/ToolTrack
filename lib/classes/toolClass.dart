@@ -137,7 +137,7 @@ Future<DocumentSnapshot?> getToolDocument(String toolId) async {
   return toolDoc.exists ? toolDoc : null;
 }
 
-Future<void> updateToolStatus(String toolId, String status) async {
+Future<void> updateToolStatus(String toolId, String status, String userWhoCheckedOut) async {
   final toolsCollection = FirebaseFirestore.instance.collection('Tools');
 
   try {
@@ -148,6 +148,7 @@ Future<void> updateToolStatus(String toolId, String status) async {
       // Update the status field of the document
       await toolDoc.update({
         'Status': status,
+        'Checked Out To': userWhoCheckedOut,
       });
       if (kDebugMode) {
         print('Status of tool with ID $toolId has been updated to $status.');
@@ -160,33 +161,6 @@ Future<void> updateToolStatus(String toolId, String status) async {
   } catch (e) {
     if (kDebugMode) {
       print('Error updating status for tool with ID $toolId: $e');
-    }
-  }
-}
-
-Future<void> updateLastCheckedOutStatus(String toolId, String userId) async {
-  final toolsCollection = FirebaseFirestore.instance.collection('Tools');
-
-  try {
-    final toolDoc = toolsCollection.doc(toolId);
-    final docSnapshot = await toolDoc.get();
-
-    if (docSnapshot.exists) {
-      // Update the Last Checked Out By field of the document
-      await toolDoc.update({
-        'Last Checked Out By': userId,
-      });
-      if (kDebugMode) {
-        print('Tool with ID $toolId has been updated with the last checked out by user ID $userId.');
-      }
-    } else {
-      if (kDebugMode) {
-        print('Tool with ID $toolId does not exist in the database.');
-      }
-    }
-  } catch (e) {
-    if (kDebugMode) {
-      print('Error updating last checked out status for tool with ID $toolId: $e');
     }
   }
 }

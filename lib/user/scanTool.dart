@@ -66,16 +66,16 @@ class _ScanToolPageState extends State<ScanToolPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(
+          title: const Text(
             "Confirm Barcode",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey[900]),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               RichText(
                 text: TextSpan(
-                  style: TextStyle(color: Colors.grey[800], fontSize: 16.0),
+                  style: const TextStyle(color: Colors.white, fontSize: 16.0),
                   children: <TextSpan>[
                     const TextSpan(text: "Tool ID: ", style: TextStyle(fontWeight: FontWeight.bold)),
                     TextSpan(text: toolBarcodeData, style: const TextStyle(fontWeight: FontWeight.normal)),
@@ -85,11 +85,10 @@ class _ScanToolPageState extends State<ScanToolPage> {
               ),
             ],
           ),
-          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           actions: <Widget>[
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(

@@ -32,7 +32,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
   void showTopSnackBar(BuildContext context, String message, Color color) {
     Flushbar(
       message: message,
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 4),
       flushbarPosition: FlushbarPosition.TOP,
       margin: const EdgeInsets.all(8),
       borderRadius: BorderRadius.circular(8),
@@ -50,13 +50,11 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
           imagePath: widget.workOrderImagePath,
           enteredBy: _nameController.text,
         );
-        if (widget.tool.status == "Checked Out" && widget.tool.lastCheckedOutBy == "Has Not Been Checked Out Yet") {
-          showTopSnackBar(context,"Already Checked Out.", Colors.red);
-        }else if (widget.tool.status == "Checked Out" && widget.tool.lastCheckedOutBy != "Has Not Been Checked Out Yet"){
-          showTopSnackBar(context, "Already Checked Out To ${widget.tool.lastCheckedOutBy}.", Colors.red);
+        if (widget.tool.status == "Checked Out") {
+          showTopSnackBar(context,"Already Checked Out To ${widget.tool.checkedOutTo}", Colors.red);
         }else {
-          updateToolStatus(widget.tool.gageID, "Checked Out");
-          // Navigate back to the first route and show the snackbar
+          updateToolStatus(widget.tool.gageID, "Checked Out", _nameController.text);
+          // Navigate back to the first route and show the snack-bar
           Navigator.popUntil(context, (route) => route.isFirst);
           Future.delayed(const Duration(milliseconds: 100), () {
             showTopSnackBar(context, "Checkout successful!", Colors.green);

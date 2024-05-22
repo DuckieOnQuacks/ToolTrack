@@ -79,10 +79,10 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Confirm Barcode", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey[900])),
+          title: Text("Confirm Barcode", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
           content: RichText(
             text: TextSpan(
-              style: TextStyle(color: Colors.grey[800], fontSize: 16.0),
+              style: TextStyle(color: Colors.white, fontSize: 16.0),
               children: <TextSpan>[
                 const TextSpan(text: "Barcode data: ", style: TextStyle(fontWeight: FontWeight.bold)),
                 TextSpan(text: barcodeData, style: const TextStyle(fontWeight: FontWeight.normal)),
@@ -90,7 +90,6 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
               ],
             ),
           ),
-          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           actions: <Widget>[
             ElevatedButton(

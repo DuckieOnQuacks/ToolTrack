@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:camera/camera.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '../backend/cameraManager.dart';
 import '../classes/toolClass.dart';
 
 class AdminInspectToolScreen extends StatefulWidget {
@@ -11,50 +13,6 @@ class AdminInspectToolScreen extends StatefulWidget {
 
   @override
   _AdminInspectToolScreenState createState() => _AdminInspectToolScreenState();
-}
-
-class CameraManager {
-  CameraController? controller;
-  final List<CameraDescription> cameras;
-
-  CameraManager(this.cameras);
-
-  Future<void> initializeCamera() async {
-    if (cameras.isNotEmpty) {
-      controller = CameraController(
-        cameras.first,
-        ResolutionPreset.medium,
-        imageFormatGroup: ImageFormatGroup.yuv420,
-      );
-      try {
-        await controller!.initialize();
-      } catch (e) {
-        debugPrint('Error initializing camera: $e');
-      }
-    }
-  }
-
-  Future<void> disposeCamera() async {
-    await controller?.dispose();
-  }
-
-  Future<String?> takePicture() async {
-    if (controller == null || !controller!.value.isInitialized) {
-      debugPrint('Camera not initialized');
-      return null;
-    }
-
-    if (!controller!.value.isTakingPicture) {
-      try {
-        final XFile file = await controller!.takePicture();
-        return file.path;
-      } catch (e) {
-        debugPrint('Error taking picture: $e');
-        return null;
-      }
-    }
-    return null;
-  }
 }
 
 class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
@@ -69,6 +27,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
   FlashMode _flashMode = FlashMode.off;
   bool _isCameraInitialized = false;
   bool _isLoading = false;
+  String? imageUrl;
 
   @override
   void initState() {
@@ -84,6 +43,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     whereBeingUsedController = TextEditingController(text: widget.tool.atMachine);
     personCheckedOutController = TextEditingController(text: widget.tool.status);
     dateCheckedOutController = TextEditingController(text: widget.tool.atMachine);
+    _fetchImageUrl();
   }
 
   Future<void> _initializeCamera() async {
@@ -95,6 +55,22 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
       _isCameraInitialized = true;
       _isLoading = false;
     });
+  }
+
+  Future<void> _fetchImageUrl() async {
+    try {
+      DocumentSnapshot toolSnapshot = await FirebaseFirestore.instance
+          .collection('tools')
+          .doc(widget.tool.gageID) // Assuming 'gageID' is a field in your Tool class
+          .get();
+      if (toolSnapshot.exists) {
+        setState(() {
+          imageUrl = toolSnapshot['imageUrl'];
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching image URL: $e');
+    }
   }
 
   @override
@@ -171,29 +147,6 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     });
   }
 
-  void _showPictureDialog(String imagePath) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.file(File(imagePath)),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Close'),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   void showTopSnackBar(BuildContext context, String message, Color color) {
     Flushbar(
       message: message,
@@ -213,7 +166,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
         text: TextSpan(
           text: 'Tool Name: ',
           style: const TextStyle(
-              fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.black),
+              fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.white),
           children: <TextSpan>[
             TextSpan(
               text: '${widget.tool.gageType} -> ${toolNameController.text}',
@@ -231,7 +184,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             style: const TextStyle(
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold,
-                color: Colors.black),
+                color: Colors.white),
             children: <TextSpan>[
               TextSpan(
                   text: '${widget.tool.atMachine} -> ${whereBeingUsedController.text}',
@@ -247,7 +200,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             style: const TextStyle(
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold,
-                color: Colors.black),
+                color: Colors.white),
             children: <TextSpan>[
               TextSpan(
                   text: '${widget.tool.status} -> ${personCheckedOutController.text}',
@@ -263,7 +216,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             style: const TextStyle(
                 fontSize: 14.0,
                 fontWeight: FontWeight.bold,
-                color: Colors.black),
+                color: Colors.white),
             children: <TextSpan>[
               TextSpan(
                   text: '${widget.tool.dateCheckedOut} -> ${dateCheckedOutController.text}',
@@ -271,31 +224,81 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             ]),
       ));
     }
+    const SizedBox(height: 10);
+    if (pictureTaken) {
+      changesWidgets.add(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'New Image:',
+              style: TextStyle(
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
+            const SizedBox(height: 8),
+            Image.file(
+              File(imagePath),
+              width: 100,
+              height: 100,
+            ),
+          ],
+        ),
+      );
+    }
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirm Changes'),
+          buttonPadding: const EdgeInsets.all(15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 10,
+          title: const Row(
+            children: [
+              Icon(
+                Icons.warning_amber_outlined,
+                color: Colors.orange,
+              ),
+              SizedBox(width: 10),
+              Text(
+                'Confirm Changes',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
           content: SingleChildScrollView(
             child: ListBody(
               children: changesWidgets,
             ),
           ),
           actions: <Widget>[
-            TextButton(
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.red,
+                backgroundColor: Colors.white,
+              ),
               child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
             ),
-            TextButton(
-              child: const Text('Confirm'),
+            ElevatedButton(
               onPressed: () {
                 // Implement save functionality here
                 Navigator.of(context).pop();
                 showTopSnackBar(context, "Changes saved successfully", Colors.green);
               },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.green,
+              ),
+              child: const Text('Confirm'),
             ),
           ],
         );
@@ -312,7 +315,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
         ),
         body: Center(
           child: InteractiveViewer(
-            child: Image.file(File(imageUrl), fit: BoxFit.contain),
+            child: Image.network(imageUrl, fit: BoxFit.contain),
           ),
         ),
       ),
@@ -332,13 +335,13 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
-                icon: (!widget.tool.imagePath.startsWith("Invalid") || pictureTaken)
+                icon: (widget.tool.imagePath.isNotEmpty || pictureTaken)
                     ? const Icon(Icons.image)
                     : const Icon(Icons.camera_alt),
                 color: Colors.orange[800],
                 iconSize: 100.0,
                 onPressed: () {
-                  if (!widget.tool.imagePath.startsWith("Invalid") || pictureTaken) {
+                  if (widget.tool.imagePath.isNotEmpty || pictureTaken) {
                     _showImageFullscreen(context, pictureTaken ? imagePath : widget.tool.imagePath);
                   } else {
                     _showCameraDialog();

@@ -31,7 +31,7 @@ class _ReturnConfirmationPageState extends State<ReturnConfirmationPage> {
   void showTopSnackBar(BuildContext context, String message, Color color) {
     Flushbar(
       message: message,
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 4),
       flushbarPosition: FlushbarPosition.TOP,
       margin: const EdgeInsets.all(8),
       borderRadius: BorderRadius.circular(8),
@@ -48,8 +48,7 @@ class _ReturnConfirmationPageState extends State<ReturnConfirmationPage> {
           showTopSnackBar(context, "Tool Not Checked Out To WorkOrder ${widget.workorderId}", Colors.red);
         }
         else {
-          updateToolStatus(widget.tool.gageID, "Available");
-          updateLastCheckedOutStatus(widget.tool.gageID, _nameController.text);
+          updateToolStatus(widget.tool.gageID, "Available", "No One");
           // Navigate back to the first route and show the snackbar
           Navigator.popUntil(context, (route) => route.isFirst);
           Future.delayed(const Duration(milliseconds: 100), () {
