@@ -1,6 +1,7 @@
-import 'dart:ui';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 
 class Tool {
@@ -36,31 +37,6 @@ class Tool {
     required this.checkedOutTo,
   });
 
-
-  final List<Color> pastelColors = [
-    const Color(0xFFFFDFD3), // Pastel Peach
-    const Color(0xFFE2F0CB), // Pastel Tea Green
-    const Color(0xFFB5EAD7), // Pastel Keppel
-    const Color(0xFFECEAE4), // Pastel Bone
-    const Color(0xFFF9D5A7), // Pastel Orange
-    const Color(0xFFBDE0FE), // Pastel Light Blue
-    const Color(0xFFA9DEF9), // Pastel Cerulean
-    const Color(0xFFFCF5C7), // Pastel Lemon
-    const Color(0xFFC5CAE9), // Pastel indigo
-    const Color(0xFFBBDEFB), // Pastel blue
-    const Color(0xFFB2EBF2), // Pastel cyan
-    const Color(0xFFB2DFDB), // Pastel teal
-    const Color(0xFFC8E6C9), // Pastal green
-    const Color(0xFFA1C3D1), // Pastel Blue Green
-    const Color(0xFFF4E1D2), // Pastel Almond
-    const Color(0xFFD3E0EA), // Pastel Blue Fog
-    const Color(0xFFD6D2D2), // Pastel Gray
-    const Color(0xFFF6EAC2), // Pastel Olive
-    const Color(0xFFB5EAD7), // Pastel Mint
-    const Color(0xFFC7CEEA), // Pastel Lavender
-    const Color(0xFFA2D2FF), // Pastel Sky Blue
-
-  ];
 
   // Factory method to create a Tool object from JSON data
   factory Tool.fromJson(Map<String, dynamic> json) =>
@@ -128,11 +104,6 @@ Future<void> addToolWithParams(String calFreq, String calLast, String calNextDue
   final json = orderTable.toJson();
   // Create document and write data to Firestore
   await docOrder.set(json);
-}
-
-Future<DocumentSnapshot?> getToolDocument(String toolId) async {
-  final toolDoc = await FirebaseFirestore.instance.collection('Tools').doc(toolId).get();
-  return toolDoc.exists ? toolDoc : null;
 }
 
 Future<void> updateToolStatus(String toolId, String status, String userWhoCheckedOut) async {
@@ -275,6 +246,117 @@ Future<void> addCheckedOutToFieldToTools() async {
   } catch (e) {
     if (kDebugMode) {
       print('Error updating tools: $e');
+    }
+  }
+}
+// Function to delete a tool given a Tool object
+Future<void> deleteTool(Tool tool) async {
+  final toolsCollection = FirebaseFirestore.instance.collection('Tools');
+
+  try {
+    final toolDoc = toolsCollection.doc(tool.gageID);
+    final docSnapshot = await toolDoc.get();
+
+    if (docSnapshot.exists) {
+      // Delete the document
+      await toolDoc.delete();
+      if (kDebugMode) {
+        print('Tool with ID ${tool.gageID} has been deleted.');
+      }
+    } else {
+      if (kDebugMode) {
+        print('Tool with ID ${tool.gageID} does not exist in the database.');
+      }
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print('Error deleting tool with ID ${tool.gageID}: $e');
+    }
+  }
+}
+
+Future<String?> uploadImageToStorage(String filePath, String gageID) async {
+  File file = File(filePath);
+  try {
+    final storageRef = FirebaseStorage.instance.ref().child('ToolImages/$gageID');
+    final uploadTask = storageRef.putFile(file);
+    final snapshot = await uploadTask.whenComplete(() => {});
+    final downloadUrl = await snapshot.ref.getDownloadURL();
+    return downloadUrl;
+  } catch (e) {
+    if (kDebugMode) {
+      print('Error uploading image: $e');
+    }
+    return null;
+  }
+}
+
+Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
+  final toolsCollection = FirebaseFirestore.instance.collection('Tools');
+  final toolDoc = toolsCollection.doc(oldTool.gageID);
+
+  Map<String, dynamic> updates = {};
+
+  if (oldTool.calibrationFreq != newTool.calibrationFreq) {
+    updates['Calibration Frequency'] = newTool.calibrationFreq;
+  }
+  if (oldTool.calibrationLast != newTool.calibrationLast) {
+    updates['Last Calibrated'] = newTool.calibrationLast;
+  }
+  if (oldTool.calibrationNextDue != newTool.calibrationNextDue) {
+    updates['Calibration Due Date'] = newTool.calibrationNextDue;
+  }
+  if (oldTool.creationDate != newTool.creationDate) {
+    updates['Date Created'] = newTool.creationDate;
+  }
+  if (oldTool.gageID != newTool.gageID) {
+    updates['Gage ID'] = newTool.gageID;
+  }
+  if (oldTool.gageType != newTool.gageType) {
+    updates['Type of Gage'] = newTool.gageType;
+  }
+  if (oldTool.imagePath != newTool.imagePath) {
+    String? newImageUrl = await uploadImageToStorage(newTool.imagePath, oldTool.gageID);
+    if (newImageUrl != null) {
+      updates['Tool Image Path'] = newImageUrl;
+    }
+  }
+  if (oldTool.gageDesc != newTool.gageDesc) {
+    updates['Gage Description'] = newTool.gageDesc;
+  }
+  if (oldTool.dayRemain != newTool.dayRemain) {
+    updates['Days Remaining Until Calibration'] = newTool.dayRemain;
+  }
+  if (oldTool.status != newTool.status) {
+    updates['Status'] = newTool.status;
+  }
+  if (oldTool.lastCheckedOutBy != newTool.lastCheckedOutBy) {
+    updates['Last Checked Out By'] = newTool.lastCheckedOutBy;
+  }
+  if (oldTool.atMachine != newTool.atMachine) {
+    updates['Located At Machine'] = newTool.atMachine;
+  }
+  if (oldTool.dateCheckedOut != newTool.dateCheckedOut) {
+    updates['Date Checked Out'] = newTool.dateCheckedOut;
+  }
+  if (oldTool.checkedOutTo != newTool.checkedOutTo) {
+    updates['Checked Out To'] = newTool.checkedOutTo;
+  }
+
+  if (updates.isNotEmpty) {
+    try {
+      await toolDoc.update(updates);
+      if (kDebugMode) {
+        print('Tool with ID ${oldTool.gageID} has been updated with new information.');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error updating tool with ID ${oldTool.gageID}: $e');
+      }
+    }
+  } else {
+    if (kDebugMode) {
+      print('No differences found between the old and new tool information.');
     }
   }
 }

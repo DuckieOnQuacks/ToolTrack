@@ -58,19 +58,6 @@ class CameraManager {
     }
     return null;
   }
-
-  Future<String?> scanBarcode(String imagePath) async {
-    final inputImage = InputImage.fromFilePath(imagePath);
-    try {
-      final List<Barcode> barcodes = await barcodeScanner.processImage(inputImage);
-      if (barcodes.isNotEmpty) {
-        return barcodes.first.rawValue;
-      }
-    } catch (e) {
-      debugPrint('Error scanning barcode: $e');
-    }
-    return null;
-  }
 }
 
 class _AdminAddToolPageState extends State<AdminAddToolPage> {
@@ -104,17 +91,6 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
     });
   }
 
-  Future<void> _initializeCamera() async {
-    setState(() {
-      _isLoading = true;
-    });
-    await _cameraManager.initializeCamera();
-    setState(() {
-      _isCameraInitialized = true;
-      _isLoading = false;
-    });
-  }
-
   @override
   void dispose() {
     _cameraManager.disposeCamera();
@@ -127,6 +103,17 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
     _gageDescController.dispose();
     _daysRemainController.dispose();
     super.dispose();
+  }
+
+  Future<void> _initializeCamera() async {
+    setState(() {
+      _isLoading = true;
+    });
+    await _cameraManager.initializeCamera();
+    setState(() {
+      _isCameraInitialized = true;
+      _isLoading = false;
+    });
   }
 
   Future<void> _showCameraDialog() async {
@@ -344,19 +331,22 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                 ),
                 const SizedBox(height: 20),
                 Center(
-                  child: ElevatedButton(
-                    onPressed: _submitForm,
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.orange,
-                      elevation: 5,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () => _submitForm(),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.orange[800],
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
+                      child: const Text('Submit'),
                     ),
-                    child: const Text('Submit'),
                   ),
-                ),
+                )
               ],
             ),
           ),

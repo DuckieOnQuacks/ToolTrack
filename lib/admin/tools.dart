@@ -1,10 +1,12 @@
+import 'dart:math';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:vineburgapp/admin/tool_inspect.dart';
 import '../classes/toolClass.dart';
 import '../login.dart';
 import 'add_tool.dart';
+import 'tool_edit.dart';
 
 class AdminToolsPage extends StatefulWidget {
   const AdminToolsPage({super.key});
@@ -17,19 +19,49 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
   Future<List<Tool>>? tools;
   TextEditingController searchController = TextEditingController();
   late Future<List<Tool>> filteredTools;
+  late List<Color> shuffledColors;
+
+  final List<Color> cncShopColors = [
+    const Color(0xFF2E7D32), // Green
+    const Color(0xFF607D8B), // Blue Grey
+    const Color(0xFF546E7A), // Light Blue Grey
+    const Color(0xFF4CAF50), // Medium Green
+    const Color(0xFF78909C), // Greyish Blue
+    const Color(0xFF00695C), // Teal
+    const Color(0xFF00796B), // Medium Teal
+    const Color(0xFF8D6E63), // Light Brown
+    const Color(0xFF9E9E9E), // Grey
+    const Color(0xFFBDBDBD), // Light Grey
+    const Color(0xFFE0E0E0), // Very Light Grey
+    const Color(0xFFFF5722), // Deep Orange
+    const Color(0xFFFF9800), // Orange
+    const Color(0xFFFFE0B2), // Light Orange
+    const Color(0xFF8BC34A), // Light Green
+  ];
+
+
+// Function to randomly assort the list of colors
+  List<Color> getRandomlyAssortedColors(List<Color> colors) {
+    final random = Random();
+    final colorList = List<Color>.from(colors);
+    colorList.shuffle(random);
+    return colorList;
+  }
 
   @override
   void initState() {
     super.initState();
     tools = getAllTools();
     filteredTools = tools!; // Initially, filteredTools will show all tools
+    shuffledColors = getRandomlyAssortedColors(cncShopColors); // Shuffle the colors once
   }
 
   void filterSearchResults(String query) {
     if (query.isNotEmpty) {
       setState(() {
         filteredTools = tools!.then((allTools) => allTools.where((tool) {
-          return tool.gageType.toLowerCase().contains(query.toLowerCase()) || tool.gageID.toLowerCase().contains(query.toLowerCase());
+          return tool.gageType.toLowerCase().contains(query.toLowerCase()) ||
+              tool.gageID.toLowerCase().contains(query.toLowerCase());
         }).toList());
       });
     } else {
@@ -37,6 +69,14 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
         filteredTools = tools!;
       });
     }
+  }
+
+  Future<void> refreshToolsList() async {
+    setState(() {
+      tools = getAllTools();
+      filteredTools = tools!;
+      shuffledColors = getRandomlyAssortedColors(cncShopColors);
+    });
   }
 
   @override
@@ -84,90 +124,89 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
             ),
           ),
           Expanded(
-            child: FutureBuilder<List<Tool>>(
-              future: filteredTools,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: Lottie.asset(
-                      'assets/lottie/loading.json',
-                      width: 200,
-                      height: 200,
-                    ),
-                  );
-                } else if (snapshot.hasData) {
-                  final tools = snapshot.data!;
-                  if (tools.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        "No Tools Found",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.grey,
+            child: RefreshIndicator(
+              onRefresh: refreshToolsList,
+              child: FutureBuilder<List<Tool>>(
+                future: filteredTools,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: Lottie.asset(
+                        'assets/lottie/loading.json',
+                        width: 200,
+                        height: 200,
+                      ),
+                    );
+                  } else if (snapshot.hasData) {
+                    final tools = snapshot.data!;
+                    if (tools.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          "No Tools Found",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.grey,
+                          ),
                         ),
+                      );
+                    }
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(10),
+                      itemCount: tools.length,
+                      itemBuilder: (context, index) {
+                        Color tileColor = shuffledColors[index % shuffledColors.length];
+                        return Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          elevation: 4,
+                          color: tileColor,
+                          child: ListTile(
+                            trailing: IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.black),
+                              onPressed: () => onDeletePressed(tools[index]),
+                            ),
+                            title: Text(
+                              tools[index].gageID,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            subtitle: Text(
+                              'Type: ${tools[index].gageType}',
+                              style: const TextStyle(color: Colors.black87),
+                            ),
+                            onTap: () async {
+                              var result = await Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => AdminInspectToolScreen(tool: tools[index]),
+                              ));
+                              if (result == true) {
+                                refreshToolsList();
+                              }
+                            },
+                          ),
+                        );
+                      },
+                    );
+                  } else {
+                    return Center(
+                      child: Lottie.asset(
+                        'assets/lottie/error.json',
+                        width: 200,
+                        height: 200,
                       ),
                     );
                   }
-                  return ListView.builder(
-                    padding: const EdgeInsets.all(10),
-                    itemCount: tools.length,
-                    itemBuilder: (context, index) {
-                      Color tileColor = tools[index].pastelColors[index % tools[index].pastelColors.length];
-                      return Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        elevation: 4,
-                        color: tileColor,
-                        child: ListTile(
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.black),
-                            onPressed: () => onDeletePressed(tools[index]),
-                          ),
-                          title: Text(
-                            tools[index].gageDesc,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black
-                            ),
-                          ),
-                          subtitle: Text('Gage ID: ${tools[index].gageID}', style: const TextStyle(color: Colors.black87),),
-                          onTap: () async {
-                            var result = await Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => AdminInspectToolScreen(tool: tools[index]),
-                            ));
-                            if (result == true) {
-                              refreshToolsList();
-                            }
-                          },
-                        ),
-                      );
-                    },
-                  );
-                } else {
-                  return Center(
-                    child: Lottie.asset(
-                      'assets/lottie/error.json',
-                      width: 200,
-                      height: 200,
-                    ),
-                  );
-                }
-              },
+                },
+              ),
             ),
           ),
         ],
       ),
     );
-  }
-
-  void refreshToolsList() {
-    setState(() {
-      tools = getAllTools();
-      filteredTools = tools!;
-    });
   }
 
   void onDeletePressed(Tool tool) async {
@@ -251,7 +290,6 @@ class DeleteToolDialog extends StatelessWidget {
       buttonPadding: const EdgeInsets.all(15),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-
       ),
       elevation: 10,
       title: const Row(
@@ -266,7 +304,7 @@ class DeleteToolDialog extends StatelessWidget {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: Colors.white,
             ),
           ),
         ],
@@ -284,6 +322,7 @@ class DeleteToolDialog extends StatelessWidget {
         ElevatedButton(
           onPressed: () async {
             // Implement tool deletion logic here
+            deleteTool(tool);
             Navigator.of(context).pop(true);
           },
           style: ElevatedButton.styleFrom(

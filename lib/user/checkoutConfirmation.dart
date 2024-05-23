@@ -136,17 +136,9 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
   }
 
   Future<ImageProvider<Object>> _loadImage(String path) async {
-    if (_isNetworkUrl(path)) {
-      return NetworkImage(path);
-    } else {
-      return FileImage(File(path));
-    }
+    return NetworkImage(path);
   }
 
-  bool _isNetworkUrl(String path) {
-    final uri = Uri.parse(path);
-    return uri.scheme == 'http' || uri.scheme == 'https';
-  }
 
   @override
   Widget build(BuildContext context) {

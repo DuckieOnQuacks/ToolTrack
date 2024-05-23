@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import '../login.dart';
@@ -25,7 +26,9 @@ class _HomePageState extends State<HomePage> {
         isLoadingCameras = false;
       });
     }).catchError((e) {
-      print('Error initializing cameras: $e');
+      if (kDebugMode) {
+        print('Error initializing cameras: $e');
+      }
       setState(() {
         isLoadingCameras = false;
       });
