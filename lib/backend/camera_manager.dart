@@ -50,7 +50,8 @@ class CameraManager {
   Future<String?> scanBarcode(String imagePath) async {
     final inputImage = InputImage.fromFilePath(imagePath);
     try {
-      final List<Barcode> barcodes = await barcodeScanner.processImage(inputImage);
+      final List<Barcode> barcodes =
+          await barcodeScanner.processImage(inputImage);
       if (barcodes.isNotEmpty) {
         return barcodes.first.rawValue;
       }

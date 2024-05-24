@@ -1,12 +1,13 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:vineburgapp/user/returnConfirmation.dart';
-import '../backend/cameraManager.dart';
-import '../classes/toolClass.dart';
-import 'checkoutConfirmation.dart';
+import 'package:vineburgapp/user/return_confirmation.dart';
+import '../backend/camera_manager.dart';
+import '../classes/tool_class.dart';
+import 'checkout_confirmation.dart';
 
 class ScanToolPage extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -17,7 +18,7 @@ class ScanToolPage extends StatefulWidget {
   const ScanToolPage(this.cameras, this.workorderData, this.workOrderImagePath, this.inOrOut, {super.key});
 
   @override
-  _ScanToolPageState createState() => _ScanToolPageState();
+  State<ScanToolPage> createState() => _ScanToolPageState();
 }
 
 class _ScanToolPageState extends State<ScanToolPage> {
@@ -56,7 +57,9 @@ class _ScanToolPageState extends State<ScanToolPage> {
       final toolDoc = await FirebaseFirestore.instance.collection('Tools').doc(toolId).get();
       return toolDoc.exists ? toolDoc : null;
     } catch (e) {
-      print('Error getting tool document: $e');
+      if (kDebugMode) {
+        print('Error getting tool document: $e');
+      }
       return null;
     }
   }

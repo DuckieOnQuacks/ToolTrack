@@ -1,12 +1,12 @@
 import 'dart:math';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import '../classes/toolClass.dart';
+import 'package:easy_debounce/easy_debounce.dart';
+import '../classes/tool_class.dart';
 import '../login.dart';
 import 'add_tool.dart';
-import 'tool_edit.dart';
+import 'edit_tool.dart';
 
 class AdminToolsPage extends StatefulWidget {
   const AdminToolsPage({super.key});
@@ -39,8 +39,6 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
     const Color(0xFF8BC34A), // Light Green
   ];
 
-
-// Function to randomly assort the list of colors
   List<Color> getRandomlyAssortedColors(List<Color> colors) {
     final random = Random();
     final colorList = List<Color>.from(colors);
@@ -52,23 +50,38 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
   void initState() {
     super.initState();
     tools = getAllTools();
-    filteredTools = tools!; // Initially, filteredTools will show all tools
-    shuffledColors = getRandomlyAssortedColors(cncShopColors); // Shuffle the colors once
+    filteredTools = tools!;
+    shuffledColors = getRandomlyAssortedColors(cncShopColors);
+    searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    searchController.removeListener(_onSearchChanged);
+    searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    EasyDebounce.debounce(
+      'search-debouncer', // <-- An identifier for this particular debouncer
+      const Duration(milliseconds: 500), // <-- The debounce duration
+      () => filterSearchResults(searchController.text), // <-- The target method
+    );
   }
 
   void filterSearchResults(String query) {
-    if (query.isNotEmpty) {
-      setState(() {
+    setState(() {
+      if (query.isNotEmpty) {
         filteredTools = tools!.then((allTools) => allTools.where((tool) {
-          return tool.gageType.toLowerCase().contains(query.toLowerCase()) ||
-              tool.gageID.toLowerCase().contains(query.toLowerCase());
-        }).toList());
-      });
-    } else {
-      setState(() {
+              return tool.status.toLowerCase().contains(query.toLowerCase()) ||
+                  tool.gageID.toLowerCase().contains(query.toLowerCase()) ||
+                  tool.checkedOutTo.toLowerCase().contains(query.toLowerCase());
+            }).toList());
+      } else {
         filteredTools = tools!;
-      });
-    }
+      }
+    });
   }
 
   Future<void> refreshToolsList() async {
@@ -92,7 +105,8 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
             icon: const Icon(Icons.add, color: Colors.white),
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const AdminAddToolPage()), // Navigate to AdminAddToolPage
+                MaterialPageRoute(
+                    builder: (context) => const AdminAddToolPage()),
               );
             },
           ),
@@ -109,13 +123,10 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              onChanged: (value) {
-                filterSearchResults(value);
-              },
               controller: searchController,
               decoration: const InputDecoration(
                 labelText: "Search",
-                hintText: "Search by tool name or ID",
+                hintText: "Search by user, tool ID, or tool status",
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(25.0)),
@@ -155,7 +166,8 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                       padding: const EdgeInsets.all(10),
                       itemCount: tools.length,
                       itemBuilder: (context, index) {
-                        Color tileColor = shuffledColors[index % shuffledColors.length];
+                        Color tileColor =
+                            shuffledColors[index % shuffledColors.length];
                         return Card(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -164,7 +176,8 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                           color: tileColor,
                           child: ListTile(
                             trailing: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.black),
+                              icon:
+                                  const Icon(Icons.delete, color: Colors.black),
                               onPressed: () => onDeletePressed(tools[index]),
                             ),
                             title: Text(
@@ -180,8 +193,10 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                               style: const TextStyle(color: Colors.black87),
                             ),
                             onTap: () async {
-                              var result = await Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => AdminInspectToolScreen(tool: tools[index]),
+                              var result = await Navigator.of(context)
+                                  .push(MaterialPageRoute(
+                                builder: (context) =>
+                                    AdminInspectToolScreen(tool: tools[index]),
                               ));
                               if (result == true) {
                                 refreshToolsList();
@@ -247,7 +262,8 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
               ),
             ],
           ),
-          content: const Text('Are you sure you want to log out of your account?'),
+          content:
+              const Text('Are you sure you want to log out of your account?'),
           actions: <Widget>[
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -309,7 +325,8 @@ class DeleteToolDialog extends StatelessWidget {
           ),
         ],
       ),
-      content: const Text('Are you sure you want to remove this tool from the database?'),
+      content: const Text(
+          'Are you sure you want to remove this tool from the database?'),
       actions: <Widget>[
         ElevatedButton(
           onPressed: () => Navigator.of(context).pop(false),

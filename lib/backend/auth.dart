@@ -11,7 +11,6 @@ import '../login.dart';
 *
 * Also checks if the current user is an admin or not.
 */
-
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
 

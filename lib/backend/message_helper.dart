@@ -49,7 +49,8 @@ void showMessage(BuildContext context, String title, String message) {
                 alignment: Alignment.bottomRight,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.black,
                   ),
                   onPressed: () {
                     Navigator.of(dialogContext).pop();
@@ -116,7 +117,8 @@ void showWarning(BuildContext context, String message) {
                 alignment: Alignment.bottomRight,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.black,
                   ),
                   onPressed: () {
                     Navigator.of(dialogContext).pop();
@@ -130,7 +132,6 @@ void showWarning(BuildContext context, String message) {
       );
     },
   );
-
 }
 
 Future<void> showWarning2(BuildContext context, String message) async {
@@ -184,7 +185,8 @@ Future<void> showWarning2(BuildContext context, String message) async {
                 alignment: Alignment.bottomRight,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Colors.grey,
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.grey,
                   ),
                   onPressed: () {
                     Navigator.of(dialogContext).pop();
@@ -198,6 +200,4 @@ Future<void> showWarning2(BuildContext context, String message) async {
       );
     },
   );
-
 }
-

@@ -2,8 +2,8 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:vineburgapp/user/scanTool.dart';
-import '../backend/cameraManager.dart';
+import 'package:vineburgapp/user/scan_tool.dart';
+import '../backend/camera_manager.dart';
 
 class ScanWorkorderPage extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -79,10 +79,10 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Confirm Barcode", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+          title: const Text("Confirm Barcode", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
           content: RichText(
             text: TextSpan(
-              style: TextStyle(color: Colors.white, fontSize: 16.0),
+              style: const TextStyle(color: Colors.white, fontSize: 16.0),
               children: <TextSpan>[
                 const TextSpan(text: "Barcode data: ", style: TextStyle(fontWeight: FontWeight.bold)),
                 TextSpan(text: barcodeData, style: const TextStyle(fontWeight: FontWeight.normal)),

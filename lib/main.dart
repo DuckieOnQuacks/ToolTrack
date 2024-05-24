@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-
 import 'backend/auth.dart';
 
 Future<void> main() async {
@@ -34,7 +33,7 @@ class MyApp extends StatelessWidget {
           textTheme: ButtonTextTheme.primary,
         ),
       ),
-      home: const AuthPage(),  // Updated to navigate to AuthPage
+      home: const AuthPage(), // Updated to navigate to AuthPage
     );
   }
 }

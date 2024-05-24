@@ -15,7 +15,7 @@ class Tool {
   final String gageDesc;
   final String dayRemain;
   final String status;
-  final String? lastCheckedOutBy;
+  final String lastCheckedOutBy;
   final String atMachine;
   final String dateCheckedOut;
   final String checkedOutTo;
@@ -37,11 +37,9 @@ class Tool {
     required this.checkedOutTo,
   });
 
-
   // Factory method to create a Tool object from JSON data
-  factory Tool.fromJson(Map<String, dynamic> json) =>
-      Tool(
-        calibrationFreq: json['Calibration Frequency'] as String? ?? '' ,
+  factory Tool.fromJson(Map<String, dynamic> json) => Tool(
+        calibrationFreq: json['Calibration Frequency'] as String? ?? '',
         calibrationLast: json["Last Calibrated"] as String? ?? '',
         calibrationNextDue: json['Calibration Due Date'] as String? ?? '',
         creationDate: json['Date Created'] as String? ?? '',
@@ -55,10 +53,9 @@ class Tool {
         atMachine: json["Located At Machine"] as String? ?? '',
         dateCheckedOut: json["Date Checked Out"] as String? ?? '',
         checkedOutTo: json["Checked Out To"] as String? ?? '',
-    );
+      );
   // Method to convert a Machine object to JSON data
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'Calibration Frequency': calibrationFreq,
         'Last Calibrated': calibrationLast,
         'Calibration Due Date': calibrationNextDue,
@@ -75,7 +72,18 @@ class Tool {
       };
 }
 
-Future<void> addToolWithParams(String calFreq, String calLast, String calNextDue, String creationDate, String gageID, String gageType, String imagePath, String gageDesc, String daysRemain) async {
+/// Adds a new tool to the Firestore database with the provided parameters.
+Future<void> addToolWithParams(
+    String calFreq,
+    String calLast,
+    String calNextDue,
+    String creationDate,
+    String gageID,
+    String gageType,
+    String imagePath,
+    String gageDesc,
+    String daysRemain) async {
+  // Check if the user is signed in.
   final currentUser = FirebaseAuth.instance.currentUser;
   if (currentUser == null) {
     if (kDebugMode) {
@@ -84,29 +92,31 @@ Future<void> addToolWithParams(String calFreq, String calLast, String calNextDue
     return;
   }
 
+  // Prepare the tool data and write it to Firestore.
   final docOrder = FirebaseFirestore.instance.collection("Tools").doc(gageID);
   final orderTable = Tool(
-      calibrationFreq: calFreq,
-      calibrationLast: calLast,
-      calibrationNextDue: calNextDue,
-      creationDate: creationDate,
-      gageID: gageID,
-      gageType: gageType,
-      imagePath: imagePath,
-      gageDesc: gageDesc,
-      dayRemain: daysRemain,
-      status: "Available",
-      lastCheckedOutBy: "",
-      atMachine: "",
-      dateCheckedOut: "",
-      checkedOutTo: "",
+    calibrationFreq: calFreq,
+    calibrationLast: calLast,
+    calibrationNextDue: calNextDue,
+    creationDate: creationDate,
+    gageID: gageID,
+    gageType: gageType,
+    imagePath: imagePath,
+    gageDesc: gageDesc,
+    dayRemain: daysRemain,
+    status: "Available",
+    lastCheckedOutBy: "",
+    atMachine: "",
+    dateCheckedOut: "",
+    checkedOutTo: "",
   );
   final json = orderTable.toJson();
-  // Create document and write data to Firestore
-  await docOrder.set(json);
+  await docOrder.set(json); // Create document and write data to Firestore.
 }
 
-Future<void> updateToolStatus(String toolId, String status, String userWhoCheckedOut) async {
+/// Updates the status of a tool in the Firestore database.
+Future<void> updateToolStatus(
+    String toolId, String status, String userWhoCheckedOut) async {
   final toolsCollection = FirebaseFirestore.instance.collection('Tools');
 
   try {
@@ -114,7 +124,7 @@ Future<void> updateToolStatus(String toolId, String status, String userWhoChecke
     final docSnapshot = await toolDoc.get();
 
     if (docSnapshot.exists) {
-      // Update the status field of the document
+      // Update the status field of the document.
       await toolDoc.update({
         'Status': status,
         'Checked Out To': userWhoCheckedOut,
@@ -134,6 +144,7 @@ Future<void> updateToolStatus(String toolId, String status, String userWhoChecke
   }
 }
 
+/// Retrieves the status of a tool from the Firestore database.
 Future<String?> getToolStatus(String toolId) async {
   final toolsCollection = FirebaseFirestore.instance.collection('Tools');
 
@@ -141,7 +152,7 @@ Future<String?> getToolStatus(String toolId) async {
     final toolDoc = await toolsCollection.doc(toolId).get();
 
     if (toolDoc.exists) {
-      // Retrieve the status field of the document
+      // Retrieve the status field of the document.
       final status = toolDoc.data()?['Status'] as String?;
       if (kDebugMode) {
         print('Status of tool with ID $toolId is $status.');
@@ -161,8 +172,10 @@ Future<String?> getToolStatus(String toolId) async {
   }
 }
 
+/// Checks if a tool is part of a specified work order in the Firestore database.
 Future<bool> isToolInWorkOrder(String workOrderId, String toolId) async {
-  final workOrdersCollection = FirebaseFirestore.instance.collection('WorkOrders');
+  final workOrdersCollection =
+      FirebaseFirestore.instance.collection('WorkOrders');
 
   try {
     final workOrderDoc = await workOrdersCollection.doc(workOrderId).get();
@@ -195,7 +208,7 @@ Future<bool> isToolInWorkOrder(String workOrderId, String toolId) async {
   }
 }
 
-//Admin helper functions.
+/// Retrieves all tools from the Firestore database.
 Future<List<Tool>> getAllTools() async {
   List<Tool> toolDetails = [];
   final toolsCollection = FirebaseFirestore.instance.collection('Tools');
@@ -206,7 +219,9 @@ Future<List<Tool>> getAllTools() async {
       if (doc.exists) {
         toolDetails.add(Tool.fromJson(doc.data()));
       } else {
-        print('Tool ${doc.id} does not exist in the Tools collection.');
+        if (kDebugMode) {
+          print('Tool ${doc.id} does not exist in the Tools collection.');
+        }
       }
     }
   } catch (e) {
@@ -214,10 +229,10 @@ Future<List<Tool>> getAllTools() async {
       print('Error fetching tools: $e');
     }
   }
-
   return toolDetails;
 }
 
+/// Adds the "Checked Out To" field to all tools in the Firestore database if it doesn't exist.
 Future<void> addCheckedOutToFieldToTools() async {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   CollectionReference toolsCollection = firestore.collection('Tools');
@@ -227,17 +242,17 @@ Future<void> addCheckedOutToFieldToTools() async {
     WriteBatch batch = firestore.batch();
 
     for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-      // Get the current data of the tool
+      // Get the current data of the tool.
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-      // Check if the field already exists to avoid overwriting existing data
+      // Check if the field already exists to avoid overwriting existing data.
       if (!data.containsKey('Checked Out To')) {
-        // Add "Checked Out To" field with an empty string or default value
+        // Add "Checked Out To" field with an empty string or default value.
         batch.update(doc.reference, {'Checked Out To': ''});
       }
     }
 
-    // Commit the batch update
+    // Commit the batch update.
     await batch.commit();
 
     if (kDebugMode) {
@@ -249,7 +264,8 @@ Future<void> addCheckedOutToFieldToTools() async {
     }
   }
 }
-// Function to delete a tool given a Tool object
+
+/// Deletes a tool from the Firestore database given a Tool object as well as the image associated with it.
 Future<void> deleteTool(Tool tool) async {
   final toolsCollection = FirebaseFirestore.instance.collection('Tools');
 
@@ -258,10 +274,27 @@ Future<void> deleteTool(Tool tool) async {
     final docSnapshot = await toolDoc.get();
 
     if (docSnapshot.exists) {
-      // Delete the document
+      // Delete the document.
       await toolDoc.delete();
       if (kDebugMode) {
         print('Tool with ID ${tool.gageID} has been deleted.');
+      }
+
+      // Attempt to delete the image from Firebase Storage.
+      if (tool.imagePath.isNotEmpty) {
+        try {
+          final storageRef =
+              FirebaseStorage.instance.refFromURL(tool.imagePath);
+          await storageRef.delete();
+          if (kDebugMode) {
+            print(
+                'Image for tool with ID ${tool.gageID} has been deleted from Firebase Storage.');
+          }
+        } catch (e) {
+          if (kDebugMode) {
+            print('Error deleting image for tool with ID ${tool.gageID}: $e');
+          }
+        }
       }
     } else {
       if (kDebugMode) {
@@ -275,10 +308,12 @@ Future<void> deleteTool(Tool tool) async {
   }
 }
 
+/// Uploads an image to Firebase Storage and returns the download URL.
 Future<String?> uploadImageToStorage(String filePath, String gageID) async {
   File file = File(filePath);
   try {
-    final storageRef = FirebaseStorage.instance.ref().child('ToolImages/$gageID');
+    final storageRef =
+        FirebaseStorage.instance.ref().child('ToolImages/$gageID');
     final uploadTask = storageRef.putFile(file);
     final snapshot = await uploadTask.whenComplete(() => {});
     final downloadUrl = await snapshot.ref.getDownloadURL();
@@ -291,9 +326,77 @@ Future<String?> uploadImageToStorage(String filePath, String gageID) async {
   }
 }
 
+/// Updates a tool in the Firestore database if any of its fields have changed.
+/// Updates a tool in the Firestore database if any of its fields have changed.
+/// If the gageID has changed, it deletes the old tool and creates a new tool with the new ID.
 Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
   final toolsCollection = FirebaseFirestore.instance.collection('Tools');
   final toolDoc = toolsCollection.doc(oldTool.gageID);
+
+  // If the gageID has changed, delete the old tool and create a new one with the new ID.
+  if (oldTool.gageID != newTool.gageID) {
+    try {
+      // Delete the old tool.
+      await toolDoc.delete();
+      if (kDebugMode) {
+        print('Old tool with ID ${oldTool.gageID} has been deleted.');
+      }
+
+      // Create a new tool with the new ID.
+      final newToolDoc = toolsCollection.doc(newTool.gageID);
+      String? newImageUrl;
+      if (oldTool.imagePath != newTool.imagePath) {
+        newImageUrl =
+            await uploadImageToStorage(newTool.imagePath, newTool.gageID);
+      }
+      final newToolData = Tool(
+        calibrationFreq: newTool.calibrationFreq.isNotEmpty
+            ? newTool.calibrationFreq
+            : oldTool.calibrationFreq,
+        calibrationLast: newTool.calibrationLast.isNotEmpty
+            ? newTool.calibrationLast
+            : oldTool.calibrationLast,
+        calibrationNextDue: newTool.calibrationNextDue.isNotEmpty
+            ? newTool.calibrationNextDue
+            : oldTool.calibrationNextDue,
+        creationDate: newTool.creationDate.isNotEmpty
+            ? newTool.creationDate
+            : oldTool.creationDate,
+        gageID: newTool.gageID,
+        gageType:
+            newTool.gageType.isNotEmpty ? newTool.gageType : oldTool.gageType,
+        imagePath: newImageUrl ?? oldTool.imagePath,
+        gageDesc:
+            newTool.gageDesc.isNotEmpty ? newTool.gageDesc : oldTool.gageDesc,
+        dayRemain: newTool.dayRemain.isNotEmpty
+            ? newTool.dayRemain
+            : oldTool.dayRemain,
+        status: newTool.status.isNotEmpty ? newTool.status : oldTool.status,
+        lastCheckedOutBy: newTool.lastCheckedOutBy.isNotEmpty
+            ? newTool.lastCheckedOutBy
+            : oldTool.lastCheckedOutBy,
+        atMachine: newTool.atMachine.isNotEmpty
+            ? newTool.atMachine
+            : oldTool.atMachine,
+        dateCheckedOut: newTool.dateCheckedOut.isNotEmpty
+            ? newTool.dateCheckedOut
+            : oldTool.dateCheckedOut,
+        checkedOutTo: newTool.checkedOutTo.isNotEmpty
+            ? newTool.checkedOutTo
+            : oldTool.checkedOutTo,
+      ).toJson();
+
+      await newToolDoc.set(newToolData);
+      if (kDebugMode) {
+        print('New tool with ID ${newTool.gageID} has been created.');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error updating tool with ID ${oldTool.gageID}: $e');
+      }
+    }
+    return;
+  }
 
   Map<String, dynamic> updates = {};
 
@@ -309,14 +412,12 @@ Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
   if (oldTool.creationDate != newTool.creationDate) {
     updates['Date Created'] = newTool.creationDate;
   }
-  if (oldTool.gageID != newTool.gageID) {
-    updates['Gage ID'] = newTool.gageID;
-  }
   if (oldTool.gageType != newTool.gageType) {
     updates['Type of Gage'] = newTool.gageType;
   }
   if (oldTool.imagePath != newTool.imagePath) {
-    String? newImageUrl = await uploadImageToStorage(newTool.imagePath, oldTool.gageID);
+    String? newImageUrl =
+        await uploadImageToStorage(newTool.imagePath, oldTool.gageID);
     if (newImageUrl != null) {
       updates['Tool Image Path'] = newImageUrl;
     }
@@ -347,7 +448,8 @@ Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
     try {
       await toolDoc.update(updates);
       if (kDebugMode) {
-        print('Tool with ID ${oldTool.gageID} has been updated with new information.');
+        print(
+            'Tool with ID ${oldTool.gageID} has been updated with new information.');
       }
     } catch (e) {
       if (kDebugMode) {
@@ -358,5 +460,14 @@ Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
     if (kDebugMode) {
       print('No differences found between the old and new tool information.');
     }
+  }
+}
+
+Future<void> deleteOldImage(String oldImagePath) async {
+  try {
+    final ref = FirebaseStorage.instance.refFromURL(oldImagePath);
+    await ref.delete();
+  } catch (e) {
+    debugPrint('Error deleting old image: $e');
   }
 }

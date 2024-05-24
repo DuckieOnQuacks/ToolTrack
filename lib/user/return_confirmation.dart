@@ -1,16 +1,15 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:vineburgapp/classes/toolClass.dart';
 import 'dart:io';
-import 'package:vineburgapp/classes/workOrderClass.dart';
+import '../classes/tool_class.dart';
 
-class CheckoutConfirmationPage extends StatefulWidget {
+class ReturnConfirmationPage extends StatefulWidget {
   final String workorderId;
   final Tool tool;
   final String workOrderImagePath;
   final String toolImagePath;
 
-  const CheckoutConfirmationPage({
+  const ReturnConfirmationPage({
     super.key,
     required this.workorderId,
     required this.tool,
@@ -19,11 +18,10 @@ class CheckoutConfirmationPage extends StatefulWidget {
   });
 
   @override
-  _CheckoutConfirmationPageState createState() =>
-      _CheckoutConfirmationPageState();
+  State<ReturnConfirmationPage> createState() => _ReturnConfirmationPageState();
 }
 
-class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
+class _ReturnConfirmationPageState extends State<ReturnConfirmationPage> {
   final TextEditingController _nameController = TextEditingController();
 
   void showTopSnackBar(BuildContext context, String message, Color color) {
@@ -37,31 +35,34 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
     ).show(context);
   }
 
-  void confirmCheckout() async {
-    String name = _nameController.text.trim();
-    if (name.isNotEmpty) {
-      try {
-        await handleWorkOrderAndCheckout(
-          workorderId: widget.workorderId,
-          toolId: widget.tool.gageID,
-          imagePath: widget.workOrderImagePath,
-          enteredBy: _nameController.text,
-        );
-        if (widget.tool.status == "Checked Out") {
-          showTopSnackBar(context,"Already Checked Out To ${widget.tool.checkedOutTo}", Colors.red);
-        }else {
-          updateToolStatus(widget.tool.gageID, "Checked Out", _nameController.text);
-          // Navigate back to the first route and show the snack-bar
-          Navigator.popUntil(context, (route) => route.isFirst);
-          Future.delayed(const Duration(milliseconds: 100), () {
-            showTopSnackBar(context, "Checkout successful!", Colors.green);
-          });
+  void confirmReturn() async {
+    if(context.mounted) {
+      String name = _nameController.text.trim();
+      if (name.isNotEmpty) {
+        try {
+          bool toolIsInWorkOrder = await isToolInWorkOrder(
+              widget.workorderId, widget.tool.gageID);
+          if (toolIsInWorkOrder == false) {
+            showTopSnackBar(context,
+                "Tool Not Checked Out To WorkOrder ${widget.workorderId}",
+                Colors.red);
+          }
+          else {
+            updateToolStatus(widget.tool.gageID, "Available", "No One");
+            // Navigate back to the first route and show the snackbar
+            Navigator.popUntil(context, (route) => route.isFirst);
+            Future.delayed(const Duration(milliseconds: 100), () {
+              showTopSnackBar(context, "Return successful!", Colors.green);
+            });
+          }
+        } catch (e) {
+          showTopSnackBar(
+              context, "Failed to return. Please try again.", Colors.red);
         }
-      } catch (e) {
-        showTopSnackBar(context, "Failed to checkout. Please try again.", Colors.red);
+      } else {
+        showTopSnackBar(
+            context, "Please enter your employee ID.", Colors.orange);
       }
-    } else {
-      showTopSnackBar(context, "Please enter your employee ID.", Colors.orange);
     }
   }
 
@@ -85,28 +86,14 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (description != null) ...[
-                  Text(description,
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(description, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
                   const SizedBox(height: 10),
                 ],
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: FutureBuilder(
-                    future: _loadImage(imagePath),
-                    builder: (BuildContext context, AsyncSnapshot<ImageProvider<Object>> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return const Center(child: Icon(Icons.error));
-                      } else {
-                        return Image(
-                          image: snapshot.data!,
-                          fit: BoxFit.cover,
-                        );
-                      }
-                    },
-                  ),
+                  child: _isNetworkUrl(imagePath)
+                      ? Image.network(imagePath)
+                      : Image.file(File(imagePath)),
                 ),
                 const SizedBox(height: 10),
                 Container(
@@ -135,10 +122,10 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
     );
   }
 
-  Future<ImageProvider<Object>> _loadImage(String path) async {
-    return NetworkImage(path);
+  bool _isNetworkUrl(String path) {
+    final uri = Uri.parse(path);
+    return uri.scheme == 'http' || uri.scheme == 'https';
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -179,20 +166,26 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                             fontSize: 18, color: Colors.grey),
                       ),
                       const SizedBox(height: 10),
-                      Row(children: [
-                        const Text(
-                          'Tool ID:',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                        const Spacer(),
-                        IconButton(
-                          icon: const Icon(Icons.image),
-                          onPressed: () {
-                            _showImage(widget.toolImagePath);
-                          },
-                        ),
-                      ]),
+                      Row(
+                        children: [
+                          const Text(
+                            'Tool ID:',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
+                          const Spacer(),
+                          IconButton(
+                            icon: const Icon(Icons.image),
+                            onPressed: () {
+                              if (widget.toolImagePath.isEmpty) {
+                                showTopSnackBar(context, "No image available for this tool.", Colors.orange);
+                              } else {
+                                _showImage(widget.toolImagePath);
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                       Text(
                         widget.tool.gageID,
                         style: const TextStyle(
@@ -200,10 +193,12 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                       ),
                       const SizedBox(height: 20),
                       TextField(
+                        style: const TextStyle(color: Colors.white),
                         controller: _nameController,
                         decoration: const InputDecoration(
                           labelText: 'Enter Employee ID',
-                          border: OutlineInputBorder(),
+                          labelStyle: TextStyle(color: Colors.white),
+                          border: UnderlineInputBorder(),
                         ),
                         textCapitalization: TextCapitalization.words,
                       ),
@@ -216,7 +211,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: confirmCheckout,
+                onPressed: confirmReturn,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   backgroundColor: Colors.orange[800],
@@ -226,7 +221,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                   textStyle: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                child: const Text('Checkout',
+                child: const Text('Return',
                     style: TextStyle(color: Colors.white)),
               ),
             ),

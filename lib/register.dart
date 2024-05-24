@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:core';
-import 'backend/messageHelper.dart';
-import 'backend/userHelper.dart';
+import 'backend/message_helper.dart';
+import 'backend/user_helper.dart';
 import 'login.dart';
 
 // Object Cleanup, removes from tree permanently
@@ -24,10 +24,13 @@ class _RegisterPageState extends State<RegisterPage> {
   List<String> tempFavOrders = [""];
 
   // Capitalize the first letter of the firstname and lastname
-  String capitalize(String s) => s.isEmpty ? '' : s[0].toUpperCase() + s.substring(1).toLowerCase();
+  String capitalize(String s) =>
+      s.isEmpty ? '' : s[0].toUpperCase() + s.substring(1).toLowerCase();
 
   void createAccount() async {
-    if (passwordController.text.isEmpty || confirmPassword.text.isEmpty || firstName.text.isEmpty) {
+    if (passwordController.text.isEmpty ||
+        confirmPassword.text.isEmpty ||
+        firstName.text.isEmpty) {
       showMessage(context, 'Notice', 'Please complete all fields.');
       return;
     }
@@ -36,7 +39,8 @@ class _RegisterPageState extends State<RegisterPage> {
       // Check if password is confirmed
       if (passwordController.text == confirmPassword.text) {
         // Check if length of passwords entered are greater than 6
-        if (passwordController.text.length > 6 && confirmPassword.text.length > 6) {
+        if (passwordController.text.length > 6 &&
+            confirmPassword.text.length > 6) {
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
             email: createUsername(firstName.text),
             password: passwordController.text,
@@ -46,12 +50,14 @@ class _RegisterPageState extends State<RegisterPage> {
           String capitalizedFirstName = capitalize(firstName.text);
           addUserDetails(capitalizedFirstName);
           Navigator.pop(context);
-          Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
+          Navigator.of(context)
+              .push(MaterialPageRoute(builder: (BuildContext context) {
             return const LoginPage();
           }));
         } else {
           // Show error message if password length is not greater than 6
-          showMessage(context, 'Notice', 'Password must be at least 7 characters.');
+          showMessage(
+              context, 'Notice', 'Password must be at least 7 characters.');
         }
       } else {
         // Show error message if passwords don't match
@@ -208,13 +214,15 @@ class _RegisterPageState extends State<RegisterPage> {
                       createAccount();
                     },
                     style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(const EdgeInsets.all(25)),
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.orange.shade800),
+                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                          const EdgeInsets.all(25)),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Colors.orange.shade800),
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(color: Colors.grey[900]!, width: 3)
-                        ),
+                            side:
+                                BorderSide(color: Colors.grey[900]!, width: 3)),
                       ),
                     ),
                     child: const Center(

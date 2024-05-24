@@ -10,17 +10,18 @@ Future<void> addUserDetails(String firstName) async {
     }
     return;
   }
-  final userDocRef = FirebaseFirestore.instance.collection('Users').doc(user.uid);
+  final userDocRef =
+      FirebaseFirestore.instance.collection('Users').doc(user.uid);
   String username = createUsername(firstName);
   await userDocRef.set({
     'First Name': firstName.trim(),
     'Email': username,
-
   });
 }
 
 String createUsername(String firstName) {
-  String formattedFirstName = firstName.trim().replaceAll(' ', '_').toLowerCase();
+  String formattedFirstName =
+      firstName.trim().replaceAll(' ', '_').toLowerCase();
 
   return '$formattedFirstName@vineburg.com';
 }

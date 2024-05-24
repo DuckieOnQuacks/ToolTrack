@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:vineburgapp/classes/toolClass.dart';
+import 'package:vineburgapp/classes/tool_class.dart';
 import 'package:csv/csv.dart';
-
 
 class CSVPage extends StatefulWidget {
   const CSVPage({super.key});
@@ -70,10 +69,12 @@ class _CSVPageState extends State<CSVPage> {
                         currentRow[6].toString() // daysRemain
                         );
 
-                    print("Processed Gage ID: $gageId");
+                    if (kDebugMode) {
+                      print("Processed Gage ID: $gageId");
+                    }
 
                     // Wait for 1 second before processing the next row
-                    await Future.delayed(Duration(seconds: 1));
+                    await Future.delayed(const Duration(seconds: 1));
                   }
 
                   // Once all rows have been processed

@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:intl/intl.dart';
-import '../classes/toolClass.dart';
+import '../classes/tool_class.dart';
 
 class AdminAddToolPage extends StatefulWidget {
   const AdminAddToolPage({super.key});
@@ -74,8 +74,8 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
 
   late CameraManager _cameraManager;
   FlashMode _flashMode = FlashMode.off;
-  bool _isCameraInitialized = false;
-  bool _isLoading = false;
+  bool isCameraInitialized = false;
+  bool isLoading = false;
   String imagePath = '';
   String imageUrl = '';
   bool pictureTaken = false;
@@ -84,6 +84,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
   void initState() {
     super.initState();
     availableCameras().then((availableCameras) {
+      if (!mounted) return; // Ensure the widget is still mounted
       setState(() {
         _cameraManager = CameraManager(availableCameras);
       });
@@ -107,17 +108,19 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
 
   Future<void> _initializeCamera() async {
     setState(() {
-      _isLoading = true;
+      isLoading = true;
     });
     await _cameraManager.initializeCamera();
+    if (!mounted) return; // Ensure the widget is still mounted
     setState(() {
-      _isCameraInitialized = true;
-      _isLoading = false;
+      isCameraInitialized = true;
+      isLoading = false;
     });
   }
 
   Future<void> _showCameraDialog() async {
-    if (_cameraManager.controller != null && _cameraManager.controller!.value.isInitialized) {
+    if (_cameraManager.controller != null &&
+        _cameraManager.controller!.value.isInitialized) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -142,7 +145,9 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        icon: Icon(_flashMode == FlashMode.torch ? Icons.flash_on : Icons.flash_off),
+                        icon: Icon(_flashMode == FlashMode.torch
+                            ? Icons.flash_on
+                            : Icons.flash_off),
                         onPressed: _toggleFlashMode,
                         color: Colors.yellow,
                         iconSize: 36,
@@ -154,12 +159,13 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                         onPressed: () async {
                           String? path = await _cameraManager.takePicture();
                           if (path != null) {
+                            // Ensure the widget is still mounted
                             setState(() {
                               imagePath = path;
                               pictureTaken = true;
                             });
                           }
-                          Navigator.of(context).pop();
+                          if (context.mounted) Navigator.of(context).pop();
                         },
                       ),
                     ],
@@ -175,13 +181,14 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
 
   void _toggleFlashMode() {
     setState(() {
-      _flashMode = _flashMode == FlashMode.off ? FlashMode.torch : FlashMode.off;
+      _flashMode =
+          _flashMode == FlashMode.off ? FlashMode.torch : FlashMode.off;
       _cameraManager.controller?.setFlashMode(_flashMode);
     });
   }
 
   Future<void> _submitForm() async {
-    if (_formKey.currentState?.validate() ?? false) {
+    if (!_formKey.currentState!.validate()) {
       // Show top snackbar warning if any required field is not filled
       _showTopSnackBar(context, "Please fill in all required fields.");
       return;
@@ -200,7 +207,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
       _daysRemainController.text,
     );
 
-    if (!mounted) return;
+    if (!mounted) return; // Ensure the widget is still mounted
     Navigator.of(context).pop();
   }
 
@@ -260,18 +267,21 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                     const Flexible(
                       child: Text(
                         'Take a Picture of the Tool: *',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.camera_alt, size: 40, color: Colors.orange),
+                      icon: const Icon(Icons.camera_alt,
+                          size: 40, color: Colors.orange),
                       onPressed: () async {
                         await _showCameraDialog();
                       },
                     ),
                     if (pictureTaken) ...[
                       IconButton(
-                        icon: const Icon(Icons.image, color: Colors.green, size: 40),
+                        icon: const Icon(Icons.image,
+                            color: Colors.green, size: 40),
                         onPressed: () {
                           _showPictureDialog(imagePath);
                         },
@@ -285,25 +295,33 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                   controller: _gageIDController,
                   label: 'Enter Gage ID: *',
                   hintText: 'e.g. 00001',
-                  validator: (value) => value!.isEmpty ? 'This field is required' : null,
+                  validator: (value) =>
+                      value!.isEmpty ? 'This field is required' : null,
                 ),
                 _buildDateField(
                   controller: _dateCreatedController,
                   label: 'Enter Creation Date: *',
                   hintText: 'MM/DD/YYYY',
-                  validator: (value) => value!.isEmpty ? 'This field is required' : null,
+                  validator: (value) =>
+                      value!.isEmpty ? 'This field is required' : null,
                 ),
                 _buildTextField(
                   controller: _gageDescController,
                   label: 'Enter Gage Description: *',
                   hintText: 'e.g. 2-3" MITUTOYO MICROMETER',
-                  validator: (value) => value!.isEmpty ? 'This field is required' : null,
+                  validator: (value) =>
+                      value!.isEmpty ? 'This field is required' : null,
                 ),
                 _buildDropdownField(
                   controller: _gageTypeController,
                   label: 'Gage Type: *',
                   hintText: 'Select Gage Type',
-                  items: ['Thread Plug Gage', 'Ring Gage', 'Caliper', 'Micrometer'],
+                  items: [
+                    'Thread Plug Gage',
+                    'Ring Gage',
+                    'Caliper',
+                    'Micrometer'
+                  ],
                 ),
                 const SizedBox(height: 20),
                 _buildSectionHeader('Calibration Information'),
@@ -311,7 +329,8 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                   controller: _calFreqController,
                   label: 'Calibration Frequency (days): *',
                   hintText: 'e.g. 67',
-                  validator: (value) => value!.isEmpty ? 'This field is required' : null,
+                  validator: (value) =>
+                      value!.isEmpty ? 'This field is required' : null,
                 ),
                 _buildDateField(
                   controller: _calNextDueController,
@@ -322,7 +341,8 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                   controller: _daysRemainController,
                   label: 'Days Remaining Until Calibration (days): *',
                   hintText: 'e.g. 180',
-                  validator: (value) => value!.isEmpty ? 'This field is required' : null,
+                  validator: (value) =>
+                      value!.isEmpty ? 'This field is required' : null,
                 ),
                 _buildDateField(
                   controller: _calLastController,
@@ -470,7 +490,8 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
       padding: const EdgeInsets.only(bottom: 10, top: 20),
       child: Text(
         title,
-        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.orange),
+        style: const TextStyle(
+            fontSize: 22, fontWeight: FontWeight.bold, color: Colors.orange),
       ),
     );
   }

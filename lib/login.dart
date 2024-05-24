@@ -5,7 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:vineburgapp/admin/tools.dart';
 import 'package:vineburgapp/register.dart';
 import 'package:vineburgapp/user/home.dart';
-import 'backend/messageHelper.dart';
+import 'backend/message_helper.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -21,7 +21,8 @@ class _LoginPageState extends State<LoginPage> {
   String? passwordErrorMessage;
 
   String createUsername(String username) {
-    String formattedUsername = username.trim().replaceAll(' ', '_').toLowerCase();
+    String formattedUsername =
+        username.trim().replaceAll(' ', '_').toLowerCase();
     return '$formattedUsername@vineburg.com';
   }
 
@@ -45,14 +46,15 @@ class _LoginPageState extends State<LoginPage> {
     try {
       if (validateFields()) {
         await FirebaseAuth.instance.signInWithEmailAndPassword(
-            email: createUsername(usernameController.text),
+            email: createUsername(usernameController.text.trim()),
             password: passwordController.text);
 
         String userEmail = FirebaseAuth.instance.currentUser!.email!;
         MaterialPageRoute newPage;
 
         if (userEmail == 'admin@vineburg.com') {
-          newPage = MaterialPageRoute(builder: (context) => const AdminToolsPage());
+          newPage =
+              MaterialPageRoute(builder: (context) => const AdminToolsPage());
         } else {
           newPage = MaterialPageRoute(builder: (context) => const HomePage());
         }
@@ -74,7 +76,8 @@ class _LoginPageState extends State<LoginPage> {
         } else if (e.code == 'wrong-password') {
           showMessage(context, 'Error', 'Wrong password');
         } else if (e.code == 'user-not-found') {
-          showMessage(context, 'Error', 'This email address entered is not registered.');
+          showMessage(context, 'Error',
+              'This email address entered is not registered.');
         } else {
           showMessage(context, 'Error', 'An unexpected error occurred');
         }
@@ -88,8 +91,10 @@ class _LoginPageState extends State<LoginPage> {
       usernameErrorMessage = null;
       passwordErrorMessage = null;
 
-      if (passwordController.text.isEmpty || passwordController.text.length < 6) {
-        passwordErrorMessage = 'Please enter a password with at least 6 characters';
+      if (passwordController.text.isEmpty ||
+          passwordController.text.length < 6) {
+        passwordErrorMessage =
+            'Please enter a password with at least 6 characters';
         valid = false;
       }
     });
@@ -99,136 +104,144 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/images/drilling.png',
-                  scale: 2.5,
-                ),
-                const SizedBox(height: 50),
-                Text(
-                  'Welcome To Tool Tracker',
-                  style: GoogleFonts.signika(
-                    fontSize: 50.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 30),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[900],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: TextField(
-                      controller: usernameController,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                        labelText: 'Username',
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelStyle: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.white70,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey[800],
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[900],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                        labelText: 'Password',
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelStyle: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.white70,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey[800],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                ElevatedButton(
-                  onPressed: signUserIn,
-                  style: ButtonStyle(
-                    padding: MaterialStateProperty.all<EdgeInsetsGeometry>(const EdgeInsets.all(20)),
-                    backgroundColor: MaterialStateProperty.all<Color>(Colors.orange.shade800),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Log In',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Dont have an account?',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (BuildContext context) {
-                              return const RegisterPage();
-                            }));
-                      },
-                      child: const Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          color: Colors.orange,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ])))));
+        resizeToAvoidBottomInset: true,
+        body: SafeArea(
+            child: Center(
+                child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/images/drilling.png',
+                            scale: 2.5,
+                          ),
+                          const SizedBox(height: 50),
+                          Text(
+                            'Welcome To Tool Tracker',
+                            style: GoogleFonts.signika(
+                              fontSize: 50.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 30),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.grey[900],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: TextField(
+                                controller: usernameController,
+                                style: const TextStyle(color: Colors.white),
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 15),
+                                  labelText: 'Username',
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
+                                  labelStyle: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white70,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.grey[800],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.grey[900],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: TextField(
+                                controller: passwordController,
+                                obscureText: true,
+                                style: const TextStyle(color: Colors.white),
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 15),
+                                  labelText: 'Password',
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
+                                  labelStyle: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.white70,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  filled: true,
+                                  fillColor: Colors.grey[800],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 30),
+                          ElevatedButton(
+                            onPressed: signUserIn,
+                            style: ButtonStyle(
+                              padding:
+                                  MaterialStateProperty.all<EdgeInsetsGeometry>(
+                                      const EdgeInsets.all(20)),
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.orange.shade800),
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                'Log In',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Dont have an account?',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (BuildContext context) {
+                                    return const RegisterPage();
+                                  }));
+                                },
+                                child: const Text(
+                                  'Sign Up',
+                                  style: TextStyle(
+                                    color: Colors.orange,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ])))));
   }
 }
