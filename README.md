@@ -63,10 +63,3 @@ Ensure you have the necessary Flutter environment set up. You can follow the [Fl
    - Update or delete tool information from your inventory.
    - Keep track of tool usage and availability.
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
-
-## Contact
-
-For any questions or feedback, please contact the repository owner.
