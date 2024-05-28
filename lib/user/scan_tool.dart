@@ -171,9 +171,15 @@ class _ScanToolPageState extends State<ScanToolPage> {
               _isLoading = false;
             });
 
+            bool toolIsInWorkOrder = await isToolInWorkOrder(widget.workorderData, tool.gageID);
+
+            if (toolIsInWorkOrder == false) {
+              showTopSnackBar(context, "Tool Not Checked Out To WorkOrder ${widget.workorderData}", Colors.red);
+            }
+
             // If checking out, ensure the tool is not already checked out
             if (widget.inOrOut == 'checkout' && tool.status != 'Available') {
-              showTopSnackBar(context, "Tool ${tool.gageID} is currently checked out to ${tool.lastCheckedOutBy}. Try A Different Tool!");
+              showTopSnackBar(context, "Error: Tool ${tool.gageID} is currently checked out to ${tool.lastCheckedOutBy}. Try A Different Tool!", Colors.red);
             } else {
               // Show the confirmation dialog with the associated image URL
               showConfirmationDialog(context, barcodeData, tool);
@@ -182,20 +188,20 @@ class _ScanToolPageState extends State<ScanToolPage> {
             setState(() {
               _isLoading = false;
             });
-            showTopSnackBar(context, "Tool data is invalid.");
+            showTopSnackBar(context, "Error: Tool data is invalid.", Colors.red);
           }
         } else {
           setState(() {
             _isLoading = false;
           });
           // Tool ID does not exist, show error snackbar
-          showTopSnackBar(context, "Tool ID not found in the database.");
+          showTopSnackBar(context, "Error: Tool ID not found in the database.", Colors.red);
         }
       } else {
         setState(() {
           _isLoading = false;
         });
-        showTopSnackBar(context, "No tool QR code found, try again.");
+        showTopSnackBar(context, "Error: No tool QR code found, please scan again.", Colors.red);
       }
     } else {
       setState(() {
@@ -206,7 +212,6 @@ class _ScanToolPageState extends State<ScanToolPage> {
 
   void showManualEntryDialog(BuildContext context) {
     TextEditingController controller = TextEditingController();
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -219,7 +224,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
           actions: <Widget>[
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.red,  // Text color
+                foregroundColor: Colors.white, backgroundColor: Colors.red, // Text color
               ),
               child: const Text("Cancel"),
               onPressed: () {
@@ -228,7 +233,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.green,  // Text color
+                foregroundColor: Colors.white, backgroundColor: Colors.green, // Text color
               ),
               child: const Text("Confirm"),
               onPressed: () async {
@@ -237,6 +242,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
                   setState(() {
                     _isLoading = true;
                   });
+
                   final toolDoc = await getToolDocument(toolId);
                   if (toolDoc != null) {
                     final data = toolDoc.data();
@@ -248,28 +254,33 @@ class _ScanToolPageState extends State<ScanToolPage> {
                         _associatedImageUrl = storageUrl;
                         _isLoading = false;
                       });
-                      Navigator.of(context).pop(); // Dismiss the dialog
 
-                      // If checking out, ensure the tool is not already checked out
-                      if (widget.inOrOut == 'checkout' && tool.status != 'Available') {
-                        showTopSnackBar(context, "Tool is currently checked out.");
+                      bool toolIsInWorkOrder = await isToolInWorkOrder(widget.workorderData, tool.gageID);
+
+                      if (!toolIsInWorkOrder && widget.inOrOut != 'checkout') {
+                        showTopSnackBar(context, "Tool Not Checked Out To WorkOrder ${widget.workorderData}", Colors.red);
                       } else {
-                        showConfirmationDialog(context, toolId, tool);
+                        // If checking out, ensure the tool is not already checked out
+                        if (widget.inOrOut == 'checkout' && tool.status != 'Available') {
+                          showTopSnackBar(context, "Error: Tool ${tool.gageID} is currently checked out to ${tool.checkedOutTo}. Try A Different Tool!", Colors.red);
+                        } else {
+                          showConfirmationDialog(context, toolId, tool);
+                        }
                       }
                     } else {
                       setState(() {
                         _isLoading = false;
                       });
-                      showTopSnackBar(context, "Tool data is invalid.");
+                      showTopSnackBar(context, "Error: Tool data is invalid.", Colors.red);
                     }
                   } else {
                     setState(() {
                       _isLoading = false;
                     });
-                    showTopSnackBar(context, "Tool ID not found in the database.");
+                    showTopSnackBar(context, "Error: Tool ID not found in the database.", Colors.red);
                   }
                 } else {
-                  showTopSnackBar(context, "Please enter a valid Tool ID.");
+                  showTopSnackBar(context, "Error: Please enter a valid Tool ID.", Colors.red);
                 }
               },
             ),
@@ -279,14 +290,14 @@ class _ScanToolPageState extends State<ScanToolPage> {
     );
   }
 
-  void showTopSnackBar(BuildContext context, String message) {
+  void showTopSnackBar(BuildContext context, String message, Color color) {
     Flushbar(
       message: message,
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 4),
       flushbarPosition: FlushbarPosition.TOP,
       margin: const EdgeInsets.all(8),
       borderRadius: BorderRadius.circular(8),
-      backgroundColor: Colors.red,
+      backgroundColor: color,
     ).show(context);
   }
 

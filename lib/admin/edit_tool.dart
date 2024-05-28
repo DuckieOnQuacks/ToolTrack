@@ -23,22 +23,22 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
   final TextEditingController gageIDController = TextEditingController();
   final TextEditingController gageTypeController = TextEditingController();
   final TextEditingController gageDescriptionController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController checkedOutToController = TextEditingController();
   final TextEditingController lastCheckedOutController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController statusController = TextEditingController();
   final TextEditingController calibrationFreqController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController daysRemainController = TextEditingController();
   final TextEditingController dateCreatedController = TextEditingController();
   final TextEditingController calibrationDueController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController lastCalibratedController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController atMachineController = TextEditingController();
   final TextEditingController dateCheckedOutController =
-      TextEditingController();
+  TextEditingController();
 
   String imagePath = '';
   bool pictureTaken = false;
@@ -90,7 +90,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
       DocumentSnapshot toolSnapshot = await FirebaseFirestore.instance
           .collection('tools')
           .doc(widget
-              .tool.gageID) // Assuming 'gageID' is a field in your Tool class
+          .tool.gageID) // Assuming 'gageID' is a field in your Tool class
           .get();
       if (toolSnapshot.exists) {
         setState(() {
@@ -180,7 +180,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
   void _toggleFlashMode() {
     setState(() {
       _flashMode =
-          _flashMode == FlashMode.off ? FlashMode.torch : FlashMode.off;
+      _flashMode == FlashMode.off ? FlashMode.torch : FlashMode.off;
       _cameraManager.controller?.setFlashMode(_flashMode);
     });
   }
@@ -242,7 +242,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             children: <TextSpan>[
               TextSpan(
                   text:
-                      '${widget.tool.gageDesc} -> ${gageDescriptionController.text}',
+                  '${widget.tool.gageDesc} -> ${gageDescriptionController.text}',
                   style: const TextStyle(fontWeight: FontWeight.normal)),
             ]),
       ));
@@ -259,7 +259,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             children: <TextSpan>[
               TextSpan(
                   text:
-                      '${widget.tool.checkedOutTo} -> ${checkedOutToController.text}',
+                  '${widget.tool.checkedOutTo} -> ${checkedOutToController.text}',
                   style: const TextStyle(fontWeight: FontWeight.normal)),
             ]),
       ));
@@ -276,7 +276,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             children: <TextSpan>[
               TextSpan(
                   text:
-                      '${widget.tool.lastCheckedOutBy} -> ${lastCheckedOutController.text}',
+                  '${widget.tool.lastCheckedOutBy} -> ${lastCheckedOutController.text}',
                   style: const TextStyle(fontWeight: FontWeight.normal)),
             ]),
       ));
@@ -307,7 +307,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             children: <TextSpan>[
               TextSpan(
                   text:
-                      '${widget.tool.creationDate} -> ${dateCreatedController.text}',
+                  '${widget.tool.creationDate} -> ${dateCreatedController.text}',
                   style: const TextStyle(fontWeight: FontWeight.normal)),
             ]),
       ));
@@ -323,7 +323,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             children: <TextSpan>[
               TextSpan(
                   text:
-                      '${widget.tool.calibrationNextDue} -> ${calibrationDueController.text}',
+                  '${widget.tool.calibrationNextDue} -> ${calibrationDueController.text}',
                   style: const TextStyle(fontWeight: FontWeight.normal)),
             ]),
       ));
@@ -339,7 +339,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             children: <TextSpan>[
               TextSpan(
                   text:
-                      '${widget.tool.calibrationLast} -> ${lastCalibratedController.text}',
+                  '${widget.tool.calibrationLast} -> ${lastCalibratedController.text}',
                   style: const TextStyle(fontWeight: FontWeight.normal)),
             ]),
       ));
@@ -355,7 +355,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             children: <TextSpan>[
               TextSpan(
                   text:
-                      '${widget.tool.atMachine} -> ${atMachineController.text}',
+                  '${widget.tool.atMachine} -> ${atMachineController.text}',
                   style: const TextStyle(fontWeight: FontWeight.normal)),
             ]),
       ));
@@ -371,7 +371,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             children: <TextSpan>[
               TextSpan(
                   text:
-                      '${widget.tool.dateCheckedOut} -> ${dateCheckedOutController.text}',
+                  '${widget.tool.dateCheckedOut} -> ${dateCheckedOutController.text}',
                   style: const TextStyle(fontWeight: FontWeight.normal)),
             ]),
       ));
@@ -623,7 +623,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                       label: 'Checked Out To: ',
                       hintText: 'i.e. Jack',
                     ),
-                    _buildDateField(
+                    _buildDateFieldWithClear(
                       controller: dateCheckedOutController,
                       label: 'Date Checked Out: ',
                       hintText: 'MM/DD/YYYY',
@@ -746,6 +746,59 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     );
   }
 
+  Widget _buildDateFieldWithClear({
+    required TextEditingController controller,
+    required String label,
+    required String hintText,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: controller,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              hintText: hintText,
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.calendar_today),
+                    onPressed: () async {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      DateTime? date = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      );
+                      if (date != null) {
+                        controller.text = DateFormat('MM/dd/yyyy').format(date);
+                      }
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      controller.clear();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildDropdownField({
     required TextEditingController controller,
     required String label,
@@ -764,7 +817,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
             value:
-                controller.text.isEmpty ? widget.tool.status : controller.text,
+            controller.text.isEmpty ? widget.tool.status : controller.text,
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
               hintText: hintText,

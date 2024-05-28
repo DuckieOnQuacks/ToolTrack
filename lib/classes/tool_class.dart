@@ -70,6 +70,19 @@ class Tool {
         'Located At Machine': atMachine,
         'Checked Out To': checkedOutTo
       };
+
+  // Function to fetch image URL from Firebase Storage
+  Future<String> fetchImageUrl() async {
+    try {
+      String downloadURL = await FirebaseStorage.instance.ref(imagePath).getDownloadURL();
+      return downloadURL;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching image URL: $e');
+      }
+      return '';
+    }
+  }
 }
 
 /// Adds a new tool to the Firestore database with the provided parameters.
@@ -115,7 +128,40 @@ Future<void> addToolWithParams(
 }
 
 /// Updates the status of a tool in the Firestore database.
-Future<void> updateToolStatus(
+Future<void> checkoutTool(
+    String toolId, String status, String userWhoCheckedOut, String atMachine) async {
+  final toolsCollection = FirebaseFirestore.instance.collection('Tools');
+
+  try {
+    final toolDoc = toolsCollection.doc(toolId);
+    final docSnapshot = await toolDoc.get();
+    DateTime now = DateTime.now();
+    DateTime currentDate = DateTime(now.year, now.month, now.day);
+
+    if (docSnapshot.exists) {
+      // Update the status field of the document.
+      await toolDoc.update({
+        'Status': status,
+        'Checked Out To': userWhoCheckedOut,
+        'Date Checked Out': currentDate.toString(),
+        'At Machine': atMachine,
+      });
+      if (kDebugMode) {
+        print('Status of tool with ID $toolId has been updated to $status.');
+      }
+    } else {
+      if (kDebugMode) {
+        print('Tool with ID $toolId does not exist in the database.');
+      }
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print('Error updating status for tool with ID $toolId: $e');
+    }
+  }
+}
+
+Future<void> returnTool(
     String toolId, String status, String userWhoCheckedOut) async {
   final toolsCollection = FirebaseFirestore.instance.collection('Tools');
 
@@ -127,7 +173,8 @@ Future<void> updateToolStatus(
       // Update the status field of the document.
       await toolDoc.update({
         'Status': status,
-        'Checked Out To': userWhoCheckedOut,
+        'Checked Out To': "",
+        'Date Checked Out': "",
       });
       if (kDebugMode) {
         print('Status of tool with ID $toolId has been updated to $status.');

@@ -127,7 +127,7 @@ Future<void> handleWorkOrderAndCheckout({
 }) async {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   DocumentReference workOrderRef =
-      firestore.collection('WorkOrders').doc(workorderId);
+  firestore.collection('WorkOrders').doc(workorderId);
 
   DocumentSnapshot workOrderSnapshot = await workOrderRef.get();
 
@@ -144,26 +144,38 @@ Future<void> handleWorkOrderAndCheckout({
   } else {
     // Work order does not exist, create a new one
     final FirebaseStorage storage = FirebaseStorage.instance;
+    String downloadURL = '';
+
+    if (imagePath.isNotEmpty) {
+      try {
+        // Upload the image to Firebase Storage
+        final Reference storageReference =
+        storage.ref().child('WorkOrderImages/$workorderId.jpg');
+        final UploadTask uploadTask = storageReference.putFile(File(imagePath));
+
+        // Wait for the upload to complete
+        final TaskSnapshot storageSnapshot = await uploadTask;
+
+        // Get the download URL of the uploaded image
+        downloadURL = await storageSnapshot.ref.getDownloadURL();
+      } catch (e) {
+        if (kDebugMode) {
+          print(
+              'Error uploading image for work order $workorderId: $e');
+        }
+        throw e; // Re-throw the error after logging
+      }
+    }
+
+    // Create a map with the work order data
+    Map<String, dynamic> workOrderData = {
+      'id': workorderId,
+      'ImagePath': downloadURL, // Use the download URL or an empty string
+      'Tools': [toolId], // Add the single tool ID to a list
+      'Entered By': enteredBy,
+    };
+
     try {
-      // Upload the image to Firebase Storage
-      final Reference storageReference =
-          storage.ref().child('WorkOrderImages/$workorderId.jpg');
-      final UploadTask uploadTask = storageReference.putFile(File(imagePath));
-
-      // Wait for the upload to complete
-      final TaskSnapshot storageSnapshot = await uploadTask;
-
-      // Get the download URL of the uploaded image
-      final String downloadURL = await storageSnapshot.ref.getDownloadURL();
-
-      // Create a map with the work order data
-      Map<String, dynamic> workOrderData = {
-        'id': workorderId,
-        'ImagePath': downloadURL, // Use the download URL
-        'Tools': [toolId], // Add the single tool ID to a list
-        'Entered By': enteredBy,
-      };
-
       // Create a new document in the 'WorkOrders' collection with the specified ID
       await workOrderRef.set(workOrderData);
 
@@ -176,6 +188,7 @@ Future<void> handleWorkOrderAndCheckout({
         print(
             'Error adding work order $workorderId to the WorkOrders collection: $e');
       }
+      throw e; // Re-throw the error after logging
     }
   }
 }
