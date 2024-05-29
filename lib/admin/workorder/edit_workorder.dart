@@ -10,10 +10,12 @@ class AdminInspectWorkOrderScreen extends StatefulWidget {
   const AdminInspectWorkOrderScreen({super.key, required this.workOrder});
 
   @override
-  State<AdminInspectWorkOrderScreen> createState() => _AdminInspectWorkOrderScreenState();
+  State<AdminInspectWorkOrderScreen> createState() =>
+      _AdminInspectWorkOrderScreenState();
 }
 
-class _AdminInspectWorkOrderScreenState extends State<AdminInspectWorkOrderScreen> {
+class _AdminInspectWorkOrderScreenState
+    extends State<AdminInspectWorkOrderScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController idController = TextEditingController();
   final TextEditingController enteredByController = TextEditingController();
@@ -79,7 +81,8 @@ class _AdminInspectWorkOrderScreenState extends State<AdminInspectWorkOrderScree
               fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.white),
           children: <TextSpan>[
             TextSpan(
-              text: '${widget.workOrder.enteredBy} -> ${enteredByController.text}',
+              text:
+              '${widget.workOrder.enteredBy} -> ${enteredByController.text}',
               style: const TextStyle(fontWeight: FontWeight.normal),
             ),
           ],
@@ -89,12 +92,10 @@ class _AdminInspectWorkOrderScreenState extends State<AdminInspectWorkOrderScree
 
     const SizedBox(height: 10);
 
-    final addedTools = tools
-        .where((tool) => !initialTools.contains(tool))
-        .toList();
-    final removedTools = initialTools
-        .where((tool) => !tools.contains(tool))
-        .toList();
+    final addedTools =
+    tools.where((tool) => !initialTools.contains(tool)).toList();
+    final removedTools =
+    initialTools.where((tool) => !tools.contains(tool)).toList();
 
     if (addedTools.isNotEmpty) {
       changesWidgets.add(Column(
@@ -103,7 +104,9 @@ class _AdminInspectWorkOrderScreenState extends State<AdminInspectWorkOrderScree
           const Text(
             'Added Tools:',
             style: TextStyle(
-                fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.white),
+                fontSize: 14.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
           ),
           const SizedBox(height: 8),
           ...addedTools.map((tool) => Text(
@@ -122,7 +125,9 @@ class _AdminInspectWorkOrderScreenState extends State<AdminInspectWorkOrderScree
           const Text(
             'Removed Tools:',
             style: TextStyle(
-                fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.white),
+                fontSize: 14.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
           ),
           const SizedBox(height: 8),
           ...removedTools.map((tool) => Text(
@@ -182,7 +187,8 @@ class _AdminInspectWorkOrderScreenState extends State<AdminInspectWorkOrderScree
                   tool: tools,
                   imagePath: "",
                 );
-                await updateWorkOrderIfDifferent(widget.workOrder, newWorkOrder);
+                await updateWorkOrderIfDifferent(
+                    widget.workOrder, newWorkOrder);
                 if (context.mounted) {
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
@@ -238,7 +244,6 @@ class _AdminInspectWorkOrderScreenState extends State<AdminInspectWorkOrderScree
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 20),
                     _buildSectionHeader('Work Order Information'),
                     _buildTextField(
                       controller: idController,
@@ -279,7 +284,11 @@ class _AdminInspectWorkOrderScreenState extends State<AdminInspectWorkOrderScree
     );
   }
 
-  Widget _buildTextField({required TextEditingController controller, required String label, required String hintText,}) {
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hintText,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -319,10 +328,8 @@ class _AdminInspectWorkOrderScreenState extends State<AdminInspectWorkOrderScree
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Tools:',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
+          const Text('Tools:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           ListView.builder(
             shrinkWrap: true,
@@ -348,14 +355,20 @@ class _AdminInspectWorkOrderScreenState extends State<AdminInspectWorkOrderScree
             },
           ),
           const SizedBox(height: 10),
-          TextFormField(
-            controller: newToolController,
-            decoration: InputDecoration(
-              border: const OutlineInputBorder(),
-              hintText: 'Enter tool ID',
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.add, color: Colors.green),
-                onPressed: _addTool,
+          Padding(
+            padding: const EdgeInsets.only(left: 16), // Add left padding here
+            child: SizedBox(
+              width: 450, // Adjust this width to match the list items
+              child: TextFormField(
+                controller: newToolController,
+                decoration: InputDecoration(
+                  border: const UnderlineInputBorder(),
+                  hintText: 'Add Tool ID',
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.add, color: Colors.green),
+                    onPressed: _addTool,
+                  ),
+                ),
               ),
             ),
           ),
@@ -364,10 +377,14 @@ class _AdminInspectWorkOrderScreenState extends State<AdminInspectWorkOrderScree
     );
   }
 
-  Future<void> updateWorkOrderIfDifferent(WorkOrder oldWorkOrder, WorkOrder newWorkOrder) async {
+  Future<void> updateWorkOrderIfDifferent(
+      WorkOrder oldWorkOrder, WorkOrder newWorkOrder) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     if (oldWorkOrder.toJson() != newWorkOrder.toJson()) {
-      await firestore.collection('WorkOrders').doc(newWorkOrder.id).set(newWorkOrder.toJson());
+      await firestore
+          .collection('WorkOrders')
+          .doc(newWorkOrder.id)
+          .set(newWorkOrder.toJson());
     }
   }
 }

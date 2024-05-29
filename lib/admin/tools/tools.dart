@@ -20,6 +20,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
   TextEditingController searchController = TextEditingController();
   late Future<List<Tool>> filteredTools;
   late List<Color> shuffledColors;
+  final ValueNotifier<int> toolCountNotifier = ValueNotifier<int>(0);
 
   final List<Color> cncShopColors = [
     const Color(0xFF2E7D32), // Green
@@ -53,12 +54,14 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
     filteredTools = tools!;
     shuffledColors = getRandomlyAssortedColors(cncShopColors);
     searchController.addListener(_onSearchChanged);
+    updateToolCount();
   }
 
   @override
   void dispose() {
     searchController.removeListener(_onSearchChanged);
     searchController.dispose();
+    toolCountNotifier.dispose();
     super.dispose();
   }
 
@@ -66,7 +69,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
     EasyDebounce.debounce(
       'search-debouncer', // <-- An identifier for this particular debouncer
       const Duration(milliseconds: 500), // <-- The debounce duration
-      () => filterSearchResults(searchController.text), // <-- The target method
+          () => filterSearchResults(searchController.text), // <-- The target method
     );
   }
 
@@ -74,13 +77,20 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
     setState(() {
       if (query.isNotEmpty) {
         filteredTools = tools!.then((allTools) => allTools.where((tool) {
-              return tool.status.toLowerCase().contains(query.toLowerCase()) ||
-                  tool.gageID.toLowerCase().contains(query.toLowerCase()) ||
-                  tool.checkedOutTo.toLowerCase().contains(query.toLowerCase());
-            }).toList());
+          return tool.status.toLowerCase().contains(query.toLowerCase()) ||
+              tool.gageID.toLowerCase().contains(query.toLowerCase()) || tool.gageType.toLowerCase().contains(query.toLowerCase()) ||
+              tool.checkedOutTo.toLowerCase().contains(query.toLowerCase());
+        }).toList());
       } else {
         filteredTools = tools!;
       }
+    });
+    updateToolCount();
+  }
+
+  void updateToolCount() {
+    filteredTools.then((list) {
+      toolCountNotifier.value = list.length;
     });
   }
 
@@ -90,6 +100,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
       filteredTools = tools!;
       shuffledColors = getRandomlyAssortedColors(cncShopColors);
     });
+    updateToolCount();
   }
 
   @override
@@ -126,13 +137,31 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
               controller: searchController,
               decoration: const InputDecoration(
                 labelText: "Search",
-                hintText: "Search by user, tool ID, or tool status",
+                hintText: "Search by user, tool ID, tool status, or tool type",
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(25.0)),
                 ),
               ),
             ),
+          ),
+          ValueListenableBuilder<int>(
+            valueListenable: toolCountNotifier,
+            builder: (context, count, child) {
+              return Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Number of Results: $count',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
           Expanded(
             child: RefreshIndicator(
@@ -167,7 +196,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                       itemCount: tools.length,
                       itemBuilder: (context, index) {
                         Color tileColor =
-                            shuffledColors[index % shuffledColors.length];
+                        shuffledColors[index % shuffledColors.length];
                         return Card(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -177,7 +206,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                           child: ListTile(
                             trailing: IconButton(
                               icon:
-                                  const Icon(Icons.delete, color: Colors.black),
+                              const Icon(Icons.delete, color: Colors.black),
                               onPressed: () => onDeletePressed(tools[index]),
                             ),
                             title: Text(
@@ -263,7 +292,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
             ],
           ),
           content:
-              const Text('Are you sure you want to log out of your account?'),
+          const Text('Are you sure you want to log out of your account?'),
           actions: <Widget>[
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(false),

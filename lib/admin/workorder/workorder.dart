@@ -21,6 +21,7 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
   TextEditingController searchController = TextEditingController();
   late Future<List<WorkOrder>> filteredWorkOrders;
   late List<Color> shuffledColors;
+  final ValueNotifier<int> workOrderCountNotifier = ValueNotifier<int>(0);
 
   final List<Color> cncShopColors = [
     const Color(0xFF2E7D32), // Green
@@ -54,12 +55,14 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
     filteredWorkOrders = workOrders!;
     shuffledColors = getRandomlyAssortedColors(cncShopColors);
     searchController.addListener(_onSearchChanged);
+    updateWorkOrderCount();
   }
 
   @override
   void dispose() {
     searchController.removeListener(_onSearchChanged);
     searchController.dispose();
+    workOrderCountNotifier.dispose();
     super.dispose();
   }
 
@@ -82,6 +85,13 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
         filteredWorkOrders = workOrders!;
       }
     });
+    updateWorkOrderCount();
+  }
+
+  void updateWorkOrderCount() {
+    filteredWorkOrders.then((list) {
+      workOrderCountNotifier.value = list.length;
+    });
   }
 
   Future<void> refreshWorkOrdersList() async {
@@ -90,6 +100,7 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
       filteredWorkOrders = workOrders!;
       shuffledColors = getRandomlyAssortedColors(cncShopColors);
     });
+    updateWorkOrderCount();
   }
 
   Future<List<WorkOrder>> getAllWorkOrders() async {
@@ -122,6 +133,24 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
                 ),
               ),
             ),
+          ),
+          ValueListenableBuilder<int>(
+            valueListenable: workOrderCountNotifier,
+            builder: (context, count, child) {
+              return Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Number of Results: $count',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
           Expanded(
             child: RefreshIndicator(
