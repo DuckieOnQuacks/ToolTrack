@@ -4,8 +4,8 @@ import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../backend/camera_manager.dart';
-import '../classes/tool_class.dart';
+import '../../backend/camera_manager.dart';
+import '../../classes/tool_class.dart';
 
 class AdminInspectToolScreen extends StatefulWidget {
   final Tool tool;
@@ -47,6 +47,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
   bool isLoading = false;
   String? imageUrl;
   String statusValue = 'Available';
+  bool isModeled = false;
 
   @override
   void initState() {
@@ -71,6 +72,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     atMachineController.text = widget.tool.atMachine;
     dateCheckedOutController.text = widget.tool.dateCheckedOut;
     imagePath = widget.tool.imagePath;
+    isModeled = widget.tool.modeled;
     _fetchImageUrl();
   }
 
@@ -89,8 +91,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     try {
       DocumentSnapshot toolSnapshot = await FirebaseFirestore.instance
           .collection('tools')
-          .doc(widget
-          .tool.gageID) // Assuming 'gageID' is a field in your Tool class
+          .doc(widget.tool.gageID)
           .get();
       if (toolSnapshot.exists) {
         setState(() {
@@ -114,6 +115,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     dateCreatedController.dispose();
     calibrationDueController.dispose();
     lastCalibratedController.dispose();
+    atMachineController.dispose();
     super.dispose();
   }
 
@@ -197,7 +199,6 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
   }
 
   void _confirmChanges(BuildContext context) {
-    // Compare current values with original values and create a list of changes
     List<Widget> changesWidgets = [];
     if (gageIDController.text != widget.tool.gageID) {
       changesWidgets.add(RichText(
@@ -242,7 +243,8 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             children: <TextSpan>[
               TextSpan(
                   text:
-                  '${widget.tool.gageDesc} -> ${gageDescriptionController.text}',
+                  '${widget.tool.gageDesc} -> ${gageDescriptionController
+                      .text}',
                   style: const TextStyle(fontWeight: FontWeight.normal)),
             ]),
       ));
@@ -259,7 +261,8 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             children: <TextSpan>[
               TextSpan(
                   text:
-                  '${widget.tool.checkedOutTo} -> ${checkedOutToController.text}',
+                  '${widget.tool.checkedOutTo} -> ${checkedOutToController
+                      .text}',
                   style: const TextStyle(fontWeight: FontWeight.normal)),
             ]),
       ));
@@ -276,7 +279,8 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             children: <TextSpan>[
               TextSpan(
                   text:
-                  '${widget.tool.lastCheckedOutBy} -> ${lastCheckedOutController.text}',
+                  '${widget.tool.lastCheckedOutBy} -> ${lastCheckedOutController
+                      .text}',
                   style: const TextStyle(fontWeight: FontWeight.normal)),
             ]),
       ));
@@ -307,7 +311,8 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             children: <TextSpan>[
               TextSpan(
                   text:
-                  '${widget.tool.creationDate} -> ${dateCreatedController.text}',
+                  '${widget.tool.creationDate} -> ${dateCreatedController
+                      .text}',
                   style: const TextStyle(fontWeight: FontWeight.normal)),
             ]),
       ));
@@ -323,7 +328,8 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             children: <TextSpan>[
               TextSpan(
                   text:
-                  '${widget.tool.calibrationNextDue} -> ${calibrationDueController.text}',
+                  '${widget.tool
+                      .calibrationNextDue} -> ${calibrationDueController.text}',
                   style: const TextStyle(fontWeight: FontWeight.normal)),
             ]),
       ));
@@ -339,7 +345,8 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             children: <TextSpan>[
               TextSpan(
                   text:
-                  '${widget.tool.calibrationLast} -> ${lastCalibratedController.text}',
+                  '${widget.tool.calibrationLast} -> ${lastCalibratedController
+                      .text}',
                   style: const TextStyle(fontWeight: FontWeight.normal)),
             ]),
       ));
@@ -371,7 +378,23 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             children: <TextSpan>[
               TextSpan(
                   text:
-                  '${widget.tool.dateCheckedOut} -> ${dateCheckedOutController.text}',
+                  '${widget.tool.dateCheckedOut} -> ${dateCheckedOutController
+                      .text}',
+                  style: const TextStyle(fontWeight: FontWeight.normal)),
+            ]),
+      ));
+    }
+    if (isModeled != widget.tool.modeled) {
+      changesWidgets.add(RichText(
+        text: TextSpan(
+            text: 'Modeled: ',
+            style: const TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
+            children: <TextSpan>[
+              TextSpan(
+                  text: '${widget.tool.modeled} -> $isModeled',
                   style: const TextStyle(fontWeight: FontWeight.normal)),
             ]),
       ));
@@ -455,6 +478,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                   atMachine: atMachineController.text,
                   dateCheckedOut: dateCheckedOutController.text,
                   checkedOutTo: checkedOutToController.text,
+                  modeled: isModeled,
                 );
                 if ((imagePath != widget.tool.imagePath) &&
                     widget.tool.imagePath != "") {
@@ -497,48 +521,65 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
           ),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: FutureBuilder(
-                    future: _loadImage(imagePath),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<ImageProvider<Object>> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return const Center(child: Icon(Icons.error));
-                      } else {
-                        return Image(
-                          image: snapshot.data!,
-                          fit: BoxFit.cover,
-                        );
-                      }
-                    },
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.orange[800],
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: Text(
+                      'Tool ID: ${widget.tool.gageID}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    child: const Text('Close'),
                   ),
-                ),
-              ],
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: FutureBuilder(
+                      future: _loadImage(imagePath),
+                      builder: (BuildContext context, AsyncSnapshot<ImageProvider<Object>> snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return const Center(child: Icon(Icons.error));
+                        } else {
+                          return ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: MediaQuery.of(context).size.height * 0.5,
+                            ),
+                            child: Image(
+                              image: snapshot.data!,
+                              fit: BoxFit.cover,
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.orange[800],
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text('Close'),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -563,7 +604,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Tool Details'),
+        title: const Text('Edit/View Tool Details'),
       ),
       body: Stack(
         children: [
@@ -598,35 +639,43 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                       ],
                     ),
                     _buildSectionHeader('Tool Information'),
+                    _buildModeledCheckbox(),
                     _buildTextField(
                       controller: gageIDController,
-                      label: 'Enter Gage ID: ',
+                      label: 'Tool ID: ',
                       hintText: 'e.g. 00001',
-                    ),
-                    _buildDateField(
-                      controller: dateCreatedController,
-                      label: 'Enter Creation Date: ',
-                      hintText: 'MM/DD/YYYY',
                     ),
                     _buildTextField(
                       controller: gageDescriptionController,
-                      label: 'Enter Gage Description: ',
+                      label: 'Tool Description: ',
                       hintText: 'e.g. 2-3" MITUTOYO MICROMETER',
                     ),
                     _buildTextField(
                       controller: gageTypeController,
-                      label: 'Gage Type: ',
+                      label: 'Tool Type: ',
                       hintText: 'Enter In Gage Type',
                     ),
+                    _buildDateField(
+                      controller: dateCreatedController,
+                      label: 'Tool Creation Date: ',
+                      hintText: 'MM/DD/YYYY',
+                    ),
+                    const SizedBox(height: 20),
+                    _buildSectionHeader('Status/Location'),
                     _buildTextField(
                       controller: checkedOutToController,
                       label: 'Checked Out To: ',
                       hintText: 'i.e. Jack',
                     ),
-                    _buildDateFieldWithClear(
-                      controller: dateCheckedOutController,
-                      label: 'Date Checked Out: ',
-                      hintText: 'MM/DD/YYYY',
+                    _buildTextField(
+                      controller: lastCheckedOutController,
+                      label: 'Last Checked Out To: ',
+                      hintText: 'i.e. Joey',
+                    ),
+                    _buildTextField(
+                      controller: atMachineController,
+                      label: 'At Machine: ',
+                      hintText: 'i.e. 1234',
                     ),
                     _buildDropdownField(
                       controller: statusController,
@@ -634,21 +683,21 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                       hintText: 'i.e. Available',
                       items: ['Available', "Checked Out"],
                     ),
-                    _buildTextField(
-                      controller: lastCheckedOutController,
-                      label: 'Last Checked Out To: ',
-                      hintText: 'i.e. Joey',
+                    _buildDateFieldWithClear(
+                      controller: dateCheckedOutController,
+                      label: 'Date Checked Out: ',
+                      hintText: 'MM/DD/YYYY',
                     ),
                     const SizedBox(height: 20),
                     _buildSectionHeader('Calibration Information'),
                     _buildDateField(
                       controller: calibrationDueController,
-                      label: 'Calibration Next Due: ',
+                      label: 'Next Due: ',
                       hintText: 'MM/DD/YYYY',
                     ),
                     _buildDateField(
                       controller: lastCalibratedController,
-                      label: 'Calibration Last Completed: ',
+                      label: 'Last Completed: ',
                       hintText: 'MM/DD/YYYY',
                     ),
                     const SizedBox(height: 20),
@@ -850,6 +899,43 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
         title,
         style: const TextStyle(
             fontSize: 22, fontWeight: FontWeight.bold, color: Colors.orange),
+      ),
+    );
+  }
+
+  Widget _buildModeledCheckbox() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Transform.scale(
+            scale: 1.5,
+            child: Checkbox(
+              value: isModeled,
+              onChanged: (bool? value) {
+                setState(() {
+                  isModeled = value ?? false;
+                });
+              },
+              activeColor: Colors.orange[800],
+              checkColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+           const Text(
+            'Modeled',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ],
       ),
     );
   }

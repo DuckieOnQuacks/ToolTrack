@@ -3,22 +3,23 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:easy_debounce/easy_debounce.dart';
-import '../classes/tool_class.dart';
-import '../login.dart';
-import 'add_tool.dart';
-import 'edit_tool.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+import 'package:vineburgapp/admin/workorder/edit_workorder.dart';
+import '../../classes/workorder_class.dart';
+import '../../login.dart';
 
-class AdminToolsPage extends StatefulWidget {
-  const AdminToolsPage({super.key});
+class AdminWorkOrdersPage extends StatefulWidget {
+  const AdminWorkOrdersPage({super.key});
 
   @override
-  State<AdminToolsPage> createState() => _AdminToolsPageState();
+  State<AdminWorkOrdersPage> createState() => _AdminWorkOrdersPageState();
 }
 
-class _AdminToolsPageState extends State<AdminToolsPage> {
-  Future<List<Tool>>? tools;
+class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
+  Future<List<WorkOrder>>? workOrders;
   TextEditingController searchController = TextEditingController();
-  late Future<List<Tool>> filteredTools;
+  late Future<List<WorkOrder>> filteredWorkOrders;
   late List<Color> shuffledColors;
 
   final List<Color> cncShopColors = [
@@ -49,8 +50,8 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
   @override
   void initState() {
     super.initState();
-    tools = getAllTools();
-    filteredTools = tools!;
+    workOrders = getAllWorkOrders();
+    filteredWorkOrders = workOrders!;
     shuffledColors = getRandomlyAssortedColors(cncShopColors);
     searchController.addListener(_onSearchChanged);
   }
@@ -66,57 +67,45 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
     EasyDebounce.debounce(
       'search-debouncer', // <-- An identifier for this particular debouncer
       const Duration(milliseconds: 500), // <-- The debounce duration
-      () => filterSearchResults(searchController.text), // <-- The target method
+          () => filterSearchResults(searchController.text), // <-- The target method
     );
   }
 
   void filterSearchResults(String query) {
     setState(() {
       if (query.isNotEmpty) {
-        filteredTools = tools!.then((allTools) => allTools.where((tool) {
-              return tool.status.toLowerCase().contains(query.toLowerCase()) ||
-                  tool.gageID.toLowerCase().contains(query.toLowerCase()) ||
-                  tool.checkedOutTo.toLowerCase().contains(query.toLowerCase());
-            }).toList());
+        filteredWorkOrders = workOrders!.then((allWorkOrders) => allWorkOrders.where((workOrder) {
+          return workOrder.id.toLowerCase().contains(query.toLowerCase()) ||
+              workOrder.enteredBy.toLowerCase().contains(query.toLowerCase());
+        }).toList());
       } else {
-        filteredTools = tools!;
+        filteredWorkOrders = workOrders!;
       }
     });
   }
 
-  Future<void> refreshToolsList() async {
+  Future<void> refreshWorkOrdersList() async {
     setState(() {
-      tools = getAllTools();
-      filteredTools = tools!;
+      workOrders = getAllWorkOrders();
+      filteredWorkOrders = workOrders!;
       shuffledColors = getRandomlyAssortedColors(cncShopColors);
     });
+  }
+
+  Future<List<WorkOrder>> getAllWorkOrders() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    QuerySnapshot snapshot = await firestore.collection('WorkOrders').get();
+    return snapshot.docs.map((doc) => WorkOrder.fromJson(doc.data() as Map<String, dynamic>)).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tool Search', style: TextStyle(color: Colors.white)),
+        title: const Text('Work Order Search', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900],
         automaticallyImplyLeading: false,
         centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.add, color: Colors.white),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (context) => const AdminAddToolPage()),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () {
-              showLogoutConfirmationDialog(context);
-            },
-          ),
-        ],
       ),
       body: Column(
         children: [
@@ -126,7 +115,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
               controller: searchController,
               decoration: const InputDecoration(
                 labelText: "Search",
-                hintText: "Search by user, tool ID, or tool status",
+                hintText: "Search by ID or entered by",
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(25.0)),
@@ -136,9 +125,9 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
           ),
           Expanded(
             child: RefreshIndicator(
-              onRefresh: refreshToolsList,
-              child: FutureBuilder<List<Tool>>(
-                future: filteredTools,
+              onRefresh: refreshWorkOrdersList,
+              child: FutureBuilder<List<WorkOrder>>(
+                future: filteredWorkOrders,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
@@ -149,11 +138,11 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                       ),
                     );
                   } else if (snapshot.hasData) {
-                    final tools = snapshot.data!;
-                    if (tools.isEmpty) {
+                    final workOrders = snapshot.data!;
+                    if (workOrders.isEmpty) {
                       return const Center(
                         child: Text(
-                          "No Tools Found",
+                          "No Work Orders Found",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.normal,
@@ -164,10 +153,9 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                     }
                     return ListView.builder(
                       padding: const EdgeInsets.all(10),
-                      itemCount: tools.length,
+                      itemCount: workOrders.length,
                       itemBuilder: (context, index) {
-                        Color tileColor =
-                            shuffledColors[index % shuffledColors.length];
+                        Color tileColor = shuffledColors[index % shuffledColors.length];
                         return Card(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -176,12 +164,11 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                           color: tileColor,
                           child: ListTile(
                             trailing: IconButton(
-                              icon:
-                                  const Icon(Icons.delete, color: Colors.black),
-                              onPressed: () => onDeletePressed(tools[index]),
+                              icon: const Icon(Icons.delete, color: Colors.black),
+                              onPressed: () => onDeletePressed(workOrders[index]),
                             ),
                             title: Text(
-                              tools[index].gageID,
+                              workOrders[index].id,
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -189,18 +176,13 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                               ),
                             ),
                             subtitle: Text(
-                              'Type: ${tools[index].gageType}',
+                              'Entered by: ${workOrders[index].enteredBy}',
                               style: const TextStyle(color: Colors.black87),
                             ),
                             onTap: () async {
-                              var result = await Navigator.of(context)
-                                  .push(MaterialPageRoute(
-                                builder: (context) =>
-                                    AdminInspectToolScreen(tool: tools[index]),
+                              await Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => AdminInspectWorkOrderScreen(workOrder: workOrders[index]),
                               ));
-                              if (result == true) {
-                                refreshToolsList();
-                              }
                             },
                           ),
                         );
@@ -224,14 +206,14 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
     );
   }
 
-  void onDeletePressed(Tool tool) async {
+  void onDeletePressed(WorkOrder workOrder) async {
     bool? result = await showDialog<bool>(
       context: context,
-      builder: (BuildContext context) => DeleteToolDialog(tool: tool),
+      builder: (BuildContext context) => DeleteWorkOrderDialog(workOrder: workOrder),
     );
     if (result != null && result) {
-      // Implement tool deletion logic here
-      refreshToolsList();
+      // Implement work order deletion logic here
+      refreshWorkOrdersList();
     }
   }
 
@@ -262,8 +244,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
               ),
             ],
           ),
-          content:
-              const Text('Are you sure you want to log out of your account?'),
+          content: const Text('Are you sure you want to log out of your account?'),
           actions: <Widget>[
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -295,10 +276,10 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
   }
 }
 
-class DeleteToolDialog extends StatelessWidget {
-  final Tool tool;
+class DeleteWorkOrderDialog extends StatelessWidget {
+  final WorkOrder workOrder;
 
-  const DeleteToolDialog({super.key, required this.tool});
+  const DeleteWorkOrderDialog({super.key, required this.workOrder});
 
   @override
   Widget build(BuildContext context) {
@@ -326,7 +307,7 @@ class DeleteToolDialog extends StatelessWidget {
         ],
       ),
       content: const Text(
-          'Are you sure you want to remove this tool from the database?'),
+          'Are you sure you want to remove this work order from the database?'),
       actions: <Widget>[
         ElevatedButton(
           onPressed: () => Navigator.of(context).pop(false),
@@ -338,8 +319,8 @@ class DeleteToolDialog extends StatelessWidget {
         ),
         ElevatedButton(
           onPressed: () async {
-            // Implement tool deletion logic here
-            deleteTool(tool);
+            // Implement work order deletion logic here
+            deleteWorkOrder(workOrder);
             Navigator.of(context).pop(true);
           },
           style: ElevatedButton.styleFrom(
@@ -350,5 +331,19 @@ class DeleteToolDialog extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> deleteWorkOrder(WorkOrder workOrder) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    try {
+      await firestore.collection('WorkOrders').doc(workOrder.id).delete();
+      if (kDebugMode) {
+        print('Work order ${workOrder.id} deleted successfully.');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error deleting work order ${workOrder.id}: $e');
+      }
+    }
   }
 }

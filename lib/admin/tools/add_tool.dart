@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:intl/intl.dart';
-import '../classes/tool_class.dart';
+import '../../classes/tool_class.dart';
 
 class AdminAddToolPage extends StatefulWidget {
   const AdminAddToolPage({super.key});

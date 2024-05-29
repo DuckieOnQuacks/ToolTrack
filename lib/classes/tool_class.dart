@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 
 class Tool {
   final String calibrationFreq;
@@ -19,6 +20,7 @@ class Tool {
   final String atMachine;
   final String dateCheckedOut;
   final String checkedOutTo;
+  final bool modeled;
 
   Tool({
     required this.calibrationFreq,
@@ -35,6 +37,7 @@ class Tool {
     required this.atMachine,
     required this.dateCheckedOut,
     required this.checkedOutTo,
+    required this.modeled,
   });
 
   // Factory method to create a Tool object from JSON data
@@ -50,9 +53,10 @@ class Tool {
         dayRemain: json['Days Remaining Until Calibration'] as String? ?? '',
         status: json['Status'] as String? ?? '',
         lastCheckedOutBy: json['Last Checked Out By'] as String? ?? '',
-        atMachine: json["Located At Machine"] as String? ?? '',
+        atMachine: json["At Machine"] as String? ?? '',
         dateCheckedOut: json["Date Checked Out"] as String? ?? '',
         checkedOutTo: json["Checked Out To"] as String? ?? '',
+        modeled: json["modeled"],
       );
   // Method to convert a Machine object to JSON data
   Map<String, dynamic> toJson() => {
@@ -67,8 +71,9 @@ class Tool {
         'Days Remaining Until Calibration': dayRemain,
         'Status': status,
         'Last Checked Out By': lastCheckedOutBy,
-        'Located At Machine': atMachine,
-        'Checked Out To': checkedOutTo
+        'At Machine': atMachine,
+        'Checked Out To': checkedOutTo,
+        'modeled': modeled,
       };
 
   // Function to fetch image URL from Firebase Storage
@@ -122,6 +127,7 @@ Future<void> addToolWithParams(
     atMachine: "",
     dateCheckedOut: "",
     checkedOutTo: "",
+    modeled: false
   );
   final json = orderTable.toJson();
   await docOrder.set(json); // Create document and write data to Firestore.
@@ -136,14 +142,14 @@ Future<void> checkoutTool(
     final toolDoc = toolsCollection.doc(toolId);
     final docSnapshot = await toolDoc.get();
     DateTime now = DateTime.now();
-    DateTime currentDate = DateTime(now.year, now.month, now.day);
+    String formattedDate = DateFormat('MM/dd/yyyy').format(now);
 
     if (docSnapshot.exists) {
       // Update the status field of the document.
       await toolDoc.update({
         'Status': status,
         'Checked Out To': userWhoCheckedOut,
-        'Date Checked Out': currentDate.toString(),
+        'Date Checked Out': formattedDate.toString(),
         'At Machine': atMachine,
       });
       if (kDebugMode) {
@@ -376,6 +382,7 @@ Future<String?> uploadImageToStorage(String filePath, String gageID) async {
 /// Updates a tool in the Firestore database if any of its fields have changed.
 /// Updates a tool in the Firestore database if any of its fields have changed.
 /// If the gageID has changed, it deletes the old tool and creates a new tool with the new ID.
+
 Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
   final toolsCollection = FirebaseFirestore.instance.collection('Tools');
   final toolDoc = toolsCollection.doc(oldTool.gageID);
@@ -394,7 +401,7 @@ Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
       String? newImageUrl;
       if (oldTool.imagePath != newTool.imagePath) {
         newImageUrl =
-            await uploadImageToStorage(newTool.imagePath, newTool.gageID);
+        await uploadImageToStorage(newTool.imagePath, newTool.gageID);
       }
       final newToolData = Tool(
         calibrationFreq: newTool.calibrationFreq.isNotEmpty
@@ -411,10 +418,10 @@ Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
             : oldTool.creationDate,
         gageID: newTool.gageID,
         gageType:
-            newTool.gageType.isNotEmpty ? newTool.gageType : oldTool.gageType,
+        newTool.gageType.isNotEmpty ? newTool.gageType : oldTool.gageType,
         imagePath: newImageUrl ?? oldTool.imagePath,
         gageDesc:
-            newTool.gageDesc.isNotEmpty ? newTool.gageDesc : oldTool.gageDesc,
+        newTool.gageDesc.isNotEmpty ? newTool.gageDesc : oldTool.gageDesc,
         dayRemain: newTool.dayRemain.isNotEmpty
             ? newTool.dayRemain
             : oldTool.dayRemain,
@@ -431,6 +438,9 @@ Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
         checkedOutTo: newTool.checkedOutTo.isNotEmpty
             ? newTool.checkedOutTo
             : oldTool.checkedOutTo,
+        modeled: newTool.modeled
+            ? newTool.modeled
+            : oldTool.modeled,
       ).toJson();
 
       await newToolDoc.set(newToolData);
@@ -464,7 +474,7 @@ Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
   }
   if (oldTool.imagePath != newTool.imagePath) {
     String? newImageUrl =
-        await uploadImageToStorage(newTool.imagePath, oldTool.gageID);
+    await uploadImageToStorage(newTool.imagePath, oldTool.gageID);
     if (newImageUrl != null) {
       updates['Tool Image Path'] = newImageUrl;
     }
@@ -482,13 +492,16 @@ Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
     updates['Last Checked Out By'] = newTool.lastCheckedOutBy;
   }
   if (oldTool.atMachine != newTool.atMachine) {
-    updates['Located At Machine'] = newTool.atMachine;
+    updates['At Machine'] = newTool.atMachine;
   }
   if (oldTool.dateCheckedOut != newTool.dateCheckedOut) {
     updates['Date Checked Out'] = newTool.dateCheckedOut;
   }
   if (oldTool.checkedOutTo != newTool.checkedOutTo) {
     updates['Checked Out To'] = newTool.checkedOutTo;
+  }
+  if (oldTool.modeled != newTool.modeled) {
+    updates['modeled'] = newTool.modeled;
   }
 
   if (updates.isNotEmpty) {

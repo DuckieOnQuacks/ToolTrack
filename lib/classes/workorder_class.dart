@@ -163,7 +163,7 @@ Future<void> handleWorkOrderAndCheckout({
           print(
               'Error uploading image for work order $workorderId: $e');
         }
-        throw e; // Re-throw the error after logging
+        rethrow; // Re-throw the error after logging
       }
     }
 
@@ -188,7 +188,64 @@ Future<void> handleWorkOrderAndCheckout({
         print(
             'Error adding work order $workorderId to the WorkOrders collection: $e');
       }
-      throw e; // Re-throw the error after logging
+      rethrow; // Re-throw the error after logging
     }
+  }
+}
+Future<void> addToolToWorkOrder({
+  required String workOrderId,
+  required String toolId,
+}) async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  DocumentReference workOrderRef =
+  firestore.collection('WorkOrders').doc(workOrderId);
+
+  DocumentSnapshot workOrderSnapshot = await workOrderRef.get();
+
+  if (workOrderSnapshot.exists) {
+    // Work order exists, update the tools list
+    await workOrderRef.update({
+      'Tools': FieldValue.arrayUnion([toolId])
+    });
+
+    if (kDebugMode) {
+      print(
+          'Tool $toolId has been successfully added to work order $workOrderId.');
+    }
+  } else {
+    // The work order document does not exist
+    if (kDebugMode) {
+      print('The specified work order does not exist.');
+    }
+    throw Exception('The specified work order does not exist.');
+  }
+}
+
+Future<void> removeToolFromWorkOrder({
+  required String workOrderId,
+  required String toolId,
+}) async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  DocumentReference workOrderRef =
+  firestore.collection('WorkOrders').doc(workOrderId);
+
+  DocumentSnapshot workOrderSnapshot = await workOrderRef.get();
+
+  if (workOrderSnapshot.exists) {
+    // Work order exists, update the tools list
+    await workOrderRef.update({
+      'Tools': FieldValue.arrayRemove([toolId])
+    });
+
+    if (kDebugMode) {
+      print(
+          'Tool $toolId has been successfully removed from work order $workOrderId.');
+    }
+  } else {
+    // The work order document does not exist
+    if (kDebugMode) {
+      print('The specified work order does not exist.');
+    }
+    throw Exception('The specified work order does not exist.');
   }
 }

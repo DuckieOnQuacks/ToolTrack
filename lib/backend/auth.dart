@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:vineburgapp/user/home.dart';
-import '../admin/tools.dart';
+import '../admin/bottom_bar.dart';
 import '../login.dart';
 
 /*
@@ -23,7 +23,7 @@ class AuthPage extends StatelessWidget {
           if (snapshot.hasData) {
             // Check if the signed-in user is an admin
             if (snapshot.data!.email == 'admin@vineburg.com') {
-              return const AdminToolsPage();
+              return const AdminBottomBar();
             } else {
               return const HomePage();
             }
