@@ -79,7 +79,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
         filteredTools = tools!.then((allTools) => allTools.where((tool) {
           return tool.status.toLowerCase().contains(query.toLowerCase()) ||
               tool.gageID.toLowerCase().contains(query.toLowerCase()) || tool.gageType.toLowerCase().contains(query.toLowerCase()) ||
-              tool.checkedOutTo.toLowerCase().contains(query.toLowerCase());
+              tool.checkedOutTo.toLowerCase().contains(query.toLowerCase()) || tool.gageDesc.toLowerCase().contains(query.toLowerCase());
         }).toList());
       } else {
         filteredTools = tools!;
@@ -137,7 +137,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
               controller: searchController,
               decoration: const InputDecoration(
                 labelText: "Search",
-                hintText: "Search by user, tool ID, tool status, or tool type",
+                hintText: "Search by user, tool ID, tool status, tool type, or tool description",
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(25.0)),
@@ -225,7 +225,9 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                               var result = await Navigator.of(context)
                                   .push(MaterialPageRoute(
                                 builder: (context) =>
-                                    AdminInspectToolScreen(tool: tools[index]),
+                                    AdminInspectToolScreen(
+                                      tool: tools[index],
+                                    ),
                               ));
                               if (result == true) {
                                 refreshToolsList();

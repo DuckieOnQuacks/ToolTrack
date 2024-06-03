@@ -1,8 +1,9 @@
-import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vineburgapp/classes/tool_class.dart';
 import 'package:vineburgapp/classes/workorder_class.dart';
+
+import '../backend/message_helper.dart';
 
 class CheckoutConfirmationPage extends StatefulWidget {
   final String workorderId;
@@ -26,16 +27,6 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _atMachineController = TextEditingController();
 
-  void showTopSnackBar(BuildContext context, String message, Color color) {
-    Flushbar(
-      message: message,
-      duration: const Duration(seconds: 4),
-      flushbarPosition: FlushbarPosition.TOP,
-      margin: const EdgeInsets.all(8),
-      borderRadius: BorderRadius.circular(8),
-      backgroundColor: color,
-    ).show(context);
-  }
 
   void confirmCheckout() async {
     String name = _nameController.text.trim();

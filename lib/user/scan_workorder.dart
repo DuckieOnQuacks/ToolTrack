@@ -1,9 +1,9 @@
-import 'package:another_flushbar/flushbar.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:vineburgapp/user/scan_tool.dart';
 import '../backend/camera_manager.dart';
+import '../backend/message_helper.dart';
 
 class ScanWorkorderPage extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -65,7 +65,7 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
         setState(() {
           _isLoading = false;
         });
-        showTopSnackBar(context, "No barcode found, try again.");
+        showTopSnackBar(context, "Error: No barcode found, try again.", Colors.red);
       }
     } else {
       setState(() {
@@ -158,7 +158,7 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
                     MaterialPageRoute(builder: (context) => ScanToolPage(widget.cameras, workOrderId, '', widget.inOrOut)),
                   );
                 } else {
-                  showTopSnackBar(context, "Please enter a valid Workorder ID.");
+                  showTopSnackBar(context, "Error: Please enter a valid Workorder ID.", Colors.red);
                 }
               },
             ),
@@ -166,17 +166,6 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
         );
       },
     );
-  }
-
-  void showTopSnackBar(BuildContext context, String message) {
-    Flushbar(
-      message: message,
-      duration: const Duration(seconds: 3),
-      flushbarPosition: FlushbarPosition.TOP,
-      margin: const EdgeInsets.all(8),
-      borderRadius: BorderRadius.circular(8),
-      backgroundColor: Colors.red,
-    ).show(context);
   }
 
   void _toggleFlashMode() {

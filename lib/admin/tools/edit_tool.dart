@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'package:another_flushbar/flushbar.dart';
 import 'package:camera/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../backend/camera_manager.dart';
+import '../../backend/message_helper.dart';
 import '../../classes/tool_class.dart';
 
 class AdminInspectToolScreen extends StatefulWidget {
@@ -185,17 +185,6 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
       _flashMode == FlashMode.off ? FlashMode.torch : FlashMode.off;
       _cameraManager.controller?.setFlashMode(_flashMode);
     });
-  }
-
-  void showTopSnackBar(BuildContext context, String message, Color color) {
-    Flushbar(
-      message: message,
-      duration: const Duration(seconds: 3),
-      flushbarPosition: FlushbarPosition.TOP,
-      margin: const EdgeInsets.all(8),
-      borderRadius: BorderRadius.circular(8),
-      backgroundColor: color,
-    ).show(context);
   }
 
   void _confirmChanges(BuildContext context) {
@@ -487,8 +476,8 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                 // Implement save functionality here
                 await updateToolIfDifferent(widget.tool, newTool);
                 if (context.mounted) {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(true); // Return true to indicate changes
+                  Navigator.of(context).pop(true); // Return true to indicate changes
                   showTopSnackBar(
                       context, "Changes saved successfully", Colors.green);
                 }

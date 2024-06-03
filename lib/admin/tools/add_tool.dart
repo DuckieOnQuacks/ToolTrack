@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'package:another_flushbar/flushbar.dart';
 import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:intl/intl.dart';
+import '../../backend/message_helper.dart';
 import '../../classes/tool_class.dart';
 
 class AdminAddToolPage extends StatefulWidget {
@@ -190,7 +190,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) {
       // Show top snackbar warning if any required field is not filled
-      _showTopSnackBar(context, "Please fill in all required fields.");
+      showTopSnackBar(context, "Please fill in all required fields.", Colors.red);
       return;
     }
 
@@ -232,17 +232,6 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
         );
       },
     );
-  }
-
-  void _showTopSnackBar(BuildContext context, String message) {
-    Flushbar(
-      message: message,
-      duration: const Duration(seconds: 3),
-      flushbarPosition: FlushbarPosition.TOP,
-      margin: const EdgeInsets.all(8),
-      borderRadius: BorderRadius.circular(8),
-      backgroundColor: Colors.red,
-    ).show(context);
   }
 
   @override

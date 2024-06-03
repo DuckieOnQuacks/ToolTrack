@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:vineburgapp/classes/tool_class.dart';
 import '../login.dart';
 import 'scan_workorder.dart';
 

@@ -31,7 +31,7 @@ class _RegisterPageState extends State<RegisterPage> {
     if (passwordController.text.isEmpty ||
         confirmPassword.text.isEmpty ||
         firstName.text.isEmpty) {
-      showMessage(context, 'Notice', 'Please complete all fields.');
+      showTopSnackBar(context, 'Notice: Please complete all fields.', Colors.orange);
       return;
     }
 
@@ -56,16 +56,15 @@ class _RegisterPageState extends State<RegisterPage> {
           }));
         } else {
           // Show error message if password length is not greater than 6
-          showMessage(
-              context, 'Notice', 'Password must be at least 7 characters.');
+          showTopSnackBar(context, 'Notice: Password must be at least 7 characters.', Colors.orange);
         }
       } else {
         // Show error message if passwords don't match
-        showMessage(context, 'Notice', 'Passwords do not match!');
+        showTopSnackBar(context, 'Notice: Passwords do not match!', Colors.orange);
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
-        showMessage(context, 'Notice', 'Username already in use.');
+        showTopSnackBar(context, 'Notice: Email address already in use.', Colors.orange);
       } else {
         await showErrorMessage(e.code);
       }

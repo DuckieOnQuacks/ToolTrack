@@ -54,19 +54,19 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
     workOrders = getAllWorkOrders();
     filteredWorkOrders = workOrders!;
     shuffledColors = getRandomlyAssortedColors(cncShopColors);
-    searchController.addListener(_onSearchChanged);
+    searchController.addListener(onSearchChanged);
     updateWorkOrderCount();
   }
 
   @override
   void dispose() {
-    searchController.removeListener(_onSearchChanged);
+    searchController.removeListener(onSearchChanged);
     searchController.dispose();
     workOrderCountNotifier.dispose();
     super.dispose();
   }
 
-  void _onSearchChanged() {
+  void onSearchChanged() {
     EasyDebounce.debounce(
       'search-debouncer', // <-- An identifier for this particular debouncer
       const Duration(milliseconds: 500), // <-- The debounce duration

@@ -1,7 +1,7 @@
-import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../backend/message_helper.dart';
 import '../../classes/workorder_class.dart';
 
 class AdminInspectWorkOrderScreen extends StatefulWidget {
@@ -41,16 +41,6 @@ class _AdminInspectWorkOrderScreenState
     super.dispose();
   }
 
-  void showTopSnackBar(BuildContext context, String message, Color color) {
-    Flushbar(
-      message: message,
-      duration: const Duration(seconds: 3),
-      flushbarPosition: FlushbarPosition.TOP,
-      margin: const EdgeInsets.all(8),
-      borderRadius: BorderRadius.circular(8),
-      backgroundColor: color,
-    ).show(context);
-  }
 
   void _confirmChanges(BuildContext context) {
     List<Widget> changesWidgets = [];
