@@ -478,8 +478,8 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                 if (context.mounted) {
                   Navigator.of(context).pop(true); // Return true to indicate changes
                   Navigator.of(context).pop(true); // Return true to indicate changes
-                  showTopSnackBar(
-                      context, "Changes saved successfully", Colors.green);
+                  showTopSnackBar(context, "Changes Saved Successfully", Colors.green, title: "Success", icon: Icons.check_circle);
+
                 }
               },
               style: ElevatedButton.styleFrom(

@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:vineburgapp/admin/tools/tools.dart';
 import 'package:vineburgapp/register.dart';
 import 'package:vineburgapp/user/home.dart';
+import 'admin/bottom_bar.dart';
 import 'backend/message_helper.dart';
 
 class LoginPage extends StatefulWidget {
@@ -55,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute newPage;
 
         if (userEmail == 'admin@vineburg.com') {
-          newPage = MaterialPageRoute(builder: (context) => const AdminToolsPage());
+          newPage = MaterialPageRoute(builder: (context) => const AdminBottomBar());
         } else {
           newPage = MaterialPageRoute(builder: (context) => const HomePage());
         }

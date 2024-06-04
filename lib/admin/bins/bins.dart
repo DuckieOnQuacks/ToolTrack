@@ -3,25 +3,24 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:easy_debounce/easy_debounce.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
-import 'package:vineburgapp/admin/workorder/edit_workorder.dart';
-import '../../classes/workorder_class.dart';
+import 'package:vineburgapp/admin/bins/add_bin.dart';
+import 'package:vineburgapp/admin/bins/edit_bin.dart';
+import '../../classes/bin_class.dart';
 import '../../login.dart';
 
-class AdminWorkOrdersPage extends StatefulWidget {
-  const AdminWorkOrdersPage({super.key});
+class AdminBinsPage extends StatefulWidget {
+  const AdminBinsPage({super.key});
 
   @override
-  State<AdminWorkOrdersPage> createState() => _AdminWorkOrdersPageState();
+  State<AdminBinsPage> createState() => _AdminBinsPageState();
 }
 
-class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
-  Future<List<WorkOrder>>? workOrders;
+class _AdminBinsPageState extends State<AdminBinsPage> {
+  Future<List<Bin>>? bins;
   TextEditingController searchController = TextEditingController();
-  late Future<List<WorkOrder>> filteredWorkOrders;
+  late Future<List<Bin>> filteredBins;
   late List<Color> shuffledColors;
-  final ValueNotifier<int> workOrderCountNotifier = ValueNotifier<int>(0);
+  final ValueNotifier<int> binCountNotifier = ValueNotifier<int>(0);
 
   final List<Color> cncShopColors = [
     const Color(0xFF2E7D32), // Green
@@ -51,22 +50,22 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
   @override
   void initState() {
     super.initState();
-    workOrders = getAllWorkOrders();
-    filteredWorkOrders = workOrders!;
+    bins = getAllBins();
+    filteredBins = bins!;
     shuffledColors = getRandomlyAssortedColors(cncShopColors);
-    searchController.addListener(onSearchChanged);
-    updateWorkOrderCount();
+    searchController.addListener(_onSearchChanged);
+    updateBinCount();
   }
 
   @override
   void dispose() {
-    searchController.removeListener(onSearchChanged);
+    searchController.removeListener(_onSearchChanged);
     searchController.dispose();
-    workOrderCountNotifier.dispose();
+    binCountNotifier.dispose();
     super.dispose();
   }
 
-  void onSearchChanged() {
+  void _onSearchChanged() {
     EasyDebounce.debounce(
       'search-debouncer', // <-- An identifier for this particular debouncer
       const Duration(milliseconds: 500), // <-- The debounce duration
@@ -77,46 +76,48 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
   void filterSearchResults(String query) {
     setState(() {
       if (query.isNotEmpty) {
-        filteredWorkOrders = workOrders!.then((allWorkOrders) => allWorkOrders.where((workOrder) {
-          return workOrder.id.toLowerCase().contains(query.toLowerCase()) ||
-              workOrder.enteredBy.toLowerCase().contains(query.toLowerCase());
+        filteredBins = bins!.then((allBins) => allBins.where((bin) {
+          return bin.originalName.toLowerCase().contains(query.toLowerCase()) ||
+              bin.location.toLowerCase().contains(query.toLowerCase());
         }).toList());
       } else {
-        filteredWorkOrders = workOrders!;
+        filteredBins = bins!;
       }
     });
-    updateWorkOrderCount();
+    updateBinCount();
   }
 
-  void updateWorkOrderCount() {
-    filteredWorkOrders.then((list) {
-      workOrderCountNotifier.value = list.length;
+  void updateBinCount() {
+    filteredBins.then((list) {
+      binCountNotifier.value = list.length;
     });
   }
 
-  Future<void> refreshWorkOrdersList() async {
+  Future<void> refreshBinsList() async {
     setState(() {
-      workOrders = getAllWorkOrders();
-      filteredWorkOrders = workOrders!;
+      bins = getAllBins();
+      filteredBins = bins!;
       shuffledColors = getRandomlyAssortedColors(cncShopColors);
     });
-    updateWorkOrderCount();
-  }
-
-  Future<List<WorkOrder>> getAllWorkOrders() async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    QuerySnapshot snapshot = await firestore.collection('WorkOrders').get();
-    return snapshot.docs.map((doc) => WorkOrder.fromJson(doc.data() as Map<String, dynamic>)).toList();
+    updateBinCount();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Work Order Search', style: TextStyle(color: Colors.white)),
+        title: const Text('Bin Search', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900],
         automaticallyImplyLeading: false,
         centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.add, color: Colors.white),
+            onPressed: () async {
+              await Navigator.of(context).push(MaterialPageRoute(builder: (context) =>const AdminAddBinPage()));
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -126,7 +127,7 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
               controller: searchController,
               decoration: const InputDecoration(
                 labelText: "Search",
-                hintText: "Search by ID or entered by",
+                hintText: "Search by bin name or location",
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(25.0)),
@@ -135,7 +136,7 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
             ),
           ),
           ValueListenableBuilder<int>(
-            valueListenable: workOrderCountNotifier,
+            valueListenable: binCountNotifier,
             builder: (context, count, child) {
               return Padding(
                 padding: const EdgeInsets.only(left: 16.0),
@@ -154,9 +155,9 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
           ),
           Expanded(
             child: RefreshIndicator(
-              onRefresh: refreshWorkOrdersList,
-              child: FutureBuilder<List<WorkOrder>>(
-                future: filteredWorkOrders,
+              onRefresh: refreshBinsList,
+              child: FutureBuilder<List<Bin>>(
+                future: filteredBins,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
@@ -167,11 +168,11 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
                       ),
                     );
                   } else if (snapshot.hasData) {
-                    final workOrders = snapshot.data!;
-                    if (workOrders.isEmpty) {
+                    final bins = snapshot.data!;
+                    if (bins.isEmpty) {
                       return const Center(
                         child: Text(
-                          "No Work Orders Found",
+                          "No Bins Found",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.normal,
@@ -182,9 +183,10 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
                     }
                     return ListView.builder(
                       padding: const EdgeInsets.all(10),
-                      itemCount: workOrders.length,
+                      itemCount: bins.length,
                       itemBuilder: (context, index) {
-                        Color tileColor = shuffledColors[index % shuffledColors.length];
+                        Color tileColor =
+                        shuffledColors[index % shuffledColors.length];
                         return Card(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -192,13 +194,14 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
                           elevation: 4,
                           color: tileColor,
                           child: ListTile(
-                            leading: const Icon(Icons.work, color: Colors.black),
+                            leading: const Icon(Icons.storage, color: Colors.black),
                             trailing: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.black),
-                              onPressed: () => onDeletePressed(workOrders[index]),
+                              icon:
+                              const Icon(Icons.delete, color: Colors.black),
+                              onPressed: () => onDeletePressed(bins[index]),
                             ),
                             title: Text(
-                              workOrders[index].id,
+                              bins[index].originalName,
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -206,13 +209,20 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
                               ),
                             ),
                             subtitle: Text(
-                              'Entered by: ${workOrders[index].enteredBy}',
+                              'Location: ${bins[index].location}',
                               style: const TextStyle(color: Colors.black87),
                             ),
                             onTap: () async {
-                              await Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => AdminInspectWorkOrderScreen(workOrder: workOrders[index]),
+                              var result = await Navigator.of(context)
+                                  .push(MaterialPageRoute(
+                                builder: (context) =>
+                                    AdminInspectBinScreen(
+                                      bin: bins[index],
+                                    ),
                               ));
+                              if (result == true) {
+                                refreshBinsList();
+                              }
                             },
                           ),
                         );
@@ -236,14 +246,14 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
     );
   }
 
-  void onDeletePressed(WorkOrder workOrder) async {
+  void onDeletePressed(Bin bin) async {
     bool? result = await showDialog<bool>(
       context: context,
-      builder: (BuildContext context) => DeleteWorkOrderDialog(workOrder: workOrder),
+      builder: (BuildContext context) => DeleteBinDialog(bin: bin),
     );
     if (result != null && result) {
-      // Implement work order deletion logic here
-      refreshWorkOrdersList();
+      // Implement bin deletion logic here
+      refreshBinsList();
     }
   }
 
@@ -274,7 +284,8 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
               ),
             ],
           ),
-          content: const Text('Are you sure you want to log out of your account?'),
+          content:
+          const Text('Are you sure you want to log out of your account?'),
           actions: <Widget>[
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -306,10 +317,10 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
   }
 }
 
-class DeleteWorkOrderDialog extends StatelessWidget {
-  final WorkOrder workOrder;
+class DeleteBinDialog extends StatelessWidget {
+  final Bin bin;
 
-  const DeleteWorkOrderDialog({super.key, required this.workOrder});
+  const DeleteBinDialog({super.key, required this.bin});
 
   @override
   Widget build(BuildContext context) {
@@ -337,7 +348,7 @@ class DeleteWorkOrderDialog extends StatelessWidget {
         ],
       ),
       content: const Text(
-          'Are you sure you want to remove this work order from the database?'),
+          'Are you sure you want to remove this bin from the database?'),
       actions: <Widget>[
         ElevatedButton(
           onPressed: () => Navigator.of(context).pop(false),
@@ -349,8 +360,8 @@ class DeleteWorkOrderDialog extends StatelessWidget {
         ),
         ElevatedButton(
           onPressed: () async {
-            // Implement work order deletion logic here
-            deleteWorkOrder(workOrder);
+            // Implement bin deletion logic here
+            deleteBin(bin);
             Navigator.of(context).pop(true);
           },
           style: ElevatedButton.styleFrom(
@@ -362,18 +373,5 @@ class DeleteWorkOrderDialog extends StatelessWidget {
       ],
     );
   }
-
-  Future<void> deleteWorkOrder(WorkOrder workOrder) async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    try {
-      await firestore.collection('WorkOrders').doc(workOrder.id).delete();
-      if (kDebugMode) {
-        print('Work order ${workOrder.id} deleted successfully.');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error deleting work order ${workOrder.id}: $e');
-      }
-    }
-  }
 }
+

@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:vineburgapp/classes/bin_class.dart';
+import 'package:vineburgapp/user/return_tool.dart';
 import '../login.dart';
 import 'scan_workorder.dart';
 
@@ -132,7 +134,7 @@ class _HomePageState extends State<HomePage> {
                 ElevatedButton(
                   onPressed: cameras == null || cameras!.isEmpty ? null : () {
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ScanWorkorderPage(cameras!, 'return')
+                        builder: (context) => ReturnToolPage(cameras!, 'return')
                     ));
                   },
                   style: ElevatedButton.styleFrom(

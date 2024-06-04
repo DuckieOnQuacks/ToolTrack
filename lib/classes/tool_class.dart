@@ -181,6 +181,8 @@ Future<void> returnTool(
         'Status': status,
         'Checked Out To': "",
         'Date Checked Out': "",
+        'At Machine': "",
+        'Last Checked Out By': userWhoCheckedOut
       });
       if (kDebugMode) {
         print('Status of tool with ID $toolId has been updated to $status.');

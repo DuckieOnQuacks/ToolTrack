@@ -190,7 +190,8 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) {
       // Show top snackbar warning if any required field is not filled
-      showTopSnackBar(context, "Please fill in all required fields.", Colors.red);
+      showTopSnackBar(context, "Please fill in all required fields.", Colors.red, title: "Error", icon: Icons.error);
+
       return;
     }
 

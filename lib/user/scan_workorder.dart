@@ -60,64 +60,29 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
         setState(() {
           _isLoading = false;
         });
-        showConfirmationDialog(context, barcodeData, imagePath);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ScanToolPage(
+              widget.cameras,
+              barcodeData,
+              imagePath,
+              widget.inOrOut,
+              snackbarMessage: "Barcode data retrieved successfully!",
+            ),
+          ),
+        );
       } else {
         setState(() {
           _isLoading = false;
         });
-        showTopSnackBar(context, "Error: No barcode found, try again.", Colors.red);
+        showTopSnackBar(context, "No barcode found, try again.", Colors.red, title: "Error", icon: Icons.error);
       }
     } else {
       setState(() {
         _isLoading = false;
       });
     }
-  }
-
-  void showConfirmationDialog(BuildContext context, String barcodeData, String imagePath) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Confirm Barcode", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-          content: RichText(
-            text: TextSpan(
-              style: const TextStyle(color: Colors.white, fontSize: 16.0),
-              children: <TextSpan>[
-                const TextSpan(text: "Barcode data: ", style: TextStyle(fontWeight: FontWeight.bold)),
-                TextSpan(text: barcodeData, style: const TextStyle(fontWeight: FontWeight.normal)),
-                const TextSpan(text: "\n\nIs this the correct ID?", style: TextStyle(fontWeight: FontWeight.normal, fontStyle: FontStyle.italic)),
-              ],
-            ),
-          ),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          actions: <Widget>[
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.red,  // Text color
-              ),
-              child: const Text("Cancel"),
-              onPressed: () {
-                Navigator.of(context).pop(); // Dismiss the dialog and do not navigate
-              },
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.green,  // Text color
-              ),
-              child: const Text("Confirm"),
-              onPressed: () {
-                Navigator.of(context).pop(); // Dismiss the dialog
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ScanToolPage(widget.cameras, barcodeData, imagePath, widget.inOrOut)),
-                );
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void showManualEntryDialog(BuildContext context) {
@@ -155,10 +120,18 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
                   Navigator.of(context).pop(); // Dismiss the dialog
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ScanToolPage(widget.cameras, workOrderId, '', widget.inOrOut)),
+                    MaterialPageRoute(
+                      builder: (context) => ScanToolPage(
+                        widget.cameras,
+                        workOrderId,
+                        '',
+                        widget.inOrOut,
+                        snackbarMessage: "Workorder ID entered successfully!",
+                      ),
+                    ),
                   );
                 } else {
-                  showTopSnackBar(context, "Error: Please enter a valid Workorder ID.", Colors.red);
+                  showTopSnackBar(context, "Please enter a valid Workorder ID.", Colors.red, title: "Error", icon: Icons.error);
                 }
               },
             ),

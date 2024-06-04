@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:vineburgapp/user/return_confirmation.dart';
 import '../backend/camera_manager.dart';
 import '../backend/message_helper.dart';
 import '../classes/tool_class.dart';
@@ -14,8 +13,9 @@ class ScanToolPage extends StatefulWidget {
   final String workorderData;
   final String workOrderImagePath;
   final String inOrOut;
+  final String? snackbarMessage; // Add this line
 
-  const ScanToolPage(this.cameras, this.workorderData, this.workOrderImagePath, this.inOrOut, {super.key});
+  const ScanToolPage(this.cameras, this.workorderData, this.workOrderImagePath, this.inOrOut, {super.key, this.snackbarMessage}); // Modify this line
 
   @override
   State<ScanToolPage> createState() => _ScanToolPageState();
@@ -27,11 +27,19 @@ class _ScanToolPageState extends State<ScanToolPage> {
   bool _isLoading = false;
   bool _flashEnabled = false;
   String _associatedImageUrl = '';
+  Tool? _selectedTool;
 
   @override
   void initState() {
     super.initState();
     _initializeCamera();
+
+    // Show snackbar if there's a message
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.snackbarMessage != null) {
+        showTopSnackBar(context, widget.snackbarMessage!, Colors.green, title: "Success", icon: Icons.check);
+      }
+    });
   }
 
   Future<void> _initializeCamera() async {
@@ -68,78 +76,111 @@ class _ScanToolPageState extends State<ScanToolPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(
-            "Confirm Tool",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "Select the correct tool from the list:",
-                style: TextStyle(color: Colors.white, fontSize: 16.0),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text(
+                "Select The Tool You Want To Checkout:",
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               ),
-              const SizedBox(height: 10),
-              ...tools.map((tool) {
-                return Card(
-                  color: Colors.grey[800],
-                  child: ListTile(
-                    leading: Icon(Icons.build, color: Colors.orange[300]),
-                    title: Text(
-                      "Tool ID: ${tool.gageID}",
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    subtitle: Text(
-                      "Status: ${tool.status}",
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                    onTap: () async {
-                      Navigator.of(context).pop();
-                      if (widget.inOrOut == 'return') {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ReturnConfirmationPage(
-                              workorderId: widget.workorderData,
-                              tool: tool,
-                              toolImagePath: _associatedImageUrl,
-                              workOrderImagePath: widget.workOrderImagePath,
-                            ),
-                          ),
-                        );
-                      } else if (widget.inOrOut == 'checkout') {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CheckoutConfirmationPage(
-                              workorderId: widget.workorderData,
-                              tool: tool,
-                              toolImagePath: _associatedImageUrl,
-                              workOrderImagePath: widget.workOrderImagePath,
-                            ),
-                          ),
-                        );
-                      }
-                    },
+              content: Container(
+                width: double.maxFinite,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(height: 10),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxHeight: 300.0, // Adjust the max height as needed
+                        ),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: tools.length,
+                          itemBuilder: (context, index) {
+                            final tool = tools[index];
+                            bool isAvailable = tool.status == 'Available';
+                            return Card(
+                              color: _selectedTool == tool ? Colors.black26 : Colors.grey[800],
+                              child: ListTile(
+                                leading: Icon(Icons.build, color: Colors.orange[300]),
+                                title: Text(
+                                  tool.gageDesc,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                subtitle: Row(
+                                  children: [
+                                    Text(
+                                      "Tool ID: ${tool.gageID}",
+                                      style: const TextStyle(color: Colors.white70),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    isAvailable
+                                        ? const Icon(Icons.check_circle, color: Colors.green)
+                                        : const Icon(Icons.lock, color: Colors.red),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      isAvailable ? 'Available' : 'Checked Out',
+                                      style: TextStyle(
+                                        color: isAvailable ? Colors.green : Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                onTap: () {
+                                  setState(() {
+                                    _selectedTool = tool;
+                                  });
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                );
-              }).toList(),
-            ],
-          ),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          actions: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.red,
+                ),
               ),
-              child: const Text("Cancel"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-          backgroundColor: Colors.grey[900],
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              actions: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white, backgroundColor: Colors.red,
+                  ),
+                  child: const Text("Cancel"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white, backgroundColor: Colors.green,
+                  ),
+                  child: const Text("Confirm"),
+                  onPressed: () {
+                    if (_selectedTool != null) {
+                      Navigator.of(context).pop();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CheckoutConfirmationPage(
+                            workorderId: widget.workorderData,
+                            tool: _selectedTool!,
+                            toolImagePath: _associatedImageUrl,
+                            workOrderImagePath: widget.workOrderImagePath,
+                          ),
+                        ),
+                      );
+                    } else {
+                      showTopSnackBar(context, "Please select a tool", Colors.orange, title: "Warning", icon: Icons.warning);
+                    }
+                  },
+                ),
+              ],
+              backgroundColor: Colors.grey[900],
+            );
+          },
         );
       },
     );
@@ -181,13 +222,13 @@ class _ScanToolPageState extends State<ScanToolPage> {
           setState(() {
             _isLoading = false;
           });
-          showTopSnackBar(context, "Error: Tool IDs not found in the database.", Colors.red);
+          showTopSnackBar(context, "Tool IDs not found in the database.", Colors.red, title: "Error", icon: Icons.error);
         }
       } else {
         setState(() {
           _isLoading = false;
         });
-        showTopSnackBar(context, "Error: No tool QR code found, please scan again.", Colors.red);
+        showTopSnackBar(context, "No tool QR code found, please scan again.", Colors.red, title: "Error", icon: Icons.error);
       }
     } else {
       setState(() {
@@ -244,10 +285,11 @@ class _ScanToolPageState extends State<ScanToolPage> {
                       bool toolIsInWorkOrder = await isToolInWorkOrder(widget.workorderData, tool.gageID);
 
                       if (!toolIsInWorkOrder && widget.inOrOut != 'checkout') {
-                        showTopSnackBar(context, "Tool Not Checked Out To WorkOrder ${widget.workorderData}", Colors.red);
+                        showTopSnackBar(context, "Tool Not Checked Out To WorkOrder ${widget.workorderData}", Colors.red, title: "Error", icon: Icons.error);
+
                       } else {
                         if (widget.inOrOut == 'checkout' && tool.status != 'Available') {
-                          showTopSnackBar(context, "Error: Tool ${tool.gageID} is currently checked out to ${tool.checkedOutTo}. Try A Different Tool!", Colors.red);
+                          showTopSnackBar(context, "Tool ${tool.gageID} is currently checked out to ${tool.checkedOutTo}. Try A Different Tool!", Colors.red, title: "Error", icon: Icons.error);
                         } else {
                           showToolSelectionDialog(context, toolId, [tool]);
                         }
@@ -256,16 +298,16 @@ class _ScanToolPageState extends State<ScanToolPage> {
                       setState(() {
                         _isLoading = false;
                       });
-                      showTopSnackBar(context, "Error: Tool data is invalid.", Colors.red);
+                      showTopSnackBar(context, "Tool data is invalid.", Colors.red, title: "Error", icon: Icons.error);
                     }
                   } else {
                     setState(() {
                       _isLoading = false;
                     });
-                    showTopSnackBar(context, "Error: Tool ID not found in the database.", Colors.red);
+                    showTopSnackBar(context, "Tool ID not found in the database.", Colors.red, title: "Error", icon: Icons.error);
                   }
                 } else {
-                  showTopSnackBar(context, "Error: Please enter a valid Tool ID.", Colors.red);
+                  showTopSnackBar(context, "Please enter a valid Tool ID.", Colors.orange, title: "Warning", icon: Icons.warning);
                 }
               },
             ),
@@ -312,40 +354,38 @@ class _ScanToolPageState extends State<ScanToolPage> {
           width: 150,
           height: 150,
         )
-            : SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16.0),
-                  child: SizedBox(
-                    width: 350,
-                    height: 500,
-                    child: CameraPreview(_cameraManager.controller!),
-                  ),
+            : Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16.0),
+                child: SizedBox(
+                  width: 350,
+                  height: 500,
+                  child: CameraPreview(_cameraManager.controller!),
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: Icon(_flashEnabled ? Icons.flash_on : Icons.flash_off),
-                    onPressed: _toggleFlashMode,
-                    color: Colors.yellow,
-                    iconSize: 36,
-                  ),
-                  const SizedBox(width: 20),
-                  IconButton(
-                    icon: const Icon(Icons.camera_alt),
-                    iconSize: 50.0,
-                    onPressed: handleToolBarcodeScanning,
-                  ),
-                ],
-              ),
-            ],
-          ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: Icon(_flashEnabled ? Icons.flash_on : Icons.flash_off),
+                  onPressed: _toggleFlashMode,
+                  color: Colors.yellow,
+                  iconSize: 36,
+                ),
+                const SizedBox(width: 20),
+                IconButton(
+                  icon: const Icon(Icons.camera_alt),
+                  iconSize: 50.0,
+                  onPressed: handleToolBarcodeScanning,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vineburgapp/admin/bins/bins.dart';
 import 'package:vineburgapp/admin/tools/tools.dart';
 import 'package:vineburgapp/admin/workorder/workorder.dart';
 
@@ -15,7 +16,8 @@ class _AdminBottomBarState extends State<AdminBottomBar> {
   // What pages to load depending on the bottom bar index
   final Map<int, Widget> widgetOptions = {
     0: const AdminToolsPage(),
-    1: const AdminWorkOrdersPage()
+    1: const AdminWorkOrdersPage(),
+    2: const AdminBinsPage()
   };
 
   void _onItemTapped(int index) {
@@ -52,13 +54,16 @@ class _AdminBottomBarState extends State<AdminBottomBar> {
               icon: Icon(Icons.work),
               label: 'Work Orders',
             ),
-
+            BottomNavigationBarItem(
+              icon: Icon(Icons.storage),
+              label: 'Bins',
+            ),
           ],
           currentIndex: selectedIndex,
           unselectedItemColor: Colors.grey[600],
           selectedItemColor: Colors.white,
-          selectedIconTheme: IconThemeData(size: 30, color: Colors.white),
-          unselectedIconTheme: IconThemeData(size: 25, color: Colors.grey),
+          selectedIconTheme: const IconThemeData(size: 30, color: Colors.white),
+          unselectedIconTheme: const IconThemeData(size: 25, color: Colors.grey),
           showSelectedLabels: true,
           showUnselectedLabels: false,
           onTap: _onItemTapped,

@@ -2,23 +2,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../backend/message_helper.dart';
-import '../../classes/workorder_class.dart';
+import '../../classes/bin_class.dart';
 
-class AdminInspectWorkOrderScreen extends StatefulWidget {
-  final WorkOrder workOrder;
+class AdminInspectBinScreen extends StatefulWidget {
+  final Bin bin;
 
-  const AdminInspectWorkOrderScreen({super.key, required this.workOrder});
+  const AdminInspectBinScreen({super.key, required this.bin});
 
   @override
-  State<AdminInspectWorkOrderScreen> createState() =>
-      _AdminInspectWorkOrderScreenState();
+  State<AdminInspectBinScreen> createState() => _AdminInspectBinScreenState();
 }
 
-class _AdminInspectWorkOrderScreenState
-    extends State<AdminInspectWorkOrderScreen> {
+class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController idController = TextEditingController();
-  final TextEditingController enteredByController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController locationController = TextEditingController();
   final TextEditingController newToolController = TextEditingController();
 
   late List<String> tools;
@@ -27,33 +25,32 @@ class _AdminInspectWorkOrderScreenState
   @override
   void initState() {
     super.initState();
-    idController.text = widget.workOrder.id;
-    enteredByController.text = widget.workOrder.enteredBy;
-    tools = List.from(widget.workOrder.tool ?? []);
-    initialTools = List.from(widget.workOrder.tool ?? []);
+    nameController.text = widget.bin.originalName;
+    locationController.text = widget.bin.location;
+    tools = List.from(widget.bin.tools ?? []);
+    initialTools = List.from(widget.bin.tools ?? []);
   }
 
   @override
   void dispose() {
-    idController.dispose();
-    enteredByController.dispose();
+    nameController.dispose();
+    locationController.dispose();
     newToolController.dispose();
     super.dispose();
   }
 
-
   void _confirmChanges(BuildContext context) {
     List<Widget> changesWidgets = [];
 
-    if (idController.text != widget.workOrder.id) {
+    if (nameController.text != widget.bin.originalName) {
       changesWidgets.add(RichText(
         text: TextSpan(
-          text: 'ID: ',
+          text: 'Name: ',
           style: const TextStyle(
               fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.white),
           children: <TextSpan>[
             TextSpan(
-              text: '${widget.workOrder.id} -> ${idController.text}',
+              text: '${widget.bin.originalName} -> ${nameController.text}',
               style: const TextStyle(fontWeight: FontWeight.normal),
             ),
           ],
@@ -63,16 +60,16 @@ class _AdminInspectWorkOrderScreenState
 
     const SizedBox(height: 10);
 
-    if (enteredByController.text != widget.workOrder.enteredBy) {
+    if (locationController.text != widget.bin.location) {
       changesWidgets.add(RichText(
         text: TextSpan(
-          text: 'Entered By: ',
+          text: 'Location: ',
           style: const TextStyle(
               fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.white),
           children: <TextSpan>[
             TextSpan(
               text:
-              '${widget.workOrder.enteredBy} -> ${enteredByController.text}',
+              '${widget.bin.location} -> ${locationController.text}',
               style: const TextStyle(fontWeight: FontWeight.normal),
             ),
           ],
@@ -171,14 +168,13 @@ class _AdminInspectWorkOrderScreenState
             ),
             ElevatedButton(
               onPressed: () async {
-                final newWorkOrder = WorkOrder(
-                  id: idController.text,
-                  enteredBy: enteredByController.text,
-                  tool: tools,
-                  imagePath: "",
+                final newBin = Bin(
+                  originalName: nameController.text,
+                  location: locationController.text,
+                  tools: tools,
                 );
-                await updateWorkOrderIfDifferent(
-                    widget.workOrder, newWorkOrder);
+                await updateBinIfDifferent(
+                    widget.bin, newBin);
                 if (context.mounted) {
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
@@ -215,14 +211,13 @@ class _AdminInspectWorkOrderScreenState
   void _copyToolToClipboard(String tool) {
     Clipboard.setData(ClipboardData(text: tool));
     showTopSnackBar(context, "Tool ID copied to clipboard", Colors.blue, title: "Note:", icon: Icons.copy);
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit/View Work Order Details'),
+        title: const Text('Edit/View Bin Details'),
       ),
       body: Stack(
         children: [
@@ -234,16 +229,16 @@ class _AdminInspectWorkOrderScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionHeader('Work Order Information'),
+                    _buildSectionHeader('Bin Information'),
                     _buildTextField(
-                      controller: idController,
-                      label: 'Work Order ID: ',
-                      hintText: 'e.g. 2345',
+                      controller: nameController,
+                      label: 'Bin Name: ',
+                      hintText: 'e.g. Bin A',
                     ),
                     _buildTextField(
-                      controller: enteredByController,
-                      label: 'Entered By: ',
-                      hintText: 'e.g. 12402',
+                      controller: locationController,
+                      label: 'Location: ',
+                      hintText: 'e.g. Shelf 1',
                     ),
                     _buildToolsList(),
                     const SizedBox(height: 20),
@@ -366,15 +361,7 @@ class _AdminInspectWorkOrderScreenState
       ),
     );
   }
-
-  Future<void> updateWorkOrderIfDifferent(
-      WorkOrder oldWorkOrder, WorkOrder newWorkOrder) async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    if (oldWorkOrder.toJson() != newWorkOrder.toJson()) {
-      await firestore
-          .collection('WorkOrders')
-          .doc(newWorkOrder.id)
-          .set(newWorkOrder.toJson());
-    }
-  }
 }
+
+
+

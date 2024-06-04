@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:vineburgapp/classes/tool_class.dart';
 
 class WorkOrder {
   final String id;
@@ -248,4 +249,40 @@ Future<void> removeToolFromWorkOrder({
     }
     throw Exception('The specified work order does not exist.');
   }
+}
+
+/// Fetches the list of tools associated with a given work order ID and returns a list of Tool objects.
+Future<List<Tool>> fetchToolsFromWorkOrder(String workOrderId) async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  DocumentReference workOrderRef = firestore.collection('WorkOrders').doc(workOrderId);
+
+  DocumentSnapshot workOrderSnapshot = await workOrderRef.get();
+
+  if (workOrderSnapshot.exists) {
+    Map<String, dynamic>? data = workOrderSnapshot.data() as Map<String, dynamic>?;
+    if (data != null && data.containsKey('Tools') && data['Tools'] is List) {
+      List<String> toolIds = List<String>.from(data['Tools']);
+      List<Tool> tools = [];
+
+      for (String toolId in toolIds) {
+        DocumentSnapshot toolSnapshot = await firestore.collection('Tools').doc(toolId).get();
+        if (toolSnapshot.exists) {
+          tools.add(Tool.fromJson(toolSnapshot.data() as Map<String, dynamic>));
+        }
+      }
+      return tools;
+    } else {
+      return [];
+    }
+  } else {
+    return [];
+  }
+}
+
+Future<bool> checkWorkOrderExists(String workOrderId) async {
+  final workOrderDoc = await FirebaseFirestore.instance
+      .collection('WorkOrders')
+      .doc(workOrderId)
+      .get();
+  return workOrderDoc.exists;
 }

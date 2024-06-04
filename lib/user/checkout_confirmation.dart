@@ -27,7 +27,6 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _atMachineController = TextEditingController();
 
-
   void confirmCheckout() async {
     String name = _nameController.text.trim();
     String atMachine = _atMachineController.text.trim();
@@ -40,102 +39,111 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
           enteredBy: _nameController.text,
         );
         if (widget.tool.status == "Checked Out") {
-          showTopSnackBar(context,"Already Checked Out To ${widget.tool.checkedOutTo}", Colors.red);
-        }else {
+          showTopSnackBar(context, "Already checked out to ${widget.tool.checkedOutTo}", Colors.red, title: "Error", icon: Icons.error);
+
+        } else {
           checkoutTool(widget.tool.gageID, "Checked Out", _nameController.text.trim(), _atMachineController.text.trim());
 
           // Navigate back to the first route and show the snack-bar
-          if(context.mounted) Navigator.popUntil(context, (route) => route.isFirst);
+          if (context.mounted) Navigator.popUntil(context, (route) => route.isFirst);
           Future.delayed(const Duration(milliseconds: 100), () {
-            showTopSnackBar(context, "Checkout successful!", Colors.green);
+            showTopSnackBar(context, "Checkout successful!", Colors.green, title: "Success", icon: Icons.check_circle);
           });
         }
       } catch (e) {
-        showTopSnackBar(context, "Failed to checkout. Please try again.", Colors.red);
+        showTopSnackBar(context, "Failed to checkout. Please try again.", Colors.red, title: "Error", icon: Icons.error);
       }
     }
-    if(name.isEmpty) {
-      showTopSnackBar(context, "Please enter your employee ID.", Colors.orange);
+    if (name.isEmpty) {
+      showTopSnackBar(context, "Please enter valid employee ID", Colors.orange, title: "Warning", icon: Icons.warning);
+
     }
-    if(atMachine.isEmpty) {
-        showTopSnackBar(context, "Please enter the machine ID where the tool was located.", Colors.orange);
+    if (atMachine.isEmpty) {
+      showTopSnackBar(context, "Please enter valid machine location ID", Colors.orange, title: "Warning", icon: Icons.warning);
+
     }
   }
 
   void _showImage(String imagePath, {String? description}) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.black26,
       isScrollControlled: true,
-      backgroundColor: Colors.black,
       builder: (BuildContext context) {
         return Container(
+          height: MediaQuery.of(context).size.height * 0.9, // Increase the height of the bottom sheet
           decoration: const BoxDecoration(
-            color: Colors.black,
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(16),
               topRight: Radius.circular(16),
             ),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (description != null) ...[
-                  Text(description,
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 10),
-                ],
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: FutureBuilder(
-                    future: _loadImage(imagePath),
-                    builder: (BuildContext context, AsyncSnapshot<ImageProvider<Object>> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        return const Center(child: Icon(Icons.error));
-                      } else {
-                        return Image(
-                          image: snapshot.data!,
-                          fit: BoxFit.cover,
-                        );
-                      }
-                    },
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (description != null) ...[
+                Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 10),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.orange[800],
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text('Close'),
-                  ),
-                ),
               ],
-            ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: FutureBuilder(
+                  future: _loadImage(imagePath),
+                  builder: (BuildContext context, AsyncSnapshot<ImageProvider<Object>> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return const Center(child: Icon(Icons.error));
+                    } else {
+                      return Image(
+                        image: snapshot.data!,
+                        fit: BoxFit.contain,
+                        width: MediaQuery.of(context).size.width, // Increase the width of the image
+                        height: MediaQuery.of(context).size.height * 0.75, // Increase the height of the image
+                      );
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(height: 35),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.orange[800],
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text('Close'),
+                ),
+              ),
+            ],
           ),
         );
       },
     );
   }
 
+
+
   Future<ImageProvider<Object>> _loadImage(String path) async {
     return NetworkImage(path);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -171,41 +179,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                         Row(
                           children: [
                             const Text(
-                              'Work Order ID:',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const Spacer(),
-                            IconButton(
-                              icon: const Icon(Icons.copy, color: Colors.white),
-                              onPressed: () {
-                                Clipboard.setData(
-                                  ClipboardData(text: widget.workorderId),
-                                );
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Work Order ID copied to clipboard!'),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                        Text(
-                          widget.workorderId,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            const Text(
-                              'Tool ID:',
+                              'Tool Description:',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -222,13 +196,43 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                           ],
                         ),
                         Text(
-                          widget.tool.gageID,
+                          widget.tool.gageDesc,
                           style: const TextStyle(
                             fontSize: 18,
                             color: Colors.grey,
                           ),
                         ),
                         const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            const Text(
+                              'Work Order ID:',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              icon: const Icon(Icons.copy, color: Colors.white),
+                              onPressed: () {
+                                Clipboard.setData(
+                                  ClipboardData(text: widget.workorderId),
+                                );
+                                showTopSnackBar(context, "Workorder ID copied to clipboard!", Colors.blue, title: "Note:", icon: Icons.copy);
+                              },
+                            ),
+                          ],
+                        ),
+                        Text(
+                          widget.workorderId,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
                         const Text(
                           'Enter Employee ID',
                           style: TextStyle(

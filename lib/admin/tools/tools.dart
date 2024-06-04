@@ -78,8 +78,10 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
       if (query.isNotEmpty) {
         filteredTools = tools!.then((allTools) => allTools.where((tool) {
           return tool.status.toLowerCase().contains(query.toLowerCase()) ||
-              tool.gageID.toLowerCase().contains(query.toLowerCase()) || tool.gageType.toLowerCase().contains(query.toLowerCase()) ||
-              tool.checkedOutTo.toLowerCase().contains(query.toLowerCase()) || tool.gageDesc.toLowerCase().contains(query.toLowerCase());
+              tool.gageID.toLowerCase().contains(query.toLowerCase()) ||
+              tool.gageType.toLowerCase().contains(query.toLowerCase()) ||
+              tool.checkedOutTo.toLowerCase().contains(query.toLowerCase()) ||
+              tool.gageDesc.toLowerCase().contains(query.toLowerCase());
         }).toList());
       } else {
         filteredTools = tools!;
@@ -116,8 +118,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
             icon: const Icon(Icons.add, color: Colors.white),
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (context) => const AdminAddToolPage()),
+                MaterialPageRoute(builder: (context) => const AdminAddToolPage()),
               );
             },
           ),
@@ -195,44 +196,58 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                       padding: const EdgeInsets.all(10),
                       itemCount: tools.length,
                       itemBuilder: (context, index) {
-                        Color tileColor =
-                        shuffledColors[index % shuffledColors.length];
+                        Color tileColor = shuffledColors[index % shuffledColors.length];
                         return Card(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                           elevation: 4,
-                          color: tileColor,
-                          child: ListTile(
-                            trailing: IconButton(
-                              icon:
-                              const Icon(Icons.delete, color: Colors.black),
-                              onPressed: () => onDeletePressed(tools[index]),
-                            ),
-                            title: Text(
-                              tools[index].gageID,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [tileColor.withOpacity(0.8), tileColor],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
                               ),
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            subtitle: Text(
-                              'Type: ${tools[index].gageType}',
-                              style: const TextStyle(color: Colors.black87),
-                            ),
-                            onTap: () async {
-                              var result = await Navigator.of(context)
-                                  .push(MaterialPageRoute(
-                                builder: (context) =>
-                                    AdminInspectToolScreen(
+                            child: ListTile(
+                              leading: const Icon(Icons.build, color: Colors.black),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.black),
+                                onPressed: () => onDeletePressed(tools[index]),
+                              ),
+                              title: Text(
+                                tools[index].gageID,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Type: ${tools[index].gageType}',
+                                    style: const TextStyle(color: Colors.black87),
+                                  ),
+                                  const SizedBox(height: 4),
+                                ],
+                              ),
+                              onTap: () async {
+                                var result = await Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => AdminInspectToolScreen(
                                       tool: tools[index],
                                     ),
-                              ));
-                              if (result == true) {
-                                refreshToolsList();
-                              }
-                            },
+                                  ),
+                                );
+                                if (result == true) {
+                                  refreshToolsList();
+                                }
+                              },
+                            ),
                           ),
                         );
                       },
@@ -293,8 +308,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
               ),
             ],
           ),
-          content:
-          const Text('Are you sure you want to log out of your account?'),
+          content: const Text('Are you sure you want to log out of your account?'),
           actions: <Widget>[
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -356,8 +370,7 @@ class DeleteToolDialog extends StatelessWidget {
           ),
         ],
       ),
-      content: const Text(
-          'Are you sure you want to remove this tool from the database?'),
+      content: const Text('Are you sure you want to remove this tool from the database?'),
       actions: <Widget>[
         ElevatedButton(
           onPressed: () => Navigator.of(context).pop(false),
@@ -383,3 +396,4 @@ class DeleteToolDialog extends StatelessWidget {
     );
   }
 }
+
