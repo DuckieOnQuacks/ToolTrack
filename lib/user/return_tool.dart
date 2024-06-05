@@ -97,7 +97,7 @@ class _ReturnToolState extends State<ReturnToolPage> {
                 "Select The Tool You Want To Return:",
                 style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               ),
-              content: Container(
+              content: SizedBox(
                 width: double.maxFinite,
                 child: SingleChildScrollView(
                   child: Column(

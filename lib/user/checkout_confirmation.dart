@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vineburgapp/classes/tool_class.dart';
 import 'package:vineburgapp/classes/workorder_class.dart';
-
 import '../backend/message_helper.dart';
 
 class CheckoutConfirmationPage extends StatefulWidget {
@@ -139,8 +138,6 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
     );
   }
 
-
-
   Future<ImageProvider<Object>> _loadImage(String path) async {
     return NetworkImage(path);
   }
@@ -202,6 +199,36 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                             color: Colors.grey,
                           ),
                         ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            const Text(
+                              'Tool ID:',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              icon: const Icon(Icons.copy, color: Colors.white),
+                              onPressed: () {
+                                Clipboard.setData(
+                                  ClipboardData(text: widget.tool.gageID),
+                                );
+                                showTopSnackBar(context, "Tool ID copied to clipboard!", Colors.blue, title: "Note:", icon: Icons.copy);
+                              },
+                            ),
+                          ],
+                        ),
+                        Text(
+                          widget.tool.gageID,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey,
+                          ),
+                        ),
                         const SizedBox(height: 20),
                         Row(
                           children: [
@@ -234,7 +261,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                         ),
                         const SizedBox(height: 10),
                         const Text(
-                          'Enter Employee ID',
+                          'Enter Employee ID *',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -252,7 +279,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          'Machine Where Tool Is Being Used:',
+                          'Machine Where Tool Is Being Used *',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

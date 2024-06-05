@@ -51,11 +51,11 @@ class _AdminBottomBarState extends State<AdminBottomBar> {
               label: 'Tools',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.work),
+              icon: Icon(Icons.assignment),
               label: 'Work Orders',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.storage),
+              icon: Icon(Icons.inbox),
               label: 'Bins',
             ),
           ],

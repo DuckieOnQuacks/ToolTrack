@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../backend/message_helper.dart';
 import '../../classes/bin_class.dart';
 
@@ -29,24 +28,34 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) {
       // Show top snackbar warning if any required field is not filled
-      showTopSnackBar(context, "Please fill in all required fields.", Colors.red, title: "Error", icon: Icons.error);
+      showTopSnackBar(
+          context, "Please fill in all required fields.", Colors.red,
+          title: "Error", icon: Icons.error);
       return;
     }
     try {
       // Use the parts as parameters for addBinWithParams
       await addBinWithParams(
-        _binNameController.text,
-        _binLocationController.text,
-        _toolsController.text.split(',').map((tool) => tool.trim()).toList(),
+          _binNameController.text,
+          _binLocationController.text,
+          _toolsController.text.split(',').map((tool) => tool.trim()).toList(),
+          false
       );
       // Simulate a delay
       // Navigate back to the first route and show the snack-bar
-      if (context.mounted) Navigator.popUntil(context, (route) => route.isFirst);
+      if (context.mounted) {
+        Navigator.popUntil(
+          context, (route) => route.isFirst);
+      }
       Future.delayed(const Duration(milliseconds: 100), () {
-        showTopSnackBar(context, "Added bin successfully", Colors.green, title: "Success", icon: Icons.check_circle);
+        showTopSnackBar(
+            context, "Added bin successfully", Colors.green, title: "Success",
+            icon: Icons.check_circle);
       });
     } catch (e) {
-      showTopSnackBar(context, "Failed to add new bin. Please try again.", Colors.red, title: "Error", icon: Icons.error);
+      showTopSnackBar(
+          context, "Failed to add new bin. Please try again.", Colors.red,
+          title: "Error", icon: Icons.error);
     }
   }
 
@@ -154,3 +163,4 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
     );
   }
 }
+

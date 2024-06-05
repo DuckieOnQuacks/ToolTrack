@@ -68,7 +68,7 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
               barcodeData,
               imagePath,
               widget.inOrOut,
-              snackbarMessage: "Barcode data retrieved successfully!",
+              snackbarMessage: "Barcode data $barcodeData retrieved successfully!",
             ),
           ),
         );

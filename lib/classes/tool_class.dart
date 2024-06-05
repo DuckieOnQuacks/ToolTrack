@@ -110,6 +110,17 @@ Future<void> addToolWithParams(
     return;
   }
 
+  final FirebaseStorage storage = FirebaseStorage.instance;
+  // Upload the image to Firebase Storage
+  final Reference storageReference = storage.ref().child('$gageID.jpg');
+  final UploadTask uploadTask = storageReference.putFile(File(imagePath));
+
+  // Wait for the upload to complete
+  final TaskSnapshot storageSnapshot = await uploadTask.whenComplete(() => {});
+
+  // Get the download URL of the uploaded image
+  final String downloadURL = await storageSnapshot.ref.getDownloadURL();
+
   // Prepare the tool data and write it to Firestore.
   final docOrder = FirebaseFirestore.instance.collection("Tools").doc(gageID);
   final orderTable = Tool(
@@ -119,7 +130,7 @@ Future<void> addToolWithParams(
     creationDate: creationDate,
     gageID: gageID,
     gageType: gageType,
-    imagePath: imagePath,
+    imagePath: downloadURL,
     gageDesc: gageDesc,
     dayRemain: daysRemain,
     status: "Available",

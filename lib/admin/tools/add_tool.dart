@@ -190,8 +190,9 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) {
       // Show top snackbar warning if any required field is not filled
-      showTopSnackBar(context, "Please fill in all required fields.", Colors.red, title: "Error", icon: Icons.error);
-
+      showTopSnackBar(
+          context, "Please fill in all required fields.", Colors.red,
+          title: "Error", icon: Icons.error);
       return;
     }
 
@@ -208,8 +209,12 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
       _daysRemainController.text,
     );
 
-    if (!mounted) return; // Ensure the widget is still mounted
-    Navigator.of(context).pop();
+    if (context.mounted) Navigator.popUntil(context, (route) => route.isFirst);
+    Future.delayed(const Duration(milliseconds: 100), () {
+      showTopSnackBar(
+          context, "Added tool successfully", Colors.green, title: "Success",
+          icon: Icons.check_circle);
+    });
   }
 
   void _showPictureDialog(String imagePath) {

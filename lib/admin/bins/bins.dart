@@ -76,9 +76,19 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
   void filterSearchResults(String query) {
     setState(() {
       if (query.isNotEmpty) {
+        // Parse the query to see if it includes a request to filter by "finished"
+        bool filterByFinished = query.toLowerCase() == 'finished';
+
         filteredBins = bins!.then((allBins) => allBins.where((bin) {
-          return bin.originalName.toLowerCase().contains(query.toLowerCase()) ||
+          bool matchesNameOrLocation = bin.originalName.toLowerCase().contains(query.toLowerCase()) ||
               bin.location.toLowerCase().contains(query.toLowerCase());
+
+          // If filtering by "finished", check the finished status
+          if (filterByFinished) {
+            return bin.finished;
+          } else {
+            return matchesNameOrLocation;
+          }
         }).toList());
       } else {
         filteredBins = bins!;
@@ -86,6 +96,7 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
     });
     updateBinCount();
   }
+
 
   void updateBinCount() {
     filteredBins.then((list) {
@@ -194,7 +205,7 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
                           elevation: 4,
                           color: tileColor,
                           child: ListTile(
-                            leading: const Icon(Icons.storage, color: Colors.black),
+                            leading: const Icon(Icons.inbox, color: Colors.black),
                             trailing: IconButton(
                               icon:
                               const Icon(Icons.delete, color: Colors.black),

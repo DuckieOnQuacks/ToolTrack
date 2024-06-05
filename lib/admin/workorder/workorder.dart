@@ -192,7 +192,7 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
                           elevation: 4,
                           color: tileColor,
                           child: ListTile(
-                            leading: const Icon(Icons.work, color: Colors.black),
+                            leading: const Icon(Icons.assignment, color: Colors.black),
                             trailing: IconButton(
                               icon: const Icon(Icons.delete, color: Colors.black),
                               onPressed: () => onDeletePressed(workOrders[index]),

@@ -1,27 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:excel/excel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import 'package:vineburgapp/backend/message_helper.dart';
-import 'package:vineburgapp/classes/tool_class.dart';
 
 class Bin {
   String originalName;
   List<String?> tools;
   String location;
+  bool finished;
 
   Bin({
     required this.originalName,
     required this.tools,
     required this.location,
+    required this.finished
   });
 
 // Factory method to create a bin object from JSON data
   factory Bin.fromJson(Map<String, dynamic> json) => Bin(
     originalName: json['Name'],
     tools: List<String>.from(json['Tools'] ?? []),
-    location: json['Location']
+    location: json['Location'],
+    finished: json['Finished'],
   );
 
   // Method to convert a bin object to JSON data
@@ -30,41 +29,6 @@ class Bin {
     'Tools': tools,
     'Location': location
   };
-}
-
-Future<void> uploadDataToFirestore() async {
-  // Load the file
-  ByteData data = await rootBundle.load('assets/BinsAndWhatsInThem.xlsx');
-  var bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-  var excel = Excel.decodeBytes(bytes);
-
-  // Process the Excel file
-  for (var table in excel.tables.keys) {
-    for (var row in excel.tables[table]!.rows) {
-      if (row.isNotEmpty) {
-        // Get the original document name
-        String originalName = row[0]?.value.toString() ?? 'Undefined';
-
-        // Replace '/' with '|'
-        String documentName = originalName.replaceAll('/', '|');
-
-        // Dynamically create the tools list
-        List<String?> tools = row.skip(1).map((cell) => cell?.value?.toString()).where((tool) => tool != null && tool.isNotEmpty).toList();
-
-        Bin newBin = Bin(
-          originalName: originalName,
-          tools: tools,
-          location: 'Specify location here',  // Modify this as needed
-        );
-
-        await FirebaseFirestore.instance.collection('Bins').doc(documentName).set(newBin.toJson()).then((_) {
-          print('Successfully uploaded data for $documentName');
-        }).catchError((error) {
-          print('Failed to upload data for $documentName: $error');
-        });
-      }
-    }
-  }
 }
 
 /// Retrieves all bins from the Firestore database.
@@ -120,7 +84,8 @@ Future<void> deleteBin(Bin bin) async {
 
 Future<void> updateBinIfDifferent(Bin oldBin, Bin newBin) async {
   final binsCollection = FirebaseFirestore.instance.collection('Bins');
-  final binDoc = binsCollection.doc(oldBin.originalName);
+  String sanitizedName = oldBin.originalName.replaceAll('/', '|');
+  final binDoc = binsCollection.doc(sanitizedName);
 
   // If the bin name has changed, delete the old bin and create a new one with the new name.
   if (oldBin.originalName != newBin.originalName) {
@@ -130,13 +95,14 @@ Future<void> updateBinIfDifferent(Bin oldBin, Bin newBin) async {
       if (kDebugMode) {
         print('Old bin with name ${oldBin.originalName} has been deleted.');
       }
-
+      String sanitized2 = newBin.originalName.replaceAll('/', "|");
       // Create a new bin with the new name.
-      final newBinDoc = binsCollection.doc(newBin.originalName);
+      final newBinDoc = binsCollection.doc(sanitized2);
       final newBinData = Bin(
         originalName: newBin.originalName,
         location: newBin.location.isNotEmpty ? newBin.location : oldBin.location,
         tools: newBin.tools.isNotEmpty ? newBin.tools : oldBin.tools,
+        finished: newBin.finished ? newBin.finished : oldBin.finished,
       ).toJson();
 
       await newBinDoc.set(newBinData);
@@ -159,6 +125,22 @@ Future<void> updateBinIfDifferent(Bin oldBin, Bin newBin) async {
   if (!const ListEquality().equals(oldBin.tools, newBin.tools)) {
     updates['Tools'] = newBin.tools;
   }
+  if (oldBin.finished != newBin.finished) {
+    updates['Finished'] = newBin.finished;
+  }
+
+  if (updates.isNotEmpty) {
+    try {
+      await binDoc.update(updates);
+      if (kDebugMode) {
+        print('Bin with name ${oldBin.originalName} has been updated.');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error updating bin with name ${oldBin.originalName}: $e');
+      }
+    }
+  }
 
   if (updates.isNotEmpty) {
     try {
@@ -178,7 +160,7 @@ Future<void> updateBinIfDifferent(Bin oldBin, Bin newBin) async {
   }
 }
 
-Future<void> addBinWithParams(String originalName, String location, List<String> tools) async {
+Future<void> addBinWithParams(String originalName, String location, List<String> tools, bool finished) async {
   // Check if the user is signed in.
   try {
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -197,6 +179,7 @@ Future<void> addBinWithParams(String originalName, String location, List<String>
       originalName: originalName,
       tools: tools,
       location: location,
+      finished: finished,
     );
     final json = bin.toJson();
     await docOrder.set(json); // Create document and write data to Firestore.
@@ -210,3 +193,26 @@ Future<void> addBinWithParams(String originalName, String location, List<String>
   }
 }
 
+String formatBinID(binID) {
+  String documentName = binID.replaceAll('/', '|');
+  return documentName;
+}
+
+Future<void> addFinishedFieldToBins() async {
+  final firestore = FirebaseFirestore.instance;
+
+  try {
+    final binsCollection = firestore.collection('Bins');
+    final binsSnapshot = await binsCollection.get();
+
+    for (var doc in binsSnapshot.docs) {
+      await binsCollection.doc(doc.id).update({
+        'Finished': false,
+      });
+    }
+
+    print('Finished field added to all documents in Bins collection');
+  } catch (e) {
+    print('Error adding Finished field: $e');
+  }
+}

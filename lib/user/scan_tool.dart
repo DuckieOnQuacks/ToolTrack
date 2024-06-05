@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:vineburgapp/classes/bin_class.dart';
 import '../backend/camera_manager.dart';
 import '../backend/message_helper.dart';
 import '../classes/tool_class.dart';
@@ -83,7 +84,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
                 "Select The Tool You Want To Checkout:",
                 style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               ),
-              content: Container(
+              content: SizedBox(
                 width: double.maxFinite,
                 child: SingleChildScrollView(
                   child: Column(
@@ -198,31 +199,49 @@ class _ScanToolPageState extends State<ScanToolPage> {
     if (imagePath != null) {
       final barcodeData = await _cameraManager.scanBarcode(imagePath);
       if (barcodeData != null) {
-        final toolIds = barcodeData.split(',').map((id) => id.trim()).toList();
-        List<Tool> tools = [];
-        for (var toolId in toolIds) {
-          final toolDoc = await getToolDocument(toolId);
-          if (toolDoc != null) {
-            final data = toolDoc.data();
-            if (data != null && data is Map<String, dynamic>) {
-              final tool = Tool.fromJson(data);
-              tools.add(tool);
+        final binID = barcodeData;
+        final binDoc = await FirebaseFirestore.instance.collection('Bins').doc(formatBinID(binID)).get();
+
+        if (binDoc.exists) {
+          final data = binDoc.data();
+          if (data != null && data.containsKey('Tools')) {
+            final toolIDs = List<String>.from(data['Tools']);
+            final tools = <Tool>[];
+
+            for (final toolID in toolIDs) {
+              final toolDoc = await FirebaseFirestore.instance.collection('Tools').doc(toolID).get();
+              if (toolDoc.exists) {
+                final toolData = toolDoc.data();
+                if (toolData != null) {
+                  tools.add(Tool.fromJson(toolData));
+                }
+              }
             }
+
+            if (tools.isNotEmpty) {
+              setState(() {
+                _associatedImageUrl = tools.first.imagePath ?? '';
+                _isLoading = false;
+              });
+
+              showToolSelectionDialog(context, barcodeData, tools);
+            } else {
+              setState(() {
+                _isLoading = false;
+              });
+              showTopSnackBar(context, "No tools found in the bin.", Colors.red, title: "Error", icon: Icons.error);
+            }
+          } else {
+            setState(() {
+              _isLoading = false;
+            });
+            showTopSnackBar(context, "Bin exists but no tools found.", Colors.red, title: "Error", icon: Icons.error);
           }
-        }
-
-        if (tools.isNotEmpty) {
-          setState(() {
-            _associatedImageUrl = tools.first.imagePath ?? '';
-            _isLoading = false;
-          });
-
-          showToolSelectionDialog(context, barcodeData, tools);
         } else {
           setState(() {
             _isLoading = false;
           });
-          showTopSnackBar(context, "Tool IDs not found in the database.", Colors.red, title: "Error", icon: Icons.error);
+          showTopSnackBar(context, "Bin ID not found in the database.", Colors.red, title: "Error", icon: Icons.error);
         }
       } else {
         setState(() {

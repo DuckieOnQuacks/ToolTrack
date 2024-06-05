@@ -21,6 +21,7 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
 
   late List<String> tools;
   late List<String> initialTools;
+  bool finished = false;
 
   @override
   void initState() {
@@ -29,6 +30,7 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
     locationController.text = widget.bin.location;
     tools = List.from(widget.bin.tools ?? []);
     initialTools = List.from(widget.bin.tools ?? []);
+    finished = widget.bin.finished;
   }
 
   @override
@@ -125,6 +127,21 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
         ],
       ));
     }
+    if (finished != widget.bin.finished) {
+      changesWidgets.add(RichText(
+        text: TextSpan(
+            text: 'Modeled: ',
+            style: const TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
+            children: <TextSpan>[
+              TextSpan(
+                  text: '${widget.bin.finished} -> $finished',
+                  style: const TextStyle(fontWeight: FontWeight.normal)),
+            ]),
+      ));
+    }
 
     showDialog(
       context: context,
@@ -172,9 +189,9 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
                   originalName: nameController.text,
                   location: locationController.text,
                   tools: tools,
+                  finished: finished
                 );
-                await updateBinIfDifferent(
-                    widget.bin, newBin);
+                await updateBinIfDifferent(widget.bin, newBin);
                 if (context.mounted) {
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
@@ -230,6 +247,7 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildSectionHeader('Bin Information'),
+                    _buildModeledCheckbox(),
                     _buildTextField(
                       controller: nameController,
                       label: 'Bin Name: ',
@@ -355,6 +373,43 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
                   ),
                 ),
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModeledCheckbox() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Transform.scale(
+            scale: 1.5,
+            child: Checkbox(
+              value: finished,
+              onChanged: (bool? value) {
+                setState(() {
+                  finished = value ?? false;
+                });
+              },
+              activeColor: Colors.orange[800],
+              checkColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          const Text(
+            'Finished',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+              letterSpacing: 1.2,
             ),
           ),
         ],
