@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
+import '../backend/message_helper.dart';
 
 class Bin {
   String originalName;
@@ -197,27 +200,4 @@ Future<void> addBinWithParams(String originalName, String location, List<String>
 String formatBinID(binID) {
   String documentName = binID.replaceAll('/', '|');
   return documentName;
-}
-
-Future<void> addFinishedFieldToBins() async {
-  final firestore = FirebaseFirestore.instance;
-
-  try {
-    final binsCollection = firestore.collection('Bins');
-    final binsSnapshot = await binsCollection.get();
-
-    for (var doc in binsSnapshot.docs) {
-      await binsCollection.doc(doc.id).update({
-        'Finished': false,
-      });
-    }
-
-    if (kDebugMode) {
-      print('Finished field added to all documents in Bins collection');
-    }
-  } catch (e) {
-    if (kDebugMode) {
-      print('Error adding Finished field: $e');
-    }
-  }
 }

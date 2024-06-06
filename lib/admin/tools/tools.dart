@@ -120,7 +120,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
               ),
             ],
@@ -213,6 +213,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                   borderRadius: BorderRadius.all(Radius.circular(25.0)),
                 ),
               ),
+              style: TextStyle(fontSize: 16),
             ),
           ),
           ValueListenableBuilder<int>(
@@ -225,7 +226,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                   child: Text(
                     'Number of Results: $count',
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -299,7 +300,10 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                                 children: [
                                   Text(
                                     'Type: ${tools[index].gageType}',
-                                    style: const TextStyle(color: Colors.black87),
+                                    style: const TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -364,7 +368,7 @@ class DeleteToolDialog extends StatelessWidget {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Colors.black,
             ),
           ),
         ],

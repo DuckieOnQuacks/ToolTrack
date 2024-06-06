@@ -54,6 +54,7 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
     filteredBins = bins!;
     shuffledColors = getRandomlyAssortedColors(cncShopColors);
     searchController.addListener(onSearchChanged);
+    searchController.text = "";
     updateBinCount();
   }
 
@@ -143,6 +144,7 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
                   borderRadius: BorderRadius.all(Radius.circular(25.0)),
                 ),
               ),
+              style: TextStyle(fontSize: 16),
             ),
           ),
           ValueListenableBuilder<int>(
@@ -155,7 +157,7 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
                   child: Text(
                     'Number of Results: $count',
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -202,38 +204,47 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           elevation: 4,
-                          color: tileColor,
-                          child: ListTile(
-                            leading: const Icon(Icons.inbox, color: Colors.black),
-                            trailing: IconButton(
-                              icon:
-                              const Icon(Icons.delete, color: Colors.black),
-                              onPressed: () => onDeletePressed(bins[index]),
-                            ),
-                            title: Text(
-                              bins[index].originalName,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [tileColor.withOpacity(0.8), tileColor],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
                               ),
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            subtitle: Text(
-                              'Location: ${bins[index].location}',
-                              style: const TextStyle(color: Colors.black87),
+                            child: ListTile(
+                              leading: const Icon(Icons.inbox, color: Colors.black),
+                              trailing: IconButton(
+                                icon:
+                                const Icon(Icons.delete, color: Colors.black),
+                                onPressed: () => onDeletePressed(bins[index]),
+                              ),
+                              title: Text(
+                                bins[index].originalName,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              subtitle: Text(
+                                'Location: ${bins[index].location}',
+                                style: const TextStyle(color: Colors.black87, fontSize: 16),
+                              ),
+                              onTap: () async {
+                                var result = await Navigator.of(context)
+                                    .push(MaterialPageRoute(
+                                  builder: (context) =>
+                                      AdminInspectBinScreen(
+                                        bin: bins[index],
+                                      ),
+                                ));
+                                if (result == true) {
+                                  refreshBinsList();
+                                }
+                              },
                             ),
-                            onTap: () async {
-                              var result = await Navigator.of(context)
-                                  .push(MaterialPageRoute(
-                                builder: (context) =>
-                                    AdminInspectBinScreen(
-                                      bin: bins[index],
-                                    ),
-                              ));
-                              if (result == true) {
-                                refreshBinsList();
-                              }
-                            },
                           ),
                         );
                       },
@@ -352,7 +363,7 @@ class DeleteBinDialog extends StatelessWidget {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Colors.black,
             ),
           ),
         ],
@@ -384,4 +395,3 @@ class DeleteBinDialog extends StatelessWidget {
     );
   }
 }
-

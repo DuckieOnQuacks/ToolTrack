@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lottie/lottie.dart';
 import '../../backend/message_helper.dart';
 import '../../classes/bin_class.dart';
+import '../../classes/tool_class.dart';
 
 class AdminInspectBinScreen extends StatefulWidget {
   final Bin bin;
@@ -17,20 +19,20 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
   final TextEditingController newToolController = TextEditingController();
-  late List<String> tools;
-  late List<String> initialTools;
+  late List<Tool> tools;
+  late List<Tool> initialTools;
   bool finished = false;
-  Map<String, String> toolStatuses = {};
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     nameController.text = widget.bin.originalName;
     locationController.text = widget.bin.location;
-    tools = List.from(widget.bin.tools ?? []);
-    initialTools = List.from(widget.bin.tools ?? []);
+    tools = [];
+    initialTools = [];
+    fetchInitialTools(widget.bin.tools);
     finished = widget.bin.finished;
-    fetchToolStatuses();
   }
 
   @override
@@ -41,15 +43,19 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
     super.dispose();
   }
 
-  Future<void> fetchToolStatuses() async {
-    for (var toolId in tools) {
+  Future<void> fetchInitialTools(List<String?> toolIds) async {
+    List<Tool> fetchedTools = [];
+    for (var toolId in toolIds) {
       final toolDoc = await FirebaseFirestore.instance.collection('Tools').doc(toolId).get();
       if (toolDoc.exists) {
-        setState(() {
-          toolStatuses[toolId] = toolDoc.data()?['status'] ?? 'Unknown';
-        });
+        fetchedTools.add(Tool.fromJson(toolDoc.data()!));
       }
     }
+    setState(() {
+      tools = fetchedTools;
+      initialTools = List.from(fetchedTools);
+      isLoading = false;
+    });
   }
 
   void confirmChanges(BuildContext context) {
@@ -110,7 +116,7 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
           ),
           const SizedBox(height: 8),
           ...addedTools.map((tool) => Text(
-            tool,
+            tool.gageID,
             style: const TextStyle(
                 fontWeight: FontWeight.normal, color: Colors.white),
           )),
@@ -131,7 +137,7 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
           ),
           const SizedBox(height: 8),
           ...removedTools.map((tool) => Text(
-            tool,
+            tool.gageID,
             style: const TextStyle(
                 fontWeight: FontWeight.normal, color: Colors.white),
           )),
@@ -199,7 +205,7 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
                 final newBin = Bin(
                     originalName: nameController.text,
                     location: locationController.text,
-                    tools: tools,
+                    tools: tools.map((tool) => tool.gageID).toList(),
                     finished: finished
                 );
                 await updateBinIfDifferent(widget.bin, newBin);
@@ -224,15 +230,23 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
   Future<void> addTool() async {
     final toolId = newToolController.text.trim();
     if (toolId.isNotEmpty) {
-      final toolDoc = await FirebaseFirestore.instance.collection('Tools').doc(toolId).get();
-      if (toolDoc.exists) {
-        setState(() {
-          tools.add(toolId);
-          newToolController.clear();
-          toolStatuses[toolId] = toolDoc.data()?['status'] ?? 'Unknown';
-        });
+      bool alreadyExists = tools.any((tool) => tool.gageID == toolId);
+      if (alreadyExists) {
+        showTopSnackBar(
+            context,
+            "Tool ID $toolId is already in the list.",
+            Colors.red,
+            title: "Error",
+            icon: Icons.error
+        );
       } else {
-        showTopSnackBar(context, "Tool ID does not exist in the database. Please add the new tool before assigning it to a bin.", Colors.red, title: "Error", icon: Icons.error);
+        Tool? validTool = await validateAndFetchTool(context, toolId);
+        if (validTool != null) {
+          setState(() {
+            tools.add(validTool);
+            newToolController.clear();
+          });
+        }
       }
     }
   }
@@ -243,23 +257,20 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
     });
   }
 
-  Future<List<String>> validateToolIds(BuildContext context, List<String> toolIds) async {
-    List<String> validToolIds = [];
-    for (String toolId in toolIds) {
-      final toolDoc = await FirebaseFirestore.instance.collection('Tools').doc(toolId).get();
-      if (toolDoc.exists) {
-        validToolIds.add(toolId);
-      } else {
-        showTopSnackBar(
-            context,
-            "Tool ID $toolId does not exist in the database.",
-            Colors.red,
-            title: "Error",
-            icon: Icons.error
-        );
-      }
+  Future<Tool?> validateAndFetchTool(BuildContext context, String toolId) async {
+    final toolDoc = await FirebaseFirestore.instance.collection('Tools').doc(toolId).get();
+    if (toolDoc.exists) {
+      return Tool.fromJson(toolDoc.data()!);
+    } else {
+      showTopSnackBar(
+          context,
+          "Tool ID $toolId does not exist in the database.",
+          Colors.red,
+          title: "Error",
+          icon: Icons.error
+      );
+      return null;
     }
-    return validToolIds;
   }
 
   void copyToolToClipboard(String tool) {
@@ -367,14 +378,21 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
           const Text('Tools:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          ListView.builder(
+          isLoading
+              ? Center(
+            child: Lottie.asset(
+              'assets/lottie/loading.json',
+              width: 100,
+              height: 100,
+            ),
+          )
+              : ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: tools.length,
             itemBuilder: (context, index) {
-              String toolId = tools[index];
-
-              String status = toolStatuses[toolId] ?? 'Unknown';
+              Tool tool = tools[index];
+              String status = tool.status ?? 'Unknown';
               Color statusColor = status.toLowerCase() == 'available'
                   ? Colors.green
                   : Colors.red;
@@ -382,7 +400,7 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(toolId),
+                    Text(tool.gageID),
                     Text(
                       status,
                       style: TextStyle(
@@ -397,7 +415,7 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.copy, color: Colors.blue),
-                      onPressed: () => copyToolToClipboard(toolId),
+                      onPressed: () => copyToolToClipboard(tool.gageID),
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
