@@ -20,7 +20,7 @@ class _AdminBottomBarState extends State<AdminBottomBar> {
     2: const AdminBinsPage()
   };
 
-  void _onItemTapped(int index) {
+  void onItemTapped(int index) {
     setState(() {
       selectedIndex = index;
     });
@@ -66,7 +66,7 @@ class _AdminBottomBarState extends State<AdminBottomBar> {
           unselectedIconTheme: const IconThemeData(size: 25, color: Colors.grey),
           showSelectedLabels: true,
           showUnselectedLabels: false,
-          onTap: _onItemTapped,
+          onTap: onItemTapped,
           type: BottomNavigationBarType.fixed,
         ),
       ),

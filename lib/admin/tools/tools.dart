@@ -47,25 +47,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
     return colorList;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    tools = getAllTools();
-    filteredTools = tools!;
-    shuffledColors = getRandomlyAssortedColors(cncShopColors);
-    searchController.addListener(_onSearchChanged);
-    updateToolCount();
-  }
-
-  @override
-  void dispose() {
-    searchController.removeListener(_onSearchChanged);
-    searchController.dispose();
-    toolCountNotifier.dispose();
-    super.dispose();
-  }
-
-  void _onSearchChanged() {
+  void onSearchChanged() {
     EasyDebounce.debounce(
       'search-debouncer', // <-- An identifier for this particular debouncer
       const Duration(milliseconds: 500), // <-- The debounce duration
@@ -103,6 +85,93 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
       shuffledColors = getRandomlyAssortedColors(cncShopColors);
     });
     updateToolCount();
+  }
+
+  void onDeletePressed(Tool tool) async {
+    bool? result = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => DeleteToolDialog(tool: tool),
+    );
+    if (result != null && result) {
+      // Implement tool deletion logic here
+      refreshToolsList();
+    }
+  }
+
+  void showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          buttonPadding: const EdgeInsets.all(15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 10,
+          title: const Row(
+            children: [
+              Icon(
+                Icons.warning_amber_rounded,
+                color: Colors.redAccent,
+              ),
+              SizedBox(width: 10),
+              Text(
+                'Confirm Logout',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          content: const Text('Are you sure you want to log out of your account?'),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.black54,
+                backgroundColor: Colors.grey[300],
+              ),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => const LoginPage(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.redAccent,
+              ),
+              child: const Text('Sign Out'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    tools = getAllTools();
+    filteredTools = tools!;
+    shuffledColors = getRandomlyAssortedColors(cncShopColors);
+    searchController.addListener(onSearchChanged);
+    updateToolCount();
+  }
+
+  @override
+  void dispose() {
+    searchController.removeListener(onSearchChanged);
+    searchController.dispose();
+    toolCountNotifier.dispose();
+    super.dispose();
   }
 
   @override
@@ -232,7 +301,6 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                                     'Type: ${tools[index].gageType}',
                                     style: const TextStyle(color: Colors.black87),
                                   ),
-                                  const SizedBox(height: 4),
                                 ],
                               ),
                               onTap: () async {
@@ -267,75 +335,6 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
           ),
         ],
       ),
-    );
-  }
-
-  void onDeletePressed(Tool tool) async {
-    bool? result = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) => DeleteToolDialog(tool: tool),
-    );
-    if (result != null && result) {
-      // Implement tool deletion logic here
-      refreshToolsList();
-    }
-  }
-
-  void showLogoutConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          buttonPadding: const EdgeInsets.all(15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          elevation: 10,
-          title: const Row(
-            children: [
-              Icon(
-                Icons.warning_amber_rounded,
-                color: Colors.redAccent,
-              ),
-              SizedBox(width: 10),
-              Text(
-                'Confirm Logout',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          content: const Text('Are you sure you want to log out of your account?'),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.black54,
-                backgroundColor: Colors.grey[300],
-              ),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => const LoginPage(),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.redAccent,
-              ),
-              child: const Text('Sign Out'),
-            ),
-          ],
-        );
-      },
     );
   }
 }
@@ -396,4 +395,3 @@ class DeleteToolDialog extends StatelessWidget {
     );
   }
 }
-

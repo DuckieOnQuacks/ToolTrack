@@ -63,7 +63,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
     }
   }
 
-  void _showImage(String imagePath, {String? description}) {
+  void showImage(String imagePath, {String? description}) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.black26,
@@ -95,7 +95,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: FutureBuilder(
-                  future: _loadImage(imagePath),
+                  future: loadImage(imagePath),
                   builder: (BuildContext context, AsyncSnapshot<ImageProvider<Object>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
@@ -138,7 +138,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
     );
   }
 
-  Future<ImageProvider<Object>> _loadImage(String path) async {
+  Future<ImageProvider<Object>> loadImage(String path) async {
     return NetworkImage(path);
   }
 
@@ -187,7 +187,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                             IconButton(
                               icon: const Icon(Icons.image, color: Colors.white),
                               onPressed: () {
-                                _showImage(widget.toolImagePath);
+                                showImage(widget.toolImagePath);
                               },
                             ),
                           ],

@@ -53,19 +53,19 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
     bins = getAllBins();
     filteredBins = bins!;
     shuffledColors = getRandomlyAssortedColors(cncShopColors);
-    searchController.addListener(_onSearchChanged);
+    searchController.addListener(onSearchChanged);
     updateBinCount();
   }
 
   @override
   void dispose() {
-    searchController.removeListener(_onSearchChanged);
+    searchController.removeListener(onSearchChanged);
     searchController.dispose();
     binCountNotifier.dispose();
     super.dispose();
   }
 
-  void _onSearchChanged() {
+  void onSearchChanged() {
     EasyDebounce.debounce(
       'search-debouncer', // <-- An identifier for this particular debouncer
       const Duration(milliseconds: 500), // <-- The debounce duration
@@ -96,7 +96,6 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
     });
     updateBinCount();
   }
-
 
   void updateBinCount() {
     filteredBins.then((list) {

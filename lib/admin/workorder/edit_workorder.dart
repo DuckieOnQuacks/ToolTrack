@@ -42,7 +42,7 @@ class _AdminInspectWorkOrderScreenState
   }
 
 
-  void _confirmChanges(BuildContext context) {
+  void confirmChanges(BuildContext context) {
     List<Widget> changesWidgets = [];
 
     if (idController.text != widget.workOrder.id) {
@@ -180,8 +180,8 @@ class _AdminInspectWorkOrderScreenState
                 await updateWorkOrderIfDifferent(
                     widget.workOrder, newWorkOrder);
                 if (context.mounted) {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(true);
+                  Navigator.of(context).pop(true);
                   showTopSnackBar(context, "Changes Saved Successfully", Colors.green, title: "Success", icon: Icons.check_circle);
                 }
               },
@@ -197,7 +197,7 @@ class _AdminInspectWorkOrderScreenState
     );
   }
 
-  void _addTool() {
+  void addTool() {
     if (newToolController.text.isNotEmpty) {
       setState(() {
         tools.add(newToolController.text);
@@ -206,13 +206,13 @@ class _AdminInspectWorkOrderScreenState
     }
   }
 
-  void _removeTool(int index) {
+  void removeTool(int index) {
     setState(() {
       tools.removeAt(index);
     });
   }
 
-  void _copyToolToClipboard(String tool) {
+  void copyToolToClipboard(String tool) {
     Clipboard.setData(ClipboardData(text: tool));
     showTopSnackBar(context, "Tool ID copied to clipboard", Colors.blue, title: "Note:", icon: Icons.copy);
 
@@ -251,7 +251,7 @@ class _AdminInspectWorkOrderScreenState
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () => _confirmChanges(context),
+                          onPressed: () => confirmChanges(context),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             backgroundColor: Colors.orange[800],
@@ -274,11 +274,7 @@ class _AdminInspectWorkOrderScreenState
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hintText,
-  }) {
+  Widget _buildTextField({required TextEditingController controller, required String label, required String hintText,}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -333,11 +329,11 @@ class _AdminInspectWorkOrderScreenState
                   children: [
                     IconButton(
                       icon: const Icon(Icons.copy, color: Colors.blue),
-                      onPressed: () => _copyToolToClipboard(tools[index]),
+                      onPressed: () => copyToolToClipboard(tools[index]),
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => _removeTool(index),
+                      onPressed: () => removeTool(index),
                     ),
                   ],
                 ),
@@ -356,7 +352,7 @@ class _AdminInspectWorkOrderScreenState
                   hintText: 'Add Tool ID',
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.add, color: Colors.green),
-                    onPressed: _addTool,
+                    onPressed: addTool,
                   ),
                 ),
               ),
@@ -365,16 +361,5 @@ class _AdminInspectWorkOrderScreenState
         ],
       ),
     );
-  }
-
-  Future<void> updateWorkOrderIfDifferent(
-      WorkOrder oldWorkOrder, WorkOrder newWorkOrder) async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    if (oldWorkOrder.toJson() != newWorkOrder.toJson()) {
-      await firestore
-          .collection('WorkOrders')
-          .doc(newWorkOrder.id)
-          .set(newWorkOrder.toJson());
-    }
   }
 }

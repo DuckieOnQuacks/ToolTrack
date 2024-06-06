@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:intl/intl.dart';
+import '../../backend/camera_manager.dart';
 import '../../backend/message_helper.dart';
 import '../../classes/tool_class.dart';
 
@@ -12,52 +13,6 @@ class AdminAddToolPage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _AdminAddToolPageState();
-}
-
-class CameraManager {
-  CameraController? controller;
-  final List<CameraDescription> cameras;
-  final BarcodeScanner barcodeScanner = BarcodeScanner();
-
-  CameraManager(this.cameras);
-
-  Future<void> initializeCamera() async {
-    if (cameras.isNotEmpty) {
-      controller = CameraController(
-        cameras.first,
-        ResolutionPreset.medium,
-        imageFormatGroup: ImageFormatGroup.yuv420,
-      );
-      try {
-        await controller!.initialize();
-      } catch (e) {
-        debugPrint('Error initializing camera: $e');
-      }
-    }
-  }
-
-  Future<void> disposeCamera() async {
-    await controller?.dispose();
-    await barcodeScanner.close();
-  }
-
-  Future<String?> takePicture() async {
-    if (controller == null || !controller!.value.isInitialized) {
-      debugPrint('Camera not initialized');
-      return null;
-    }
-
-    if (!controller!.value.isTakingPicture) {
-      try {
-        final XFile file = await controller!.takePicture();
-        return file.path;
-      } catch (e) {
-        debugPrint('Error taking picture: $e');
-        return null;
-      }
-    }
-    return null;
-  }
 }
 
 class _AdminAddToolPageState extends State<AdminAddToolPage> {
@@ -80,33 +35,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
   String imageUrl = '';
   bool pictureTaken = false;
 
-  @override
-  void initState() {
-    super.initState();
-    availableCameras().then((availableCameras) {
-      if (!mounted) return; // Ensure the widget is still mounted
-      setState(() {
-        _cameraManager = CameraManager(availableCameras);
-      });
-      _initializeCamera();
-    });
-  }
-
-  @override
-  void dispose() {
-    _cameraManager.disposeCamera();
-    _gageIDController.dispose();
-    _calFreqController.dispose();
-    _calNextDueController.dispose();
-    _calLastController.dispose();
-    _dateCreatedController.dispose();
-    _gageTypeController.dispose();
-    _gageDescController.dispose();
-    _daysRemainController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _initializeCamera() async {
+  Future<void> initializeCamera() async {
     setState(() {
       isLoading = true;
     });
@@ -118,7 +47,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
     });
   }
 
-  Future<void> _showCameraDialog() async {
+  Future<void> showCameraDialog() async {
     if (_cameraManager.controller != null &&
         _cameraManager.controller!.value.isInitialized) {
       showDialog(
@@ -148,7 +77,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                         icon: Icon(_flashMode == FlashMode.torch
                             ? Icons.flash_on
                             : Icons.flash_off),
-                        onPressed: _toggleFlashMode,
+                        onPressed: toggleFlashMode,
                         color: Colors.yellow,
                         iconSize: 36,
                       ),
@@ -179,7 +108,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
     }
   }
 
-  void _toggleFlashMode() {
+  void toggleFlashMode() {
     setState(() {
       _flashMode =
           _flashMode == FlashMode.off ? FlashMode.torch : FlashMode.off;
@@ -187,7 +116,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
     });
   }
 
-  Future<void> _submitForm() async {
+  Future<void> submitForm() async {
     if (!_formKey.currentState!.validate()) {
       // Show top snackbar warning if any required field is not filled
       showTopSnackBar(
@@ -209,7 +138,10 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
       _daysRemainController.text,
     );
 
-    if (context.mounted) Navigator.popUntil(context, (route) => route.isFirst);
+    if (context.mounted) {
+      Navigator.of(context).pop(true);
+      Navigator.of(context).pop(true);
+    }
     Future.delayed(const Duration(milliseconds: 100), () {
       showTopSnackBar(
           context, "Added tool successfully", Colors.green, title: "Success",
@@ -217,7 +149,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
     });
   }
 
-  void _showPictureDialog(String imagePath) {
+  void showPictureDialog(String imagePath) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -238,6 +170,32 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
         );
       },
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    availableCameras().then((availableCameras) {
+      if (!mounted) return; // Ensure the widget is still mounted
+      setState(() {
+        _cameraManager = CameraManager(availableCameras);
+      });
+      initializeCamera();
+    });
+  }
+
+  @override
+  void dispose() {
+    _cameraManager.disposeCamera();
+    _gageIDController.dispose();
+    _calFreqController.dispose();
+    _calNextDueController.dispose();
+    _calLastController.dispose();
+    _dateCreatedController.dispose();
+    _gageTypeController.dispose();
+    _gageDescController.dispose();
+    _daysRemainController.dispose();
+    super.dispose();
   }
 
   @override
@@ -270,7 +228,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                       icon: const Icon(Icons.camera_alt,
                           size: 40, color: Colors.orange),
                       onPressed: () async {
-                        await _showCameraDialog();
+                        await showCameraDialog();
                       },
                     ),
                     if (pictureTaken) ...[
@@ -278,7 +236,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                         icon: const Icon(Icons.image,
                             color: Colors.green, size: 40),
                         onPressed: () {
-                          _showPictureDialog(imagePath);
+                          showPictureDialog(imagePath);
                         },
                       ),
                     ],
@@ -349,7 +307,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                   child: SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () => _submitForm(),
+                      onPressed: () => submitForm(),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: Colors.orange[800],
@@ -370,12 +328,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hintText,
-    String? Function(String?)? validator,
-  }) {
+  Widget _buildTextField({required TextEditingController controller, required String label, required String hintText, String? Function(String?)? validator}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -399,12 +352,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
     );
   }
 
-  Widget _buildDateField({
-    required TextEditingController controller,
-    required String label,
-    required String hintText,
-    String? Function(String?)? validator,
-  }) {
+  Widget _buildDateField({required TextEditingController controller, required String label, required String hintText, String? Function(String?)? validator}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -441,12 +389,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
     );
   }
 
-  Widget _buildDropdownField({
-    required TextEditingController controller,
-    required String label,
-    required String hintText,
-    required List<String> items,
-  }) {
+  Widget _buildDropdownField({required TextEditingController controller, required String label, required String hintText, required List<String> items,}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(

@@ -71,55 +71,55 @@ class WorkOrder {
     }
   }
 
-  /// Adds a new work order to the Firestore database.
-  /// This function creates a new document in the 'WorkOrders' collection with the specified
-  /// work order ID and populates it with the provided data.
-  Future<void> addWorkOrder({
-    required String id,
-    required String imagePath,
-    required String toolId,
-    required String enteredBy,
-  }) async {
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    final workOrderCollection = firestore.collection('WorkOrders');
-    final FirebaseStorage storage = FirebaseStorage.instance;
+}
 
-    try {
-      // Upload the image to Firebase Storage
-      final Reference storageReference =
-          storage.ref().child('WorkOrderImages/$id.jpg');
-      final UploadTask uploadTask = storageReference.putFile(File(imagePath));
+/// Adds a new work order to the Firestore database.
+/// This function creates a new document in the 'WorkOrders' collection with the specified
+/// work order ID and populates it with the provided data.
+Future<void> addWorkOrder({
+  required String id,
+  required String imagePath,
+  required String toolId,
+  required String enteredBy,
+}) async {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final workOrderCollection = firestore.collection('WorkOrders');
+  final FirebaseStorage storage = FirebaseStorage.instance;
 
-      // Wait for the upload to complete
-      final TaskSnapshot storageSnapshot =
-          await uploadTask.whenComplete(() => {});
+  try {
+    // Upload the image to Firebase Storage
+    final Reference storageReference =
+    storage.ref().child('WorkOrderImages/$id.jpg');
+    final UploadTask uploadTask = storageReference.putFile(File(imagePath));
 
-      // Get the download URL of the uploaded image
-      final String downloadURL = await storageSnapshot.ref.getDownloadURL();
+    // Wait for the upload to complete
+    final TaskSnapshot storageSnapshot =
+    await uploadTask.whenComplete(() => {});
 
-      // Create a map with the work order data
-      Map<String, dynamic> workOrderData = {
-        'id': id,
-        'ImagePath': downloadURL, // Use the download URL
-        'Tools': [toolId], // Add the single tool ID to a list
-        'Entered By': enteredBy,
-      };
+    // Get the download URL of the uploaded image
+    final String downloadURL = await storageSnapshot.ref.getDownloadURL();
 
-      // Create a new document in the 'WorkOrders' collection with the specified ID
-      await workOrderCollection.doc(id).set(workOrderData);
+    // Create a map with the work order data
+    Map<String, dynamic> workOrderData = {
+      'id': id,
+      'ImagePath': downloadURL, // Use the download URL
+      'Tools': [toolId], // Add the single tool ID to a list
+      'Entered By': enteredBy,
+    };
 
-      if (kDebugMode) {
-        print(
-            'Work order $id has been successfully added to the WorkOrders collection.');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error adding work order $id to the WorkOrders collection: $e');
-      }
+    // Create a new document in the 'WorkOrders' collection with the specified ID
+    await workOrderCollection.doc(id).set(workOrderData);
+
+    if (kDebugMode) {
+      print(
+          'Work order $id has been successfully added to the WorkOrders collection.');
+    }
+  } catch (e) {
+    if (kDebugMode) {
+      print('Error adding work order $id to the WorkOrders collection: $e');
     }
   }
 }
-
 Future<void> handleWorkOrderAndCheckout({
   required String workorderId,
   required String toolId,
@@ -285,4 +285,23 @@ Future<bool> checkWorkOrderExists(String workOrderId) async {
       .doc(workOrderId)
       .get();
   return workOrderDoc.exists;
+}
+
+Future<void> updateWorkOrderIfDifferent(
+    WorkOrder oldWorkOrder, WorkOrder newWorkOrder) async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  if (oldWorkOrder.toJson() != newWorkOrder.toJson()) {
+    await firestore
+        .collection('WorkOrders')
+        .doc(newWorkOrder.id)
+        .set(newWorkOrder.toJson());
+  }
+}
+
+Future<List<WorkOrder>> getAllWorkOrders() async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  QuerySnapshot snapshot = await firestore.collection('WorkOrders').get();
+  return snapshot.docs
+      .map((doc) => WorkOrder.fromJson(doc.data() as Map<String, dynamic>))
+      .toList();
 }

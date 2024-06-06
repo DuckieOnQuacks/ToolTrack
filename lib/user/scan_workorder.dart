@@ -1,7 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:vineburgapp/user/scan_tool.dart';
+import 'package:vineburgapp/user/scan_bin.dart';
 import '../backend/camera_manager.dart';
 import '../backend/message_helper.dart';
 
@@ -24,10 +24,10 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    initializeCamera();
   }
 
-  Future<void> _initializeCamera() async {
+  Future<void> initializeCamera() async {
     setState(() {
       _isLoading = true;
     });
@@ -126,7 +126,7 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
                         workOrderId,
                         '',
                         widget.inOrOut,
-                        snackbarMessage: "Workorder ID entered successfully!",
+                        snackbarMessage: "Workorder ID $workOrderId entered successfully!",
                       ),
                     ),
                   );
@@ -141,7 +141,7 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
     );
   }
 
-  void _toggleFlashMode() {
+  void toggleFlashMode() {
     setState(() {
       _flashEnabled = !_flashEnabled;
     });
@@ -198,7 +198,7 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
                 children: [
                   IconButton(
                     icon: Icon(_flashEnabled ? Icons.flash_on : Icons.flash_off),
-                    onPressed: _toggleFlashMode,
+                    onPressed: toggleFlashMode,
                     color: Colors.yellow,
                     iconSize: 36,
                   ),

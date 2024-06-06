@@ -26,10 +26,10 @@ class _ReturnToolState extends State<ReturnToolPage> {
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    initializeCamera();
   }
 
-  Future<void> _initializeCamera() async {
+  Future<void> initializeCamera() async {
     setState(() {
       _isLoading = true;
     });
@@ -241,7 +241,7 @@ class _ReturnToolState extends State<ReturnToolPage> {
     );
   }
 
-  void _toggleFlashMode() {
+  void toggleFlashMode() {
     setState(() {
       _flashEnabled = !_flashEnabled;
     });
@@ -354,7 +354,7 @@ class _ReturnToolState extends State<ReturnToolPage> {
                 children: [
                   IconButton(
                     icon: Icon(_flashEnabled ? Icons.flash_on : Icons.flash_off),
-                    onPressed: _toggleFlashMode,
+                    onPressed: toggleFlashMode,
                     color: Colors.yellow,
                     iconSize: 36,
                   ),

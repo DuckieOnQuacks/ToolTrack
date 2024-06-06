@@ -345,12 +345,10 @@ Future<void> deleteTool(Tool tool) async {
       if (kDebugMode) {
         print('Tool with ID ${tool.gageID} has been deleted.');
       }
-
       // Attempt to delete the image from Firebase Storage.
       if (tool.imagePath.isNotEmpty) {
         try {
-          final storageRef =
-              FirebaseStorage.instance.refFromURL(tool.imagePath);
+          final storageRef = FirebaseStorage.instance.refFromURL(tool.imagePath);
           await storageRef.delete();
           if (kDebugMode) {
             print(
@@ -393,9 +391,7 @@ Future<String?> uploadImageToStorage(String filePath, String gageID) async {
 }
 
 /// Updates a tool in the Firestore database if any of its fields have changed.
-/// Updates a tool in the Firestore database if any of its fields have changed.
 /// If the gageID has changed, it deletes the old tool and creates a new tool with the new ID.
-
 Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
   final toolsCollection = FirebaseFirestore.instance.collection('Tools');
   final toolDoc = toolsCollection.doc(oldTool.gageID);

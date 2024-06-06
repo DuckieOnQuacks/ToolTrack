@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:vineburgapp/admin/workorder/add_workorder.dart';
 import 'package:vineburgapp/admin/workorder/edit_workorder.dart';
 import '../../classes/workorder_class.dart';
 import '../../login.dart';
@@ -48,39 +49,26 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
     return colorList;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    workOrders = getAllWorkOrders();
-    filteredWorkOrders = workOrders!;
-    shuffledColors = getRandomlyAssortedColors(cncShopColors);
-    searchController.addListener(onSearchChanged);
-    updateWorkOrderCount();
-  }
-
-  @override
-  void dispose() {
-    searchController.removeListener(onSearchChanged);
-    searchController.dispose();
-    workOrderCountNotifier.dispose();
-    super.dispose();
-  }
-
   void onSearchChanged() {
     EasyDebounce.debounce(
       'search-debouncer', // <-- An identifier for this particular debouncer
       const Duration(milliseconds: 500), // <-- The debounce duration
-          () => filterSearchResults(searchController.text), // <-- The target method
+      () => filterSearchResults(searchController.text), // <-- The target method
     );
   }
 
   void filterSearchResults(String query) {
     setState(() {
       if (query.isNotEmpty) {
-        filteredWorkOrders = workOrders!.then((allWorkOrders) => allWorkOrders.where((workOrder) {
-          return workOrder.id.toLowerCase().contains(query.toLowerCase()) ||
-              workOrder.enteredBy.toLowerCase().contains(query.toLowerCase());
-        }).toList());
+        filteredWorkOrders = workOrders!
+            .then((allWorkOrders) => allWorkOrders.where((workOrder) {
+                  return workOrder.id
+                          .toLowerCase()
+                          .contains(query.toLowerCase()) ||
+                      workOrder.enteredBy
+                          .toLowerCase()
+                          .contains(query.toLowerCase());
+                }).toList());
       } else {
         filteredWorkOrders = workOrders!;
       }
@@ -103,20 +91,112 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
     updateWorkOrderCount();
   }
 
-  Future<List<WorkOrder>> getAllWorkOrders() async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    QuerySnapshot snapshot = await firestore.collection('WorkOrders').get();
-    return snapshot.docs.map((doc) => WorkOrder.fromJson(doc.data() as Map<String, dynamic>)).toList();
+  void onDeletePressed(WorkOrder workOrder) async {
+    bool? result = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) =>
+          DeleteWorkOrderDialog(workOrder: workOrder),
+    );
+    if (result != null && result) {
+      // Implement work order deletion logic here
+      refreshWorkOrdersList();
+    }
+  }
+
+  void showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          buttonPadding: const EdgeInsets.all(15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 10,
+          title: const Row(
+            children: [
+              Icon(
+                Icons.warning_amber_rounded,
+                color: Colors.redAccent,
+              ),
+              SizedBox(width: 10),
+              Text(
+                'Confirm Logout',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          content:
+          const Text('Are you sure you want to log out of your account?'),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.black54,
+                backgroundColor: Colors.grey[300],
+              ),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => const LoginPage(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.redAccent,
+              ),
+              child: const Text('Sign Out'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    workOrders = getAllWorkOrders();
+    filteredWorkOrders = workOrders!;
+    shuffledColors = getRandomlyAssortedColors(cncShopColors);
+    searchController.addListener(onSearchChanged);
+    updateWorkOrderCount();
+  }
+
+  @override
+  void dispose() {
+    searchController.removeListener(onSearchChanged);
+    searchController.dispose();
+    workOrderCountNotifier.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Work Order Search', style: TextStyle(color: Colors.white)),
+        title: const Text('Work Order Search',
+            style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900],
         automaticallyImplyLeading: false,
         centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.add, color: Colors.white),
+            onPressed: () async {
+              await Navigator.of(context).push(MaterialPageRoute(builder: (context) =>const AdminAddWorkOrderPage()));
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -184,7 +264,8 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
                       padding: const EdgeInsets.all(10),
                       itemCount: workOrders.length,
                       itemBuilder: (context, index) {
-                        Color tileColor = shuffledColors[index % shuffledColors.length];
+                        Color tileColor =
+                            shuffledColors[index % shuffledColors.length];
                         return Card(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -192,10 +273,13 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
                           elevation: 4,
                           color: tileColor,
                           child: ListTile(
-                            leading: const Icon(Icons.assignment, color: Colors.black),
+                            leading: const Icon(Icons.assignment,
+                                color: Colors.black),
                             trailing: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.black),
-                              onPressed: () => onDeletePressed(workOrders[index]),
+                              icon:
+                                  const Icon(Icons.delete, color: Colors.black),
+                              onPressed: () =>
+                                  onDeletePressed(workOrders[index]),
                             ),
                             title: Text(
                               workOrders[index].id,
@@ -210,9 +294,17 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
                               style: const TextStyle(color: Colors.black87),
                             ),
                             onTap: () async {
-                              await Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => AdminInspectWorkOrderScreen(workOrder: workOrders[index]),
-                              ));
+                              var result = await Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      AdminInspectWorkOrderScreen(
+                                    workOrder: workOrders[index],
+                                  ),
+                                ),
+                              );
+                              if (result == true) {
+                                refreshWorkOrdersList();
+                              }
                             },
                           ),
                         );
@@ -235,81 +327,26 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
       ),
     );
   }
-
-  void onDeletePressed(WorkOrder workOrder) async {
-    bool? result = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) => DeleteWorkOrderDialog(workOrder: workOrder),
-    );
-    if (result != null && result) {
-      // Implement work order deletion logic here
-      refreshWorkOrdersList();
-    }
-  }
-
-  void showLogoutConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          buttonPadding: const EdgeInsets.all(15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          elevation: 10,
-          title: const Row(
-            children: [
-              Icon(
-                Icons.warning_amber_rounded,
-                color: Colors.redAccent,
-              ),
-              SizedBox(width: 10),
-              Text(
-                'Confirm Logout',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          content: const Text('Are you sure you want to log out of your account?'),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.black54,
-                backgroundColor: Colors.grey[300],
-              ),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => const LoginPage(),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.redAccent,
-              ),
-              child: const Text('Sign Out'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
 
 class DeleteWorkOrderDialog extends StatelessWidget {
   final WorkOrder workOrder;
 
   const DeleteWorkOrderDialog({super.key, required this.workOrder});
+
+  Future<void> deleteWorkOrder(WorkOrder workOrder) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    try {
+      await firestore.collection('WorkOrders').doc(workOrder.id).delete();
+      if (kDebugMode) {
+        print('Work order ${workOrder.id} deleted successfully.');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error deleting work order ${workOrder.id}: $e');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -361,19 +398,5 @@ class DeleteWorkOrderDialog extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  Future<void> deleteWorkOrder(WorkOrder workOrder) async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-    try {
-      await firestore.collection('WorkOrders').doc(workOrder.id).delete();
-      if (kDebugMode) {
-        print('Work order ${workOrder.id} deleted successfully.');
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error deleting work order ${workOrder.id}: $e');
-      }
-    }
   }
 }

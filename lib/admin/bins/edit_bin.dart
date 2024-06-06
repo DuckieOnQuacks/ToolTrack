@@ -6,7 +6,6 @@ import '../../classes/bin_class.dart';
 
 class AdminInspectBinScreen extends StatefulWidget {
   final Bin bin;
-
   const AdminInspectBinScreen({super.key, required this.bin});
 
   @override
@@ -18,10 +17,10 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
   final TextEditingController newToolController = TextEditingController();
-
   late List<String> tools;
   late List<String> initialTools;
   bool finished = false;
+  Map<String, String> toolStatuses = {};
 
   @override
   void initState() {
@@ -31,6 +30,7 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
     tools = List.from(widget.bin.tools ?? []);
     initialTools = List.from(widget.bin.tools ?? []);
     finished = widget.bin.finished;
+    fetchToolStatuses();
   }
 
   @override
@@ -41,7 +41,18 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
     super.dispose();
   }
 
-  void _confirmChanges(BuildContext context) {
+  Future<void> fetchToolStatuses() async {
+    for (var toolId in tools) {
+      final toolDoc = await FirebaseFirestore.instance.collection('Tools').doc(toolId).get();
+      if (toolDoc.exists) {
+        setState(() {
+          toolStatuses[toolId] = toolDoc.data()?['status'] ?? 'Unknown';
+        });
+      }
+    }
+  }
+
+  void confirmChanges(BuildContext context) {
     List<Widget> changesWidgets = [];
 
     if (nameController.text != widget.bin.originalName) {
@@ -186,15 +197,15 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
             ElevatedButton(
               onPressed: () async {
                 final newBin = Bin(
-                  originalName: nameController.text,
-                  location: locationController.text,
-                  tools: tools,
-                  finished: finished
+                    originalName: nameController.text,
+                    location: locationController.text,
+                    tools: tools,
+                    finished: finished
                 );
                 await updateBinIfDifferent(widget.bin, newBin);
                 if (context.mounted) {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(true);
+                  Navigator.of(context).pop(true);
                   showTopSnackBar(context, "Changes Saved Successfully", Colors.green, title: "Success", icon: Icons.check_circle);
                 }
               },
@@ -210,22 +221,48 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
     );
   }
 
-  void _addTool() {
-    if (newToolController.text.isNotEmpty) {
-      setState(() {
-        tools.add(newToolController.text);
-        newToolController.clear();
-      });
+  Future<void> addTool() async {
+    final toolId = newToolController.text.trim();
+    if (toolId.isNotEmpty) {
+      final toolDoc = await FirebaseFirestore.instance.collection('Tools').doc(toolId).get();
+      if (toolDoc.exists) {
+        setState(() {
+          tools.add(toolId);
+          newToolController.clear();
+          toolStatuses[toolId] = toolDoc.data()?['status'] ?? 'Unknown';
+        });
+      } else {
+        showTopSnackBar(context, "Tool ID does not exist in the database. Please add the new tool before assigning it to a bin.", Colors.red, title: "Error", icon: Icons.error);
+      }
     }
   }
 
-  void _removeTool(int index) {
+  void removeTool(int index) {
     setState(() {
       tools.removeAt(index);
     });
   }
 
-  void _copyToolToClipboard(String tool) {
+  Future<List<String>> validateToolIds(BuildContext context, List<String> toolIds) async {
+    List<String> validToolIds = [];
+    for (String toolId in toolIds) {
+      final toolDoc = await FirebaseFirestore.instance.collection('Tools').doc(toolId).get();
+      if (toolDoc.exists) {
+        validToolIds.add(toolId);
+      } else {
+        showTopSnackBar(
+            context,
+            "Tool ID $toolId does not exist in the database.",
+            Colors.red,
+            title: "Error",
+            icon: Icons.error
+        );
+      }
+    }
+    return validToolIds;
+  }
+
+  void copyToolToClipboard(String tool) {
     Clipboard.setData(ClipboardData(text: tool));
     showTopSnackBar(context, "Tool ID copied to clipboard", Colors.blue, title: "Note:", icon: Icons.copy);
   }
@@ -264,7 +301,7 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () => _confirmChanges(context),
+                          onPressed: () => confirmChanges(context),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             backgroundColor: Colors.orange[800],
@@ -287,11 +324,7 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hintText,
-  }) {
+  Widget _buildTextField({required TextEditingController controller, required String label, required String hintText,}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -339,18 +372,36 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
             physics: const NeverScrollableScrollPhysics(),
             itemCount: tools.length,
             itemBuilder: (context, index) {
+              String toolId = tools[index];
+
+              String status = toolStatuses[toolId] ?? 'Unknown';
+              Color statusColor = status.toLowerCase() == 'available'
+                  ? Colors.green
+                  : Colors.red;
               return ListTile(
-                title: Text(tools[index]),
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(toolId),
+                    Text(
+                      status,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: statusColor,
+                      ),
+                    ),
+                  ],
+                ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
                       icon: const Icon(Icons.copy, color: Colors.blue),
-                      onPressed: () => _copyToolToClipboard(tools[index]),
+                      onPressed: () => copyToolToClipboard(toolId),
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => _removeTool(index),
+                      onPressed: () => removeTool(index),
                     ),
                   ],
                 ),
@@ -369,7 +420,7 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
                   hintText: 'Add Tool ID',
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.add, color: Colors.green),
-                    onPressed: _addTool,
+                    onPressed: addTool,
                   ),
                 ),
               ),
@@ -417,6 +468,3 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
     );
   }
 }
-
-
-

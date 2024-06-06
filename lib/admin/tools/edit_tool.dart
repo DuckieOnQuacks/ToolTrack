@@ -49,34 +49,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
   String statusValue = 'Available';
   bool isModeled = false;
 
-  @override
-  void initState() {
-    super.initState();
-    availableCameras().then((availableCameras) {
-      cameras = availableCameras;
-      setState(() {
-        _cameraManager = CameraManager(cameras);
-      });
-      _initializeCamera();
-    });
-    gageIDController.text = widget.tool.gageID;
-    gageTypeController.text = widget.tool.gageType;
-    gageDescriptionController.text = widget.tool.gageDesc;
-    checkedOutToController.text = widget.tool.checkedOutTo;
-    lastCheckedOutController.text = widget.tool.lastCheckedOutBy;
-    statusValue = widget.tool.status;
-    statusController.text = widget.tool.status; // Initialize with tool status
-    dateCreatedController.text = widget.tool.creationDate;
-    calibrationDueController.text = widget.tool.calibrationNextDue;
-    lastCalibratedController.text = widget.tool.calibrationLast;
-    atMachineController.text = widget.tool.atMachine;
-    dateCheckedOutController.text = widget.tool.dateCheckedOut;
-    imagePath = widget.tool.imagePath;
-    isModeled = widget.tool.modeled;
-    _fetchImageUrl();
-  }
-
-  Future<void> _initializeCamera() async {
+  Future<void> initializeCamera() async {
     setState(() {
       isLoading = true;
     });
@@ -87,7 +60,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     });
   }
 
-  Future<void> _fetchImageUrl() async {
+  Future<void> fetchImageUrl() async {
     try {
       DocumentSnapshot toolSnapshot = await FirebaseFirestore.instance
           .collection('tools')
@@ -103,23 +76,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    _cameraManager.disposeCamera();
-    gageIDController.dispose();
-    gageTypeController.dispose();
-    gageDescriptionController.dispose();
-    checkedOutToController.dispose();
-    lastCheckedOutController.dispose();
-    statusController.dispose();
-    dateCreatedController.dispose();
-    calibrationDueController.dispose();
-    lastCalibratedController.dispose();
-    atMachineController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _showCameraDialog() async {
+  Future<void> showCameraDialog() async {
     if (_cameraManager.controller != null &&
         _cameraManager.controller!.value.isInitialized) {
       showDialog(
@@ -149,7 +106,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                         icon: Icon(_flashMode == FlashMode.torch
                             ? Icons.flash_on
                             : Icons.flash_off),
-                        onPressed: _toggleFlashMode,
+                        onPressed: toggleFlashMode,
                         color: Colors.yellow,
                         iconSize: 36,
                       ),
@@ -179,7 +136,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     }
   }
 
-  void _toggleFlashMode() {
+  void toggleFlashMode() {
     setState(() {
       _flashMode =
       _flashMode == FlashMode.off ? FlashMode.torch : FlashMode.off;
@@ -187,7 +144,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     });
   }
 
-  void _confirmChanges(BuildContext context) {
+  void confirmChanges(BuildContext context) {
     List<Widget> changesWidgets = [];
     if (gageIDController.text != widget.tool.gageID) {
       changesWidgets.add(RichText(
@@ -494,7 +451,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     );
   }
 
-  void _showImage(String imagePath) {
+  void showImage(String imagePath) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -528,7 +485,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: FutureBuilder(
-                      future: _loadImage(imagePath),
+                      future: loadImage(imagePath),
                       builder: (BuildContext context, AsyncSnapshot<ImageProvider<Object>> snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return const Center(child: CircularProgressIndicator());
@@ -576,17 +533,60 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     );
   }
 
-  Future<ImageProvider<Object>> _loadImage(String path) async {
-    if (_isNetworkUrl(path)) {
+  Future<ImageProvider<Object>> loadImage(String path) async {
+    if (isNetworkUrl(path)) {
       return NetworkImage(path);
     } else {
       return FileImage(File(path));
     }
   }
 
-  bool _isNetworkUrl(String path) {
+  bool isNetworkUrl(String path) {
     final uri = Uri.parse(path);
     return uri.scheme == 'http' || uri.scheme == 'https';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    availableCameras().then((availableCameras) {
+      cameras = availableCameras;
+      setState(() {
+        _cameraManager = CameraManager(cameras);
+      });
+      initializeCamera();
+    });
+    gageIDController.text = widget.tool.gageID;
+    gageTypeController.text = widget.tool.gageType;
+    gageDescriptionController.text = widget.tool.gageDesc;
+    checkedOutToController.text = widget.tool.checkedOutTo;
+    lastCheckedOutController.text = widget.tool.lastCheckedOutBy;
+    statusValue = widget.tool.status;
+    statusController.text = widget.tool.status; // Initialize with tool status
+    dateCreatedController.text = widget.tool.creationDate;
+    calibrationDueController.text = widget.tool.calibrationNextDue;
+    lastCalibratedController.text = widget.tool.calibrationLast;
+    atMachineController.text = widget.tool.atMachine;
+    dateCheckedOutController.text = widget.tool.dateCheckedOut;
+    imagePath = widget.tool.imagePath;
+    isModeled = widget.tool.modeled;
+    fetchImageUrl();
+  }
+
+  @override
+  void dispose() {
+    _cameraManager.disposeCamera();
+    gageIDController.dispose();
+    gageTypeController.dispose();
+    gageDescriptionController.dispose();
+    checkedOutToController.dispose();
+    lastCheckedOutController.dispose();
+    statusController.dispose();
+    dateCreatedController.dispose();
+    calibrationDueController.dispose();
+    lastCalibratedController.dispose();
+    atMachineController.dispose();
+    super.dispose();
   }
 
   @override
@@ -613,7 +613,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                           icon: const Icon(Icons.camera_alt,
                               size: 70, color: Colors.orange),
                           onPressed: () async {
-                            await _showCameraDialog();
+                            await showCameraDialog();
                           },
                         ),
                         if (pictureTaken || imagePath != "") ...[
@@ -621,7 +621,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                             icon: const Icon(Icons.image,
                                 color: Colors.green, size: 70),
                             onPressed: () {
-                              _showImage(imagePath);
+                              showImage(imagePath);
                             },
                           ),
                         ],
@@ -694,7 +694,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                       child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () => _confirmChanges(context),
+                          onPressed: () => confirmChanges(context),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             backgroundColor: Colors.orange[800],
@@ -717,11 +717,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hintText,
-  }) {
+  Widget _buildTextField({required TextEditingController controller, required String label, required String hintText,}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -744,11 +740,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     );
   }
 
-  Widget _buildDateField({
-    required TextEditingController controller,
-    required String label,
-    required String hintText,
-  }) {
+  Widget _buildDateField({required TextEditingController controller, required String label, required String hintText,}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -784,11 +776,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     );
   }
 
-  Widget _buildDateFieldWithClear({
-    required TextEditingController controller,
-    required String label,
-    required String hintText,
-  }) {
+  Widget _buildDateFieldWithClear({required TextEditingController controller, required String label, required String hintText,}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -837,12 +825,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     );
   }
 
-  Widget _buildDropdownField({
-    required TextEditingController controller,
-    required String label,
-    required String hintText,
-    required List<String> items,
-  }) {
+  Widget _buildDropdownField({required TextEditingController controller, required String label, required String hintText, required List<String> items,}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(

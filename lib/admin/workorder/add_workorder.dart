@@ -1,34 +1,23 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../backend/message_helper.dart';
-import '../../classes/bin_class.dart';
+import '../../classes/workorder_class.dart';
 
-class AdminAddBinPage extends StatefulWidget {
-  const AdminAddBinPage({super.key});
+class AdminAddWorkOrderPage extends StatefulWidget {
+  const AdminAddWorkOrderPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => _AdminAddBinPageState();
+  State<StatefulWidget> createState() => _AdminAddWorkOrderPageState();
 }
 
-class _AdminAddBinPageState extends State<AdminAddBinPage> {
+class _AdminAddWorkOrderPageState extends State<AdminAddWorkOrderPage> {
   final User user = FirebaseAuth.instance.currentUser!;
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _binNameController = TextEditingController();
-  final TextEditingController _binLocationController = TextEditingController();
-  final TextEditingController _toolsController = TextEditingController();
+  final TextEditingController _workOrderIdController = TextEditingController();
+  final TextEditingController _imagePathController = TextEditingController();
   final TextEditingController newToolController = TextEditingController();
   List<String> tools = [];
-
-  @override
-  void dispose() {
-    _binNameController.dispose();
-    _binLocationController.dispose();
-    _toolsController.dispose();
-    newToolController.dispose();
-    super.dispose();
-  }
 
   Future<void> submitForm() async {
     if (!_formKey.currentState!.validate()) {
@@ -39,42 +28,33 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
       return;
     }
     try {
-      // Use the parts as parameters for addBinWithParams
-      await addBinWithParams(
-          _binNameController.text,
-          _binLocationController.text,
-          tools,
-          false
+      // Use the parts as parameters for addWorkOrder
+      await addWorkOrder(id: _workOrderIdController.text, imagePath: '', toolId: tools.isEmpty ? '' : tools[0], enteredBy: user.uid,
       );
-      // Simulate a delay
       // Navigate back to the first route and show the snack-bar
       if (context.mounted) {
+        Navigator.of(context).pop(true);
         Navigator.of(context).pop(true);
       }
       Future.delayed(const Duration(milliseconds: 100), () {
         showTopSnackBar(
-            context, "Bin added successfully", Colors.green, title: "Success",
+            context, "Added work order successfully", Colors.green, title: "Success",
             icon: Icons.check_circle);
       });
     } catch (e) {
       showTopSnackBar(
-          context, "Failed to add new bin. Please try again.", Colors.red,
+          context, "Failed to add new work order. Please try again.", Colors.red,
           title: "Error", icon: Icons.error);
     }
   }
 
-  Future<void> addTool() async {
-    final toolId = newToolController.text.trim();
-    if (toolId.isNotEmpty) {
-      final toolDoc = await FirebaseFirestore.instance.collection('Tools').doc(toolId).get();
-      if (toolDoc.exists) {
-        setState(() {
-          tools.add(toolId);
-          newToolController.clear();
-        });
-      } else {
-        showTopSnackBar(context, "Tool ID does not exist in the database. Please add the new tool before assigning it to a bin.", Colors.red, title: "Error", icon: Icons.error);
-      }
+  void addTool() {
+    final tool = newToolController.text.trim();
+    if (tool.isNotEmpty) {
+      setState(() {
+        tools.add(tool);
+        newToolController.clear();
+      });
     }
   }
 
@@ -90,10 +70,18 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
   }
 
   @override
+  void dispose() {
+    _workOrderIdController.dispose();
+    _imagePathController.dispose();
+    newToolController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Enter Bin Details'),
+        title: const Text('Enter Work Order Details'),
         backgroundColor: Colors.grey[900],
       ),
       body: SingleChildScrollView(
@@ -105,18 +93,11 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 const SizedBox(height: 20),
-                _buildSectionHeader('Bin Information'),
+                _buildSectionHeader('Work Order Information'),
                 _buildTextField(
-                  controller: _binNameController,
-                  label: 'Enter Bin Name: *',
-                  hintText: 'e.g. Bin A',
-                  validator: (value) =>
-                  value!.isEmpty ? 'This field is required' : null,
-                ),
-                _buildTextField(
-                  controller: _binLocationController,
-                  label: 'Enter Bin Location: *',
-                  hintText: 'e.g. Shelf 1',
+                  controller: _workOrderIdController,
+                  label: 'Enter Work Order ID: *',
+                  hintText: 'e.g. 12345',
                   validator: (value) =>
                   value!.isEmpty ? 'This field is required' : null,
                 ),

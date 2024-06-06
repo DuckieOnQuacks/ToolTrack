@@ -27,7 +27,8 @@ class Bin {
   Map<String, dynamic> toJson() => {
     'Name': originalName,
     'Tools': tools,
-    'Location': location
+    'Location': location,
+    'Finished': finished
   };
 }
 
@@ -211,8 +212,12 @@ Future<void> addFinishedFieldToBins() async {
       });
     }
 
-    print('Finished field added to all documents in Bins collection');
+    if (kDebugMode) {
+      print('Finished field added to all documents in Bins collection');
+    }
   } catch (e) {
-    print('Error adding Finished field: $e');
+    if (kDebugMode) {
+      print('Error adding Finished field: $e');
+    }
   }
 }
