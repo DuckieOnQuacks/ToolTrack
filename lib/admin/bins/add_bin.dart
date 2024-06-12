@@ -20,6 +20,8 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
   final TextEditingController _toolsController = TextEditingController();
   final TextEditingController newToolController = TextEditingController();
   List<String> tools = [];
+  int selectedCabinet = 0;
+  int selectedDrawer = 0;
 
   Future<void> submitForm() async {
     if (!_formKey.currentState!.validate()) {
@@ -30,10 +32,11 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
       return;
     }
     try {
+      final location = 'Cabinet $selectedCabinet - Drawer $selectedDrawer';
       // Use the parts as parameters for addBinWithParams
       await addBinWithParams(
           _binNameController.text,
-          _binLocationController.text,
+          location,
           tools,
           false
       );
@@ -113,11 +116,7 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
                   validator: (value) =>
                   value!.isEmpty ? 'This field is required' : null,
                 ),
-                _buildTextField(
-                  controller: _binLocationController,
-                  label: 'Enter Bin Location: ',
-                  hintText: 'e.g. Drawer 1 Column 2',
-                ),
+                _buildLocationPicker(),
                 _buildToolsList(),
                 const SizedBox(height: 20),
                 Center(
@@ -176,6 +175,66 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
         title,
         style: const TextStyle(
             fontSize: 22, fontWeight: FontWeight.bold, color: Colors.orange),
+      ),
+    );
+  }
+
+  Widget _buildLocationPicker() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Select Location:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              for (int cabinet = 1; cabinet <= 4; cabinet++)
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text('Cabinet $cabinet',
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
+                      for (int drawer = 1; drawer <= 10; drawer++)
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedCabinet = cabinet;
+                              selectedDrawer = drawer;
+                            });
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 2),
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: (cabinet == selectedCabinet && drawer == selectedDrawer)
+                                  ? Colors.orange
+                                  : Colors.grey[600],
+                              border: Border.all(color: Colors.black, width: 1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Drawer $drawer',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: (cabinet == selectedCabinet && drawer == selectedDrawer)
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ],
       ),
     );
   }

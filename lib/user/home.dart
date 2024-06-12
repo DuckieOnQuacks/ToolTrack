@@ -211,7 +211,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   child: const Text('Return Tool'),
                 ),
-                ElevatedButton(onPressed: (){updateToolStatuses();}, child: const Text("Here"))
+                ElevatedButton(onPressed: (){updateLocationFieldToNoLocation();}, child: const Text("Here"))
               ],
             ),
           ),

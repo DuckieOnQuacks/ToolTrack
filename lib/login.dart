@@ -121,9 +121,9 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 50),
                 Text(
-                  'Welcome To Tool Tracker',
+                  'Tool Tracker',
                   style: GoogleFonts.signika(
-                    fontSize: 50.0,
+                    fontSize: 70.0,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -139,15 +139,12 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     child: TextField(
                       controller: usernameController,
-                      style: const TextStyle(color: Colors.white),
+                      style: Theme.of(context).textTheme.bodyLarge,
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                         labelText: 'Username',
                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelStyle: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.white70,
-                        ),
+                        labelStyle: Theme.of(context).textTheme.bodyMedium,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -169,15 +166,12 @@ class _LoginPageState extends State<LoginPage> {
                     child: TextField(
                       controller: passwordController,
                       obscureText: true,
-                      style: const TextStyle(color: Colors.white),
+                      style: Theme.of(context).textTheme.bodyLarge,
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                         labelText: 'Password',
                         floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelStyle: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.white70,
-                        ),
+                        labelStyle: Theme.of(context).textTheme.bodyMedium,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
@@ -216,9 +210,9 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'Don\'t have an account?',
-                      style: TextStyle(
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),

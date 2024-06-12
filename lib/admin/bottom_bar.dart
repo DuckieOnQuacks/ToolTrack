@@ -65,7 +65,7 @@ class _AdminBottomBarState extends State<AdminBottomBar> {
           selectedIconTheme: const IconThemeData(size: 30, color: Colors.white),
           unselectedIconTheme: const IconThemeData(size: 25, color: Colors.grey),
           showSelectedLabels: true,
-          showUnselectedLabels: false,
+          showUnselectedLabels: true,
           onTap: onItemTapped,
           type: BottomNavigationBarType.fixed,
         ),

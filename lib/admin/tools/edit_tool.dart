@@ -36,7 +36,6 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
   final TextEditingController diameterController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
 
-
   String imagePath = '';
   bool pictureTaken = false;
   FlashMode _flashMode = FlashMode.off;
@@ -327,21 +326,6 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             ]),
       ));
     }
-    if (isModeled != widget.tool.modeled) {
-      changesWidgets.add(RichText(
-        text: TextSpan(
-            text: 'Modeled: ',
-            style: const TextStyle(
-                fontSize: 14.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.white),
-            children: <TextSpan>[
-              TextSpan(
-                  text: '${widget.tool.modeled} -> $isModeled',
-                  style: const TextStyle(fontWeight: FontWeight.normal)),
-            ]),
-      ));
-    }
     if (pictureTaken) {
       changesWidgets.add(
         Column(
@@ -439,23 +423,22 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
             ElevatedButton(
               onPressed: () async {
                 final newTool = Tool(
-                  calibrationFreq: widget.tool.calibrationFreq,
-                  calibrationLast: lastCalibratedController.text,
-                  calibrationNextDue: calibrationDueController.text,
-                  creationDate: dateCreatedController.text,
-                  gageID: gageIDController.text,
-                  gageType: gageTypeController.text,
-                  imagePath: imagePath,
-                  gageDesc: gageDescriptionController.text,
-                  dayRemain: daysRemainController.text,
-                  status: statusValue,
-                  lastCheckedOutBy: lastCheckedOutController.text,
-                  atMachine: atMachineController.text,
-                  dateCheckedOut: dateCheckedOutController.text,
-                  checkedOutTo: checkedOutToController.text,
-                  modeled: isModeled,
-                  diameter: diameterController.text,
-                  height: heightController.text
+                    calibrationFreq: widget.tool.calibrationFreq,
+                    calibrationLast: lastCalibratedController.text,
+                    calibrationNextDue: calibrationDueController.text,
+                    creationDate: dateCreatedController.text,
+                    gageID: gageIDController.text,
+                    gageType: gageTypeController.text,
+                    imagePath: imagePath,
+                    gageDesc: gageDescriptionController.text,
+                    dayRemain: daysRemainController.text,
+                    status: statusValue,
+                    lastCheckedOutBy: lastCheckedOutController.text,
+                    atMachine: atMachineController.text,
+                    dateCheckedOut: dateCheckedOutController.text,
+                    checkedOutTo: checkedOutToController.text,
+                    diameter: diameterController.text,
+                    height: heightController.text
                 );
                 if ((imagePath != widget.tool.imagePath) &&
                     widget.tool.imagePath != "") {
@@ -464,10 +447,13 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                 // Implement save functionality here
                 await updateToolIfDifferent(widget.tool, newTool);
                 if (context.mounted) {
-                  Navigator.of(context).pop(true); // Return true to indicate changes
-                  Navigator.of(context).pop(true); // Return true to indicate changes
-                  showTopSnackBar(context, "Changes Saved Successfully", Colors.green, title: "Success", icon: Icons.check_circle);
-
+                  Navigator.of(context).pop(
+                      true); // Return true to indicate changes
+                  Navigator.of(context).pop(
+                      true); // Return true to indicate changes
+                  showTopSnackBar(
+                      context, "Changes Saved Successfully", Colors.green,
+                      title: "Success", icon: Icons.check_circle);
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -517,15 +503,21 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                     borderRadius: BorderRadius.circular(8),
                     child: FutureBuilder(
                       future: loadImage(imagePath),
-                      builder: (BuildContext context, AsyncSnapshot<ImageProvider<Object>> snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                      builder: (BuildContext context,
+                          AsyncSnapshot<ImageProvider<Object>> snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
                         } else if (snapshot.hasError) {
                           return const Center(child: Icon(Icons.error));
                         } else {
                           return ConstrainedBox(
                             constraints: BoxConstraints(
-                              maxHeight: MediaQuery.of(context).size.height * 0.5,
+                              maxHeight: MediaQuery
+                                  .of(context)
+                                  .size
+                                  .height * 0.5,
                             ),
                             child: Image(
                               image: snapshot.data!,
@@ -600,7 +592,6 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     atMachineController.text = widget.tool.atMachine;
     dateCheckedOutController.text = widget.tool.dateCheckedOut;
     imagePath = widget.tool.imagePath;
-    isModeled = widget.tool.modeled;
     heightController.text = widget.tool.height;
     diameterController.text = widget.tool.diameter;
     fetchImageUrl();
@@ -661,7 +652,6 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                       ],
                     ),
                     _buildSectionHeader('Tool Information'),
-                    _buildModeledCheckbox(),
                     _buildTextField(
                       controller: gageIDController,
                       label: 'Tool ID: ',
@@ -914,43 +904,6 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
         title,
         style: const TextStyle(
             fontSize: 22, fontWeight: FontWeight.bold, color: Colors.orange),
-      ),
-    );
-  }
-
-  Widget _buildModeledCheckbox() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Transform.scale(
-            scale: 1.5,
-            child: Checkbox(
-              value: isModeled,
-              onChanged: (bool? value) {
-                setState(() {
-                  isModeled = value ?? false;
-                });
-              },
-              activeColor: Colors.orange[800],
-              checkColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-           const Text(
-            'Modeled',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-              letterSpacing: 1.2,
-            ),
-          ),
-        ],
       ),
     );
   }

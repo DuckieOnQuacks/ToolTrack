@@ -24,7 +24,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
   final ValueNotifier<int> toolCountNotifier = ValueNotifier<int>(0);
   String selectedFilter = 'All'; // Default filter option
 
-  final List<String> filterOptions = ['All', 'Available', 'Checked Out', 'Modeled'];
+  final List<String> filterOptions = ['All', 'Available', 'Checked Out'];
   final List<Color> cncShopColors = [
     const Color(0xFF2E7D32), // Green
     const Color(0xFF607D8B), // Blue Grey
@@ -69,8 +69,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
 
         bool matchesFilter = selectedFilter == 'All' ||
             (selectedFilter == 'Available' && tool.status == 'Available') ||
-            (selectedFilter == 'Checked Out' && tool.status == 'Checked Out') ||
-            (selectedFilter == 'Modeled' && tool.modeled == true);
+            (selectedFilter == 'Checked Out' && tool.status == 'Checked Out');
 
         return matchesQuery && matchesFilter;
       }).toList());

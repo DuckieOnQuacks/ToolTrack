@@ -22,7 +22,6 @@ class Tool {
   final String atMachine;
   final String dateCheckedOut;
   final String checkedOutTo;
-  final bool modeled;
   final String diameter;
   final String height;
 
@@ -41,7 +40,6 @@ class Tool {
     required this.atMachine,
     required this.dateCheckedOut,
     required this.checkedOutTo,
-    required this.modeled,
     required this.diameter,
     required this.height,
   });
@@ -62,7 +60,6 @@ class Tool {
         atMachine: json["At Machine"] as String? ?? '',
         dateCheckedOut: json["Date Checked Out"] as String? ?? '',
         checkedOutTo: json["Checked Out To"] as String? ?? '',
-        modeled: json["Modeled"],
         height: json["Height"],
         diameter: json["Diameter"]
       );
@@ -81,7 +78,6 @@ class Tool {
         'Last Checked Out By': lastCheckedOutBy,
         'At Machine': atMachine,
         'Checked Out To': checkedOutTo,
-        'Modeled': modeled,
         'Height': height,
         'Diameter': diameter
       };
@@ -139,7 +135,6 @@ Future<void> addToolWithParams(String calFreq, String calLast, String calNextDue
     atMachine: "",
     dateCheckedOut: "",
     checkedOutTo: "",
-    modeled: false,
     height: height,
     diameter: diameter
   );
@@ -449,9 +444,6 @@ Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
         checkedOutTo: newTool.checkedOutTo.isNotEmpty
             ? newTool.checkedOutTo
             : oldTool.checkedOutTo,
-        modeled: newTool.modeled
-            ? newTool.modeled
-            : oldTool.modeled,
         diameter: newTool.diameter.isNotEmpty
             ? newTool.diameter
             : oldTool.diameter,
@@ -516,9 +508,6 @@ Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
   }
   if (oldTool.checkedOutTo != newTool.checkedOutTo) {
     updates['Checked Out To'] = newTool.checkedOutTo;
-  }
-  if (oldTool.modeled != newTool.modeled) {
-    updates['Modeled'] = newTool.modeled;
   }
   if (oldTool.diameter != newTool.diameter){
     updates["Diameter"] = newTool.diameter;
@@ -600,5 +589,25 @@ Future<void> updateToolStatuses() async {
   }
 }
 
+Future<void> updateLocationFieldToNoLocation() async {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  CollectionReference toolsCollection = firestore.collection('Bins');
 
+  try {
+    QuerySnapshot querySnapshot = await toolsCollection.get();
+    WriteBatch batch = firestore.batch();
+
+    for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+      // Update the "Location" field to "No Location Set".
+      batch.update(doc.reference, {'Location': 'No Location Set'});
+    }
+
+    // Commit the batch update.
+    await batch.commit();
+
+    print('Successfully updated "Location" field to "No Location Set" for all tools.');
+  } catch (e) {
+    print('Error updating "Location" field for tools: $e');
+  }
+}
 

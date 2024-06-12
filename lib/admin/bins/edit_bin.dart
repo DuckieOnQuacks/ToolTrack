@@ -23,6 +23,9 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
   late List<Tool> initialTools;
   bool finished = false;
   bool isLoading = true;
+  int selectedCabinet = 0;
+  int selectedDrawer = 0;
+  bool noLocationSelected = false;
 
   Future<void> fetchInitialTools(List<String?> toolIds) async {
     List<Tool> fetchedTools = [];
@@ -60,9 +63,7 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
         ),
       ));
     }
-
     const SizedBox(height: 10);
-
     if (locationController.text != widget.bin.location) {
       changesWidgets.add(RichText(
         text: TextSpan(
@@ -78,13 +79,11 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
         ),
       ));
     }
-
     const SizedBox(height: 10);
-
     final addedTools =
-        tools.where((tool) => !initialTools.contains(tool)).toList();
+    tools.where((tool) => !initialTools.contains(tool)).toList();
     final removedTools =
-        initialTools.where((tool) => !tools.contains(tool)).toList();
+    initialTools.where((tool) => !tools.contains(tool)).toList();
 
     if (addedTools.isNotEmpty) {
       changesWidgets.add(Column(
@@ -99,10 +98,10 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
           ),
           const SizedBox(height: 8),
           ...addedTools.map((tool) => Text(
-                tool.gageID,
-                style: const TextStyle(
-                    fontWeight: FontWeight.normal, color: Colors.white),
-              )),
+            tool.gageID,
+            style: const TextStyle(
+                fontWeight: FontWeight.normal, color: Colors.white),
+          )),
         ],
       ));
     }
@@ -120,21 +119,19 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
           ),
           const SizedBox(height: 8),
           ...removedTools.map((tool) => Text(
-                tool.gageID,
-                style: const TextStyle(
-                    fontWeight: FontWeight.normal, color: Colors.white),
-              )),
+            tool.gageID,
+            style: const TextStyle(
+                fontWeight: FontWeight.normal, color: Colors.white),
+          )),
         ],
       ));
     }
     if (finished != widget.bin.finished) {
       changesWidgets.add(RichText(
         text: TextSpan(
-            text: 'Modeled: ',
+            text: 'Finished: ',
             style: const TextStyle(
-                fontSize: 14.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.white),
+                fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.white),
             children: <TextSpan>[
               TextSpan(
                   text: '${widget.bin.finished} -> $finished',
@@ -142,7 +139,6 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
             ]),
       ));
     }
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -252,6 +248,12 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
     initialTools = [];
     fetchInitialTools(widget.bin.tools);
     finished = widget.bin.finished;
+
+    // Parse initial location
+    final initialLocation = parseLocation(widget.bin.location);
+    selectedCabinet = initialLocation['cabinet'] ?? 0;
+    selectedDrawer = initialLocation['drawer'] ?? 0;
+    noLocationSelected = (selectedCabinet == 0 && selectedDrawer == 0);
   }
 
   @override
@@ -260,6 +262,111 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
     locationController.dispose();
     newToolController.dispose();
     super.dispose();
+  }
+
+  // Parse the location string to get cabinet and drawer numbers
+  Map<String, int?> parseLocation(String location) {
+    final regex = RegExp(r'Cabinet (\d+) - Drawer (\d+)');
+    final match = regex.firstMatch(location);
+    if (match != null) {
+      return {
+        'cabinet': int.parse(match.group(1)!),
+        'drawer': int.parse(match.group(2)!)
+      };
+    }
+    return {'cabinet': null, 'drawer': null}; // Default values if parsing fails
+  }
+
+  Widget _buildLocationPicker() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Select Location:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              for (int cabinet = 1; cabinet <= 4; cabinet++)
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text('Cabinet $cabinet',
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
+                      for (int drawer = 1; drawer <= 10; drawer++)
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedCabinet = cabinet;
+                              selectedDrawer = drawer;
+                              locationController.text =
+                              'Cabinet $selectedCabinet - Drawer $selectedDrawer';
+                              noLocationSelected = false;
+                            });
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 2),
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: (cabinet == selectedCabinet &&
+                                  drawer == selectedDrawer)
+                                  ? Colors.orange
+                                  : Colors.grey[600],
+                              border: Border.all(color: Colors.black, width: 1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Drawer $drawer',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: (cabinet == selectedCabinet &&
+                                      drawer == selectedDrawer)
+                                      ? Colors.white
+                                      : Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Center(
+            child: Container(
+              width: 150,
+              height: 35,
+              margin: const EdgeInsets.symmetric(vertical: 2),
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    selectedCabinet = 0;
+                    selectedDrawer = 0;
+                    locationController.text = 'No Location Set';
+                    noLocationSelected = true;
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor:
+                  noLocationSelected ? Colors.red : Colors.grey[600],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                child: const Text('Set No Location'),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -285,11 +392,7 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
                       label: 'Bin Name: ',
                       hintText: 'e.g. Bin A',
                     ),
-                    _buildTextField(
-                      controller: locationController,
-                      label: 'Location: ',
-                      hintText: 'e.g. Shelf 1',
-                    ),
+                    _buildLocationPicker(),
                     _buildToolsList(),
                     const SizedBox(height: 20),
                     Center(
@@ -319,7 +422,10 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
     );
   }
 
-  Widget _buildTextField({required TextEditingController controller, required String label, required String hintText,}) {
+  Widget _buildTextField(
+      {required TextEditingController controller,
+        required String label,
+        required String hintText}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -355,82 +461,82 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
 
   Widget _buildToolsList() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.only(bottom: 20, top: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('Tools:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           isLoading
               ? Center(
-                  child: Lottie.asset(
-                    'assets/lottie/loading.json',
-                    width: 100,
-                    height: 100,
-                  ),
-                )
+            child: Lottie.asset(
+              'assets/lottie/loading.json',
+              width: 100,
+              height: 100,
+            ),
+          )
               : ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: tools.length,
-                  itemBuilder: (context, index) {
-                    Tool tool = tools[index];
-                    String status = tool.status;
-                    IconData statusIcon;
-                    Color statusColor;
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: tools.length,
+            itemBuilder: (context, index) {
+              Tool tool = tools[index];
+              String status = tool.status;
+              IconData statusIcon;
+              Color statusColor;
 
-                    switch (status.toLowerCase()) {
-                      case 'available':
-                        statusIcon = Icons.check_circle_outline;
-                        statusColor = Colors.green;
-                        break;
-                      case 'checked out':
-                        statusIcon = Icons.cancel_outlined;
-                        statusColor = Colors.red;
-                        break;
-                      default:
-                        statusIcon = Icons.help_outline;
-                        statusColor = Colors.grey;
-                    }
+              switch (status.toLowerCase()) {
+                case 'available':
+                  statusIcon = Icons.check_circle_outline;
+                  statusColor = Colors.green;
+                  break;
+                case 'checked out':
+                  statusIcon = Icons.cancel_outlined;
+                  statusColor = Colors.red;
+                  break;
+                default:
+                  statusIcon = Icons.help_outline;
+                  statusColor = Colors.grey;
+              }
 
-                    return ListTile(
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(tool.gageID,
-                              style: const TextStyle(fontSize: 18)),
-                          Row(
-                            children: [
-                              Icon(statusIcon, size: 14, color: statusColor),
-                              const SizedBox(width: 4),
-                              Text(
-                                status,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: statusColor,
-                                ),
-                              ),
-                            ],
+              return ListTile(
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(tool.gageID,
+                        style: const TextStyle(fontSize: 18)),
+                    Row(
+                      children: [
+                        Icon(statusIcon, size: 14, color: statusColor),
+                        const SizedBox(width: 4),
+                        Text(
+                          status,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: statusColor,
                           ),
-                        ],
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.copy, color: Colors.blue),
-                            onPressed: () => copyToolToClipboard(tool.gageID),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => removeTool(index),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.copy, color: Colors.blue),
+                      onPressed: () => copyToolToClipboard(tool.gageID),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => removeTool(index),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
           const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.only(left: 16), // Add left padding here

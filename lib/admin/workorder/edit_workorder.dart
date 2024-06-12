@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lottie/lottie.dart';
 import '../../backend/message_helper.dart';
+import '../../classes/bin_class.dart';
+import '../../classes/tool_class.dart';
 import '../../classes/workorder_class.dart';
 
 class AdminInspectWorkOrderScreen extends StatefulWidget {
@@ -21,16 +24,36 @@ class _AdminInspectWorkOrderScreenState
   final TextEditingController enteredByController = TextEditingController();
   final TextEditingController newToolController = TextEditingController();
 
-  late List<String> tools;
-  late List<String> initialTools;
+  late List<Tool> tools;
+  late List<Tool> initialTools;
+  bool isLoading = true;
+
+  Future<void> fetchInitialTools(List<String?> toolIds) async {
+    List<Tool> fetchedTools = [];
+    for (var toolId in toolIds) {
+      final toolDoc = await FirebaseFirestore.instance
+          .collection('Tools')
+          .doc(toolId)
+          .get();
+      if (toolDoc.exists) {
+        fetchedTools.add(Tool.fromJson(toolDoc.data()!));
+      }
+    }
+    setState(() {
+      tools = fetchedTools;
+      initialTools = List.from(fetchedTools);
+      isLoading = false;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     idController.text = widget.workOrder.id;
     enteredByController.text = widget.workOrder.enteredBy;
-    tools = List.from(widget.workOrder.tool ?? []);
-    initialTools = List.from(widget.workOrder.tool ?? []);
+    tools = [];
+    initialTools = [];
+    fetchInitialTools(widget.workOrder.tool ?? []);
   }
 
   @override
@@ -41,9 +64,9 @@ class _AdminInspectWorkOrderScreenState
     super.dispose();
   }
 
-
   void confirmChanges(BuildContext context) {
     List<Widget> changesWidgets = [];
+
     if (idController.text != widget.workOrder.id) {
       changesWidgets.add(RichText(
         text: TextSpan(
@@ -59,7 +82,9 @@ class _AdminInspectWorkOrderScreenState
         ),
       ));
     }
+
     const SizedBox(height: 10);
+
     if (enteredByController.text != widget.workOrder.enteredBy) {
       changesWidgets.add(RichText(
         text: TextSpan(
@@ -76,9 +101,14 @@ class _AdminInspectWorkOrderScreenState
         ),
       ));
     }
+
     const SizedBox(height: 10);
-    final addedTools = tools.where((tool) => !initialTools.contains(tool)).toList();
-    final removedTools = initialTools.where((tool) => !tools.contains(tool)).toList();
+
+    final addedTools =
+    tools.where((tool) => !initialTools.contains(tool)).toList();
+    final removedTools =
+    initialTools.where((tool) => !tools.contains(tool)).toList();
+
     if (addedTools.isNotEmpty) {
       changesWidgets.add(Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,13 +122,14 @@ class _AdminInspectWorkOrderScreenState
           ),
           const SizedBox(height: 8),
           ...addedTools.map((tool) => Text(
-            tool,
+            tool.gageID,
             style: const TextStyle(
                 fontWeight: FontWeight.normal, color: Colors.white),
           )),
         ],
       ));
     }
+
     if (removedTools.isNotEmpty) {
       changesWidgets.add(Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,13 +143,14 @@ class _AdminInspectWorkOrderScreenState
           ),
           const SizedBox(height: 8),
           ...removedTools.map((tool) => Text(
-            tool,
+            tool.gageID,
             style: const TextStyle(
                 fontWeight: FontWeight.normal, color: Colors.white),
           )),
         ],
       ));
     }
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -164,7 +196,7 @@ class _AdminInspectWorkOrderScreenState
                 final newWorkOrder = WorkOrder(
                   id: idController.text,
                   enteredBy: enteredByController.text,
-                  tool: tools,
+                  tool: tools.map((tool) => tool.gageID).toList(),
                   imagePath: "",
                 );
                 await updateWorkOrderIfDifferent(
@@ -172,7 +204,9 @@ class _AdminInspectWorkOrderScreenState
                 if (context.mounted) {
                   Navigator.of(context).pop(true);
                   Navigator.of(context).pop(true);
-                  showTopSnackBar(context, "Changes Saved Successfully", Colors.green, title: "Success", icon: Icons.check_circle);
+                  showTopSnackBar(context, "Changes Saved Successfully",
+                      Colors.green,
+                      title: "Success", icon: Icons.check_circle);
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -187,12 +221,23 @@ class _AdminInspectWorkOrderScreenState
     );
   }
 
-  void addTool() {
-    if (newToolController.text.isNotEmpty) {
-      setState(() {
-        tools.add(newToolController.text);
-        newToolController.clear();
-      });
+  Future<void> addTool() async {
+    final toolId = newToolController.text.trim();
+    if (toolId.isNotEmpty) {
+      bool alreadyExists = tools.any((tool) => tool.gageID == toolId);
+      if (alreadyExists) {
+        showTopSnackBar(
+            context, "Tool ID $toolId is already in the list.", Colors.red,
+            title: "Error", icon: Icons.error);
+      } else {
+        Tool? validTool = await validateAndFetchTool(context, toolId);
+        if (validTool != null) {
+          setState(() {
+            tools.add(validTool);
+            newToolController.clear();
+          });
+        }
+      }
     }
   }
 
@@ -204,7 +249,8 @@ class _AdminInspectWorkOrderScreenState
 
   void copyToolToClipboard(String tool) {
     Clipboard.setData(ClipboardData(text: tool));
-    showTopSnackBar(context, "Tool ID copied to clipboard", Colors.blue, title: "Note:", icon: Icons.copy);
+    showTopSnackBar(context, "Tool ID copied to clipboard", Colors.blue,
+        title: "Note:", icon: Icons.copy);
   }
 
   @override
@@ -263,7 +309,11 @@ class _AdminInspectWorkOrderScreenState
     );
   }
 
-  Widget _buildTextField({required TextEditingController controller, required String label, required String hintText,}) {
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hintText,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -306,19 +356,65 @@ class _AdminInspectWorkOrderScreenState
           const Text('Tools:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          ListView.builder(
+          isLoading
+              ? Center(
+            child: Lottie.asset(
+              'assets/lottie/loading.json',
+              width: 100,
+              height: 100,
+            ),
+          )
+              : ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: tools.length,
             itemBuilder: (context, index) {
+              Tool tool = tools[index];
+              String status = tool.status;
+              IconData statusIcon;
+              Color statusColor;
+
+              switch (status.toLowerCase()) {
+                case 'available':
+                  statusIcon = Icons.check_circle_outline;
+                  statusColor = Colors.green;
+                  break;
+                case 'checked out':
+                  statusIcon = Icons.cancel_outlined;
+                  statusColor = Colors.red;
+                  break;
+                default:
+                  statusIcon = Icons.help_outline;
+                  statusColor = Colors.grey;
+              }
+
               return ListTile(
-                title: Text(tools[index]),
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(tool.gageID,
+                        style: const TextStyle(fontSize: 18)),
+                    Row(
+                      children: [
+                        Icon(statusIcon, size: 14, color: statusColor),
+                        const SizedBox(width: 4),
+                        Text(
+                          status,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: statusColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
                       icon: const Icon(Icons.copy, color: Colors.blue),
-                      onPressed: () => copyToolToClipboard(tools[index]),
+                      onPressed: () => copyToolToClipboard(tool.gageID),
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete, color: Colors.red),

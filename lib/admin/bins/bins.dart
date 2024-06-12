@@ -17,11 +17,13 @@ class AdminBinsPage extends StatefulWidget {
 
 class _AdminBinsPageState extends State<AdminBinsPage> {
   Future<List<Bin>>? bins;
-  TextEditingController searchController = TextEditingController();
   late Future<List<Bin>> filteredBins;
   late List<Color> shuffledColors;
+  TextEditingController searchController = TextEditingController();
   final ValueNotifier<int> binCountNotifier = ValueNotifier<int>(0);
+  String selectedFilter = 'All'; // Default filter option
 
+  final List<String> filterOptions = ['All', 'Finished']; // Filter options
   final List<Color> cncShopColors = [
     const Color(0xFF2E7D32), // Green
     const Color(0xFF607D8B), // Blue Grey
@@ -47,25 +49,6 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
     return colorList;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    bins = getAllBins();
-    filteredBins = bins!;
-    shuffledColors = getRandomlyAssortedColors(cncShopColors);
-    searchController.addListener(onSearchChanged);
-    searchController.text = "";
-    updateBinCount();
-  }
-
-  @override
-  void dispose() {
-    searchController.removeListener(onSearchChanged);
-    searchController.dispose();
-    binCountNotifier.dispose();
-    super.dispose();
-  }
-
   void onSearchChanged() {
     EasyDebounce.debounce(
       'search-debouncer', // <-- An identifier for this particular debouncer
@@ -76,25 +59,17 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
 
   void filterSearchResults(String query) {
     setState(() {
-      if (query.isNotEmpty) {
-        // Parse the query to see if it includes a request to filter by "finished"
-        bool filterByFinished = query.toLowerCase() == 'finished';
+      filteredBins = bins!.then((allBins) => allBins.where((bin) {
+        bool matchesQuery =
+            bin.originalName.toLowerCase().contains(query.toLowerCase()) ||
+                bin.location.toLowerCase().contains(query.toLowerCase()) ||
+                bin.tools.contains(query.toLowerCase());
 
-        filteredBins = bins!.then((allBins) => allBins.where((bin) {
-          bool matchesNameOrLocation = bin.originalName.toLowerCase().contains(query.toLowerCase()) ||
-              bin.location.toLowerCase().contains(query.toLowerCase()) ||
-              bin.tools.contains(query.toLowerCase());
+        bool matchesFilter = selectedFilter == 'All' ||
+            (selectedFilter == 'Finished' && bin.finished);
 
-          // If filtering by "finished", check the finished status
-          if (filterByFinished) {
-            return bin.finished;
-          } else {
-            return matchesNameOrLocation;
-          }
-        }).toList());
-      } else {
-        filteredBins = bins!;
-      }
+        return matchesQuery && matchesFilter;
+      }).toList());
     });
     updateBinCount();
   }
@@ -114,6 +89,93 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
     updateBinCount();
   }
 
+  void onDeletePressed(Bin bin) async {
+    bool? result = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => DeleteBinDialog(bin: bin),
+    );
+    if (result != null && result) {
+      refreshBinsList();
+    }
+  }
+
+  void showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          buttonPadding: const EdgeInsets.all(15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 10,
+          title: const Row(
+            children: [
+              Icon(
+                Icons.warning_amber_rounded,
+                color: Colors.redAccent,
+              ),
+              SizedBox(width: 10),
+              Text(
+                'Confirm Logout',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          content: const Text('Sign out of admin account?'),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.black54,
+                backgroundColor: Colors.grey[300],
+              ),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => const LoginPage(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.redAccent,
+              ),
+              child: const Text('Sign Out'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    bins = getAllBins();
+    filteredBins = bins!;
+    shuffledColors = getRandomlyAssortedColors(cncShopColors);
+    searchController.addListener(onSearchChanged);
+    searchController.text = "";
+    updateBinCount();
+  }
+
+  @override
+  void dispose() {
+    searchController.removeListener(onSearchChanged);
+    searchController.dispose();
+    binCountNotifier.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,8 +190,7 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
             onPressed: () async {
               var result = await Navigator.of(context)
                   .push(MaterialPageRoute(
-                builder: (context) =>
-                    const AdminAddBinPage(),
+                builder: (context) => const AdminAddBinPage(),
               ));
               if (result == true) {
                 refreshBinsList();
@@ -189,6 +250,26 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
               },
             ),
           ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: filterOptions.map((option) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: ChoiceChip(
+                    label: Text(option),
+                    selected: selectedFilter == option,
+                    onSelected: (selected) {
+                      setState(() {
+                        selectedFilter = option;
+                        filterSearchResults(searchController.text);
+                      });
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
           Expanded(
             child: RefreshIndicator(
               onRefresh: refreshBinsList,
@@ -221,8 +302,7 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
                       padding: const EdgeInsets.all(10),
                       itemCount: bins.length,
                       itemBuilder: (context, index) {
-                        Color tileColor =
-                        shuffledColors[index % shuffledColors.length];
+                        Color tileColor = shuffledColors[index % shuffledColors.length];
                         return Card(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -240,8 +320,7 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
                             child: ListTile(
                               leading: const Icon(Icons.inbox, color: Colors.black),
                               trailing: IconButton(
-                                icon:
-                                const Icon(Icons.delete, color: Colors.black),
+                                icon: const Icon(Icons.delete, color: Colors.black),
                                 onPressed: () => onDeletePressed(bins[index]),
                               ),
                               title: Text(
@@ -257,13 +336,13 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
                                 style: const TextStyle(color: Colors.black87, fontSize: 16),
                               ),
                               onTap: () async {
-                                var result = await Navigator.of(context)
-                                    .push(MaterialPageRoute(
-                                  builder: (context) =>
-                                      AdminInspectBinScreen(
-                                        bin: bins[index],
-                                      ),
-                                ));
+                                var result = await Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => AdminInspectBinScreen(
+                                      bin: bins[index],
+                                    ),
+                                  ),
+                                );
                                 if (result == true) {
                                   refreshBinsList();
                                 }
@@ -290,87 +369,12 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
       ),
     );
   }
-
-  void onDeletePressed(Bin bin) async {
-    bool? result = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) => DeleteBinDialog(bin: bin),
-    );
-    if (result != null && result) {
-      refreshBinsList();
-    }
-  }
-
-  void showLogoutConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          buttonPadding: const EdgeInsets.all(15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          elevation: 10,
-          title: const Row(
-            children: [
-              Icon(
-                Icons.warning_amber_rounded,
-                color: Colors.redAccent,
-              ),
-              SizedBox(width: 10),
-              Text(
-                'Confirm Logout',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          content:
-          const Text('Are you sure you want to log out of your account?'),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.black54,
-                backgroundColor: Colors.grey[300],
-              ),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => const LoginPage(),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.redAccent,
-              ),
-              child: const Text('Sign Out'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 }
 
 class DeleteBinDialog extends StatelessWidget {
   final Bin bin;
 
   const DeleteBinDialog({super.key, required this.bin});
-
-  Future<void> deleteBin(Bin bin) async {
-    // Implement the bin deletion logic here
-    // Example:
-    // await FirebaseFirestore.instance.collection('bins').doc(bin.id).delete();
-  }
 
   @override
   Widget build(BuildContext context) {

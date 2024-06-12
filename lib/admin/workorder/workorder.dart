@@ -19,9 +19,9 @@ class AdminWorkOrdersPage extends StatefulWidget {
 
 class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
   Future<List<WorkOrder>>? workOrders;
-  TextEditingController searchController = TextEditingController();
   late Future<List<WorkOrder>> filteredWorkOrders;
   late List<Color> shuffledColors;
+  TextEditingController searchController = TextEditingController();
   final ValueNotifier<int> workOrderCountNotifier = ValueNotifier<int>(0);
 
   final List<Color> cncShopColors = [

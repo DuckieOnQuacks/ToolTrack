@@ -21,10 +21,6 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.blueGrey,
         hintColor: Colors.grey,
         scaffoldBackgroundColor: Colors.black54,
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Colors.white),
-          bodyMedium: TextStyle(color: Colors.white70),
-        ),
         appBarTheme: AppBarTheme(
           color: Colors.blueGrey[900],
         ),
@@ -33,7 +29,7 @@ class MyApp extends StatelessWidget {
           textTheme: ButtonTextTheme.primary,
         ),
       ),
-      home: const AuthPage(), // Updated to navigate to AuthPage
+      home: const AuthPage(),
     );
   }
 }
