@@ -82,7 +82,8 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
 
         filteredBins = bins!.then((allBins) => allBins.where((bin) {
           bool matchesNameOrLocation = bin.originalName.toLowerCase().contains(query.toLowerCase()) ||
-              bin.location.toLowerCase().contains(query.toLowerCase());
+              bin.location.toLowerCase().contains(query.toLowerCase()) ||
+              bin.tools.contains(query.toLowerCase());
 
           // If filtering by "finished", check the finished status
           if (filterByFinished) {
@@ -128,6 +129,12 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
               await Navigator.of(context).push(MaterialPageRoute(builder: (context) =>const AdminAddBinPage()));
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white),
+            onPressed: () {
+              showLogoutConfirmationDialog(context);
+            },
+          ),
         ],
       ),
       body: Column(
@@ -138,13 +145,13 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
               controller: searchController,
               decoration: const InputDecoration(
                 labelText: "Search",
-                hintText: "Search by bin name or location",
+                hintText: "Search by bin name, location, or tool",
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(25.0)),
                 ),
               ),
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
           ),
           ValueListenableBuilder<int>(

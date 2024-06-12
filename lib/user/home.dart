@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lottie/lottie.dart';
 import 'package:vineburgapp/backend/message_helper.dart';
 import 'package:vineburgapp/user/return_tool.dart';
+import '../classes/tool_class.dart';
 import '../login.dart';
 import 'scan_workorder.dart';
 
@@ -210,6 +211,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   child: const Text('Return Tool'),
                 ),
+                ElevatedButton(onPressed: (){updateToolStatuses();}, child: const Text("Here"))
               ],
             ),
           ),

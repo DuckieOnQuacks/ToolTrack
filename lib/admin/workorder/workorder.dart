@@ -224,7 +224,7 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
                   child: Text(
                     'Number of Results: $count',
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

@@ -1,0 +1,2212 @@
+[
+  {
+    "Gage ID":"00031",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-24 UNS-3A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00035",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-24 UNS-3A NO GO RING GAGE"
+  },
+  {
+    "Gage ID":"00040",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-20 2A GO THREAD RING GAGE"
+  },
+  {
+    "Gage ID":"00054",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-24 UNS - 2A GO P.D. .2833 THD"
+  },
+  {
+    "Gage ID":"00055",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-24 UNS- 1A NO GO P.D. .2788 THD"
+  },
+  {
+    "Gage ID":"00056",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/8-20 2A GO THREAD RING GAGE"
+  },
+  {
+    "Gage ID":"00061",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-24 UNF 3A GO GAGE"
+  },
+  {
+    "Gage ID":"00064",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-24 UNF 3A NO GO GAGE"
+  },
+  {
+    "Gage ID":"00067",
+    "Type":"THREAD RING GAGE",
+    "Description":"4-40 UNC-3A NO GO RING GAGE"
+  },
+  {
+    "Gage ID":"00070",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-16 UNC 2A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00095",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-32 UNF 2A GO GAGE"
+  },
+  {
+    "Gage ID":"00096",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-28 UNF - 3A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00118",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-14 UNS-2A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00123",
+    "Type":"THREAD RING GAGE",
+    "Description":"M8 X 1.25 6g NO GO RING GAGE"
+  },
+  {
+    "Gage ID":"00126",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-28 UNF - 3A NO GO RING GAGE"
+  },
+  {
+    "Gage ID":"00130",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 7\/8-20 UNS-2A GO GAGE (PRE-PLATE)"
+  },
+  {
+    "Gage ID":"00143",
+    "Type":"THREAD RING GAGE",
+    "Description":"9\/16-20 UN 2A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00145",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-20 UNF 2A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00147",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/8-24 UNS-1A GO RING GAGE (P.D. 1.0930"
+  },
+  {
+    "Gage ID":"00148",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-24 UNS-1A NO GO RING GAGE (P.D. 1.0910"
+  },
+  {
+    "Gage ID":"00151",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-13 2A GO GAGE (ALAMEDA)"
+  },
+  {
+    "Gage ID":"00152",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-13 2A NO GO GAGE (ALAMEDA)"
+  },
+  {
+    "Gage ID":"00154",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/4-11.5 NPSM GO RING GAGE"
+  },
+  {
+    "Gage ID":"00155",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-9 UNC-2A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00156",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-18 UNC-2A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00157",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-24 UNF-2A NO GO RING GAGE"
+  },
+  {
+    "Gage ID":"00167",
+    "Type":"THREAD RING GAGE",
+    "Description":"M2 X .4 - 6g GO THREAD RING GAGE"
+  },
+  {
+    "Gage ID":"00173",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-14 UNS-2A NO GO RING GAGE"
+  },
+  {
+    "Gage ID":"00175",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-7\/8-20 UNS-2A PRE-PLATE GO GAGE"
+  },
+  {
+    "Gage ID":"00178",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-20 UNF 3A GO RING GAGE (FONDA)"
+  },
+  {
+    "Gage ID":"00179",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-20 UNF 3A NO GO RING GAGE (FONDA)"
+  },
+  {
+    "Gage ID":"00182",
+    "Type":"THREAD RING GAGE",
+    "Description":"8-32 UNC-2A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00183",
+    "Type":"THREAD RING GAGE",
+    "Description":"4-40 UNC-3A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00184",
+    "Type":"THREAD RING GAGE",
+    "Description":"5-44 UNF-2A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00185",
+    "Type":"THREAD RING GAGE",
+    "Description":"5-44 UNF-2A NO GO RING GAGE"
+  },
+  {
+    "Gage ID":"00190",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-16 UNC 2A GO GAGE"
+  },
+  {
+    "Gage ID":"00192",
+    "Type":"THREAD RING GAGE",
+    "Description":"10-24 UNC-2A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00194",
+    "Type":"THREAD RING GAGE",
+    "Description":"10-24 UNC-2A NO GO RING GAGE"
+  },
+  {
+    "Gage ID":"00195",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-20 UNC 3A GO GAGE"
+  },
+  {
+    "Gage ID":"00196",
+    "Type":"THREAD RING GAGE",
+    "Description":"10-32 UNF 2A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00198",
+    "Type":"THREAD RING GAGE",
+    "Description":"10-32 UNF 2A NO GO RING GAGE"
+  },
+  {
+    "Gage ID":"00200",
+    "Type":"THREAD RING GAGE",
+    "Description":"M6 X 1.0-6g NO GO RING GAGE"
+  },
+  {
+    "Gage ID":"00206",
+    "Type":"THREAD RING GAGE",
+    "Description":"M10 X 1.0 GO PREPLATE RING GAGE"
+  },
+  {
+    "Gage ID":"00207",
+    "Type":"THREAD RING GAGE",
+    "Description":"M10 X 1.0 GO PREPLATE RING GAGE"
+  },
+  {
+    "Gage ID":"00208",
+    "Type":"THREAD RING GAGE",
+    "Description":"M10 X 1.0 GO RING GAGE"
+  },
+  {
+    "Gage ID":"00209",
+    "Type":"THREAD RING GAGE",
+    "Description":"M9 X 1.0 GO RING GAGE"
+  },
+  {
+    "Gage ID":"00210",
+    "Type":"THREAD RING GAGE",
+    "Description":"M12 X 1.0 GO RING GAGE"
+  },
+  {
+    "Gage ID":"00212",
+    "Type":"THREAD RING GAGE",
+    "Description":"6-32 UNC-2A NO GO RINGS GAGE"
+  },
+  {
+    "Gage ID":"00216",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-18 UNC-2A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00217",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-18 UNC-2A NO GO RING GAGE"
+  },
+  {
+    "Gage ID":"00220",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-13 UNC-2A TREAD RING GAGE"
+  },
+  {
+    "Gage ID":"00221",
+    "Type":"THREAD RING GAGE",
+    "Description":"M5 X 0.8 GO RING GAGE"
+  },
+  {
+    "Gage ID":"00222",
+    "Type":"THREAD RING GAGE",
+    "Description":"M6 X 1.0 GO RING GAGE"
+  },
+  {
+    "Gage ID":"00223",
+    "Type":"THREAD RING GAGE",
+    "Description":"M8 X 1.0 GO RING GAGE"
+  },
+  {
+    "Gage ID":"00224",
+    "Type":"THREAD RING GAGE",
+    "Description":"M8 X 1.25 GO RING GAGE"
+  },
+  {
+    "Gage ID":"00225",
+    "Type":"THREAD RING GAGE",
+    "Description":"M8 X 1.25 GO RING GAGE"
+  },
+  {
+    "Gage ID":"00226",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16 24-UNS 3B GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00228",
+    "Type":"THREAD RING GAGE",
+    "Description":"9\/16-27 UNS-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00230",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/8-11 UNC-2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00231",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/8-18 SPECIAL NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00232",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/8-24 UNEF-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00233",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-27 UNS-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00234",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-20 UNF-3A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00236",
+    "Type":"THREAD RING GAGE",
+    "Description":"9\/16-18 UNF-2A 0"
+  },
+  {
+    "Gage ID":"00237",
+    "Type":"THREAD RING GAGE",
+    "Description":"9\/16-18 UNF 3A GO RING GAGE 1,087"
+  },
+  {
+    "Gage ID":"00239",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-40 NS -3 L.H. GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00244",
+    "Type":"THREAD RING GAGE",
+    "Description":"M7 X 0.8-6g GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00248",
+    "Type":"THREAD RING GAGE",
+    "Description":"4-40 UNC 2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00249",
+    "Type":"THREAD RING GAGE",
+    "Description":"M5 X 0.8 6g NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00250",
+    "Type":"THREAD RING GAGE",
+    "Description":"M7 X 0.8-6g NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00252",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-18 UNEF-2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00253",
+    "Type":"THREAD RING GAGE",
+    "Description":"M18 X 1.5 6g GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00254",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-32 UN-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00260",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-20 UNEF-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00261",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-32 UN-2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00262",
+    "Type":"THREAD RING GAGE",
+    "Description":"11\/16-24 UNEF-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00263",
+    "Type":"THREAD RING GAGE",
+    "Description":"11\/16-20 UN-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00264",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-40 UNS-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00268",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-28 UNF-2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00269",
+    "Type":"THREAD RING GAGE",
+    "Description":"M22 X 1.50 - 6g GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00271",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-32 UN-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00273",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-20 UN 2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00274",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-14 UNF-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00278",
+    "Type":"THREAD RING GAGE",
+    "Description":"6-32 UNC-2A GO GAGE 0"
+  },
+  {
+    "Gage ID":"00280",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-32 UNEF-2A L.H. GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00281",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-20 UNC-2A L.H. GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00282",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-24 UNF-3A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00283",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-24 UNF-3A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00284",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-28 UNF-2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00285",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-32 UNEF-2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00286",
+    "Type":"THREAD RING GAGE",
+    "Description":"M20 X 1.5-6g GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00287",
+    "Type":"THREAD RING GAGE",
+    "Description":"13\/16-20 UNEF-2A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00289",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-10 UNC-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00290",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-24 UNF-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00291",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-40 UNS-3A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00292",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-32 UNEF-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00293",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-32 UNEF-2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00294",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-18 UNC-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00295",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-20 UNC-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00298",
+    "Type":"THREAD RING GAGE",
+    "Description":"M6 X 1.0-6g GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00301",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-24 UNF 2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00302",
+    "Type":"THREAD RING GAGE",
+    "Description":"M5 X 0.8 GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00303",
+    "Type":"THREAD RING GAGE",
+    "Description":"M5 X 0.8 GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00304",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-20 UNF-2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00305",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-20 UNC 3A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00306",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-20 UNF-2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00307",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-28 UNF 3A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00312",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-24 P.D. 1.0930\" THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00313",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-24 P.D. 1.0960\" THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00314",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-16 UNC 3A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00318",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-24 P.D. 1.0916 THREAD RING G 1,452"
+  },
+  {
+    "Gage ID":"00319",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-24 P.D. 1.0856 THREAD RING G 1,452"
+  },
+  {
+    "Gage ID":"00321",
+    "Type":"THREAD RING GAGE",
+    "Description":"M4 X 0.7 GO RING GAGE"
+  },
+  {
+    "Gage ID":"00326",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-24 P.D. 1.0895 THREAD RING G 1,452"
+  },
+  {
+    "Gage ID":"00330",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/16-28 UN-2A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00331",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-13 2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00343",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-20 UNJF-3A GO RING"
+  },
+  {
+    "Gage ID":"00347",
+    "Type":"THREAD RING GAGE",
+    "Description":"4-40 UNC 2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00350",
+    "Type":"THREAD RING GAGE",
+    "Description":"M36 X 1.5 6g NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00352",
+    "Type":"THREAD RING GAGE",
+    "Description":"M36 X 1.5 6g GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00355",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-20 UNF-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00360",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-24 UNS-1A NO RING GAGE"
+  },
+  {
+    "Gage ID":"00361",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-24 UNS GO RING GAGE"
+  },
+  {
+    "Gage ID":"00362",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-24 UNS NO GO PRE-PLATE GAGE"
+  },
+  {
+    "Gage ID":"00371",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-14 UNS-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00373",
+    "Type":"THREAD RING GAGE",
+    "Description":"3-56 UNF-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00374",
+    "Type":"THREAD RING GAGE",
+    "Description":"3-56 UNF-2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00377",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-20 UNEF-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00381",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-20 UNF-2A THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00385",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/8-18 UNF-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00386",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 3\/8-28 UN GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00395",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-16 UNC-3A THREAD RING GAGE ( NO 0"
+  },
+  {
+    "Gage ID":"00400",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-16 UNC-3A THREAD RING GAGE (GO) 0"
+  },
+  {
+    "Gage ID":"00404",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 7\/8-20 UN-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00407",
+    "Type":"THREAD RING GAGE",
+    "Description":"10-32 UNF GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00408",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 7\/8-20 UN-2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00409",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-24 UNS GO RING GAGE (P.D. 1.0900) 0"
+  },
+  {
+    "Gage ID":"00415",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/16-20 UN-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00428",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-24 UNS GO RING GAGE (P.D. 1.0880) 0"
+  },
+  {
+    "Gage ID":"00429",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-24 UNS NO GO RING GAGE (P.D. 1. 0"
+  },
+  {
+    "Gage ID":"00431",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 3\/4-16 UN-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00435",
+    "Type":"THREAD RING GAGE",
+    "Description":".504-40 NS GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00436",
+    "Type":"THREAD RING GAGE",
+    "Description":".504-40 UNS GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00439",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-16 UNF-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00440",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-32 UN GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00445",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-24 UNS GO RING GAGE (P.D. 1. 0"
+  },
+  {
+    "Gage ID":"00447",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-24 UNS NO GO RING GAGE (P.D. 1. 0"
+  },
+  {
+    "Gage ID":"00449",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-14 NPT L-1 RING GAGE 0"
+  },
+  {
+    "Gage ID":"00451",
+    "Type":"THREAD RING GAGE",
+    "Description":".504-40 UNS-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00455",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-16 UNC 2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00470",
+    "Type":"THREAD RING GAGE",
+    "Description":"8-32 UNC-2A GO THREAD GAGE 0"
+  },
+  {
+    "Gage ID":"00471",
+    "Type":"THREAD RING GAGE",
+    "Description":"8-32 UNC-2A NO GO THREAD GAGE 0"
+  },
+  {
+    "Gage ID":"00480",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/8-18 UNF-3A THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00485",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-20 UNF-3A NO GO 0"
+  },
+  {
+    "Gage ID":"00488",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-20 UNF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00489",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-20 UNF-2A NO GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00507",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-28 UN-2A GO GAGE 0"
+  },
+  {
+    "Gage ID":"00511",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-24 UNF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00517",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-24 UNS-1A GO RING GAGE (P.D. 0"
+  },
+  {
+    "Gage ID":"00521",
+    "Type":"THREAD RING GAGE",
+    "Description":"6-32 UNC-3A GO RING GAGE"
+  },
+  {
+    "Gage ID":"00522",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 X 11-1\/2 NPT RING GAGE 1,183"
+  },
+  {
+    "Gage ID":"00535",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/4-18 UNF-2A (GO) RING GAGE 1,183"
+  },
+  {
+    "Gage ID":"00536",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/4-18 UNJF-3A (NO-GO) RING GAGE 1,183"
+  },
+  {
+    "Gage ID":"00537",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-16 UNJF-3A (GO) RING GAGE"
+  },
+  {
+    "Gage ID":"00538",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-16 UNJF-3A (NO GO) RING GAGE"
+  },
+  {
+    "Gage ID":"00538",
+    "Type":"THREAD RING GAGE",
+    "Description":"M5 X .8-6g (GO) RING GAUGE 1,183"
+  },
+  {
+    "Gage ID":"00541",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/8-12 UNJF-3A (GO) RING GAGE 1,179"
+  },
+  {
+    "Gage ID":"00545",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/8 -12 UNJF-3A (No-Go) RING GAGE 1,179"
+  },
+  {
+    "Gage ID":"00546",
+    "Type":"THREAD RING GAGE",
+    "Description":"1.0652-12 UNH-3A(GO - RING GAGE 1,179"
+  },
+  {
+    "Gage ID":"00550",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-20 UNEF-2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00553",
+    "Type":"THREAD RING GAGE",
+    "Description":"M12X1.25-6H GO \/ NO GO THREAD PLUG 141"
+  },
+  {
+    "Gage ID":"00560",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\"-14 UNS-2A NO\/GO THREAD RING GAGE 1,179"
+  },
+  {
+    "Gage ID":"00564",
+    "Type":"THREAD RING GAGE",
+    "Description":"1.0625-12 UNJ-2A NO\/GO THREAD RING GAGE"
+  },
+  {
+    "Gage ID":"00568",
+    "Type":"THREAD RING GAGE",
+    "Description":"M10 X 1.5 6g GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00569",
+    "Type":"THREAD RING GAGE",
+    "Description":"M10 X 1.5 6g NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"00800",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-18 NPSM GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00801",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-18 NPSM NO GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00802",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/8-24 UNEF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00803",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/8-24 UNEF-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00804",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/8-27 UNS-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00805",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/8-27 UNS-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00806",
+    "Type":"THREAD RING GAGE",
+    "Description":".5625-14 UNS-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00807",
+    "Type":"THREAD RING GAGE",
+    "Description":".5625-14 UNS-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00808",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-16 UNJF-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00809",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-16 UNJF-3A GO THREAD RING GAGE"
+  },
+  {
+    "Gage ID":"00811",
+    "Type":"THREAD RING GAGE",
+    "Description":"9\/16-18 UNC-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00812",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-27 UNS-2A NO\/GO THREAD RING GAGE"
+  },
+  {
+    "Gage ID":"00813",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-32 UNS-2A GO THREAD RING GAGE"
+  },
+  {
+    "Gage ID":"00814",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-32 UN-3A NO\/GO THREAD RING GAGE"
+  },
+  {
+    "Gage ID":"00815",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-32 UN-3A GO THREAD RING GAGE"
+  },
+  {
+    "Gage ID":"00816",
+    "Type":"THREAD RING GAGE",
+    "Description":"9\/16-18 UNF-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00817",
+    "Type":"THREAD RING GAGE",
+    "Description":"9\/16-18 UNF-3A NO\/GO THREAD RING GAGE 1"
+  },
+  {
+    "Gage ID":"00818",
+    "Type":"THREAD RING GAGE",
+    "Description":"9\/16-12 UNC-2 ALH NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00819",
+    "Type":"THREAD RING GAGE",
+    "Description":"9\/16-12 UNC-2 ALH GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00820",
+    "Type":"THREAD RING GAGE",
+    "Description":"9\/16-12 UNF-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00821",
+    "Type":"THREAD RING GAGE",
+    "Description":"9\/16-18 UNJF-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00822",
+    "Type":"THREAD RING GAGE",
+    "Description":"13\/16-32 UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00823",
+    "Type":"THREAD RING GAGE",
+    "Description":"13\/16-32 UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00824",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-14 NPSM-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00825",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-14 NPSM-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00826",
+    "Type":"THREAD RING GAGE",
+    "Description":".625-28 UN-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00827",
+    "Type":"THREAD RING GAGE",
+    "Description":".625-28 UN-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00828",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-32 UNS-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00829",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-32 UNS-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00830",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-16 UNF-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00831",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-16 UNF-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00832",
+    "Type":"THREAD RING GAGE",
+    "Description":"11\/16-20 UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00833",
+    "Type":"THREAD RING GAGE",
+    "Description":"11\/16-20 UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00834",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\"-32 UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00835",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\"-32-UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00836",
+    "Type":"THREAD RING GAGE",
+    "Description":"15\/16 UNJF-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00837",
+    "Type":"THREAD RING GAGE",
+    "Description":"15\/16-16 UNJF-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00838",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-27 UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00839",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-16 UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00840",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-16 UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00841",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/16-20 UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00842",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/16 UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00843",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-20 UNEF-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00844",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-20 UNF-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00845",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-14 UNF-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00846",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-14 UNF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00847",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-14 UNF-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00848",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-14 UNF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00849",
+    "Type":"THREAD RING GAGE",
+    "Description":"M24x3.0-6g NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00850",
+    "Type":"THREAD RING GAGE",
+    "Description":"M24x3.0-6g GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00851",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-14 UNF NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00852",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-14 UNF GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00853",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-22 UNS-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00854",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-22 UNS-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00855",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-16 UNJ-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00856",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/8-16 UNJ-3A NO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00857",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-12 UNJ NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00858",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-12 UNJ GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00859",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/16-16 UNEF-2A GO THREAD RING G 0"
+  },
+  {
+    "Gage ID":"00860",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/16-18 UN-3A NO\/GO THREAD RING G 0"
+  },
+  {
+    "Gage ID":"00861",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/8-12 UNJF-3A NO\/GO THREAD RING 0"
+  },
+  {
+    "Gage ID":"00862",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/8-12 UNJF-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00863",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-20 UNEF-2A NO GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00864",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-20 UNEF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00865",
+    "Type":"THREAD RING GAGE",
+    "Description":"M22x1.5-6g NO\/GO THREAD RING GAGE 1"
+  },
+  {
+    "Gage ID":"00866",
+    "Type":"THREAD RING GAGE",
+    "Description":"M22x1.5-6g GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00867",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/16-20 UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00868",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 5\/16-20 UNEF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00869",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/16-12 UN-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00870",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/16-12 UN-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00871",
+    "Type":"THREAD RING GAGE",
+    "Description":".8750-16 UNJ-3A NO\/GO THREAD RING G 0"
+  },
+  {
+    "Gage ID":"00872",
+    "Type":"THREAD RING GAGE",
+    "Description":".8750-16 UNJ-3A GO THREAD RING G 1"
+  },
+  {
+    "Gage ID":"00873",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/16-16 UNJ-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00874",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-1\/16-16 UNJ-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00875",
+    "Type":"THREAD RING GAGE",
+    "Description":"M22x1.5-6g NO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00876",
+    "Type":"THREAD RING GAGE",
+    "Description":"M22x1.5-6g GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00877",
+    "Type":"THREAD RING GAGE",
+    "Description":"1.3125-16 UNJ-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00878",
+    "Type":"THREAD RING GAGE",
+    "Description":"1.3125-16 UNJ-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00879",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-5\/16-18 UNEF-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00880",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-5\/16-18 UNEF-2A GO THREAD RING GAGE 1"
+  },
+  {
+    "Gage ID":"00881",
+    "Type":"THREAD RING GAGE",
+    "Description":"1.500-28 UN-3A B\/P GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00882",
+    "Type":"THREAD RING GAGE",
+    "Description":"1.500-28 UN-3A B\/P GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00883",
+    "Type":"THREAD RING GAGE",
+    "Description":"1.4375-16 UNJ-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00884",
+    "Type":"THREAD RING GAGE",
+    "Description":"1.4375-16 UNJ-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00885",
+    "Type":"THREAD RING GAGE",
+    "Description":"PREPLATE 1-7\/16-16 UNJ-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00886",
+    "Type":"THREAD RING GAGE",
+    "Description":"PREPLATE 1-7\/16-16 UNJ-3A NO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00887",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/4-16 UNJ-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00888",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/4-16 UNJ-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00889",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-5\/16-16 UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00890",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-5\/16-16 UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00891",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-3\/16-18 UNEF-3A B\/P NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00892",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-3\/16-18 UNEF-3A B\/P GO THREAD RING GAGE 1"
+  },
+  {
+    "Gage ID":"00893",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-5\/16-12 UNJ-3A B\/P GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00894",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-5\/16-12 UNJ-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00895",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-5\/8-16 UNEF-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00896",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-5\/8-16 UNJ-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00897",
+    "Type":"THREAD RING GAGE",
+    "Description":"1.375-20 UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00898",
+    "Type":"THREAD RING GAGE",
+    "Description":"1.375-20 UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00899",
+    "Type":"THREAD RING GAGE",
+    "Description":"2-16 UNJ-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00900",
+    "Type":"THREAD RING GAGE",
+    "Description":"2-16 UNJ-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00901",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-5\/16-18 UNEF-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00902",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-5\/16-18 UNEF-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00903",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-7\/8-14 UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00904",
+    "Type":"THREAD RING GAGE",
+    "Description":"1-7\/8-14 UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00905",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 7\/16-16 UNJ-3A PREPLATE NO\/GO THREAD RING GAGE"
+  },
+  {
+    "Gage ID":"00906",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 7\/16-16 UNJ-3A PREPLATE NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00907",
+    "Type":"THREAD RING GAGE",
+    "Description":"1.875-20 UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00908",
+    "Type":"THREAD RING GAGE",
+    "Description":"1.875-20 UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00909",
+    "Type":"THREAD RING GAGE",
+    "Description":"2 1\/2-16 UN-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00910",
+    "Type":"THREAD RING GAGE",
+    "Description":"2 1\/2-16 UN-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00912",
+    "Type":"THREAD RING GAGE",
+    "Description":"2 1\/4-12 UNJ-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00913",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 7\/16-18 UNEF-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00914",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 7\/16-18 UNEF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00915",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 3\/4-16 UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00916",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 3\/4-16 UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00917",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 11\/16-18 UNEF-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00918",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 11\/16-18 UNEF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00919",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 15\/16-16 UNJ-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00920",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 15\/16-16 UNJ-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00921",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 5\/8-16 UNJ-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00922",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 5\/8-16 UNJ-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00923",
+    "Type":"THREAD RING GAGE",
+    "Description":"3 1\/8-12 UNJ-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00924",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/8-12 UNJ-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00925",
+    "Type":"THREAD RING GAGE",
+    "Description":"2 1\/8-12 UNJ-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00926",
+    "Type":"THREAD RING GAGE",
+    "Description":"2 1\/8-12UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00927",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\"-16UN-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00928",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\"-16UN-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00929",
+    "Type":"THREAD RING GAGE",
+    "Description":"2.1875-16 UNS-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00930",
+    "Type":"THREAD RING GAGE",
+    "Description":"2.1875-16 UNS-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00931",
+    "Type":"THREAD RING GAGE",
+    "Description":"2 3\/16-16 UNS-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00932",
+    "Type":"THREAD RING GAGE",
+    "Description":"2 3\/16-16 UNS-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00933",
+    "Type":"THREAD RING GAGE",
+    "Description":"2 7\/8-16 UNJ-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00934",
+    "Type":"THREAD RING GAGE",
+    "Description":"2 7\/8-16 UNJ-3AGO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00935",
+    "Type":"THREAD RING GAGE",
+    "Description":"2 5\/8-16 UNJ-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00936",
+    "Type":"THREAD RING GAGE",
+    "Description":"2 5\/8-16 UNJ-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00937",
+    "Type":"THREAD RING GAGE",
+    "Description":"2 1\/2-18 UNS-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00938",
+    "Type":"THREAD RING GAGE",
+    "Description":"2 1\/2-18 UNS-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00939",
+    "Type":"THREAD RING GAGE",
+    "Description":"2 1\/2-18 UN GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00941",
+    "Type":"THREAD RING GAGE",
+    "Description":"3.250-12 UNJ-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00942",
+    "Type":"THREAD RING GAGE",
+    "Description":"3.250-12 UNJ-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00943",
+    "Type":"THREAD RING GAGE",
+    "Description":"3 7\/8-12 UNJ-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00944",
+    "Type":"THREAD RING GAGE",
+    "Description":"3 7\/8-12 UNJ-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00945",
+    "Type":"THREAD RING GAGE",
+    "Description":"3 3\/4-12 UNJ-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00946",
+    "Type":"THREAD RING GAGE",
+    "Description":"3 3\/4-12 UNJ 3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00947",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 3\/8-16 UNJ-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00948",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 3\/8-16 UNJS-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00949",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/8-24 UNEF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00950",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/16-18 UNEF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00951",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/8-12 UNJF-3A PREPLATE GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00953",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-32 UN-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00954",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-32 UN-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00955",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/16-18 UNEF-2A NO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00956",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/8-27 UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00957",
+    "Type":"THREAD RING GAGE",
+    "Description":"11-16-24 UNEF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00959",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-32 UN-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00960",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/8-24 UNEF-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00961",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-20 UNJEF-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00962",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-20 UNJEF-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00963",
+    "Type":"THREAD RING GAGE",
+    "Description":"11\/16-24 UNEF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00964",
+    "Type":"THREAD RING GAGE",
+    "Description":"11\/16-24 UNEF-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00965",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/4-32 UN-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00968",
+    "Type":"THREAD RING GAGE",
+    "Description":"11\/16-24 UNEF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00969",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-20 UNF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00970",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-20 UNF-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00971",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-16 UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00972",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-16 UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00973",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-32 UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00974",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-32 UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00975",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-28 UNEF-2A (LH) GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00976",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-28 UNEF-2A (LH)  NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00977",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-24 UNS-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00978",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-24 UNS-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00979",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-24 UNS-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00980",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-24 UNS-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00981",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-13 UNC-2A GO TREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00982",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-13 UNC-2A NO\/GO TREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00983",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-32 UNEF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00984",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-32 UNEF-2A GO.\/NO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00985",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-16 UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00987",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-24 UNF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00988",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-24 UNF-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00989",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-20 UNF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00990",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-20 UNF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00991",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-32 UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00992",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-32 UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00993",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-40 UNS-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00994",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-40 UNS-2A NO\/GO THREAD RING GAGE 1"
+  },
+  {
+    "Gage ID":"00995",
+    "Type":"THREAD RING GAGE",
+    "Description":".500-40 UNS-2A (PREPLATE) GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00996",
+    "Type":"THREAD RING GAGE",
+    "Description":".500-40 UNS-2A (PREPLATE) NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00997",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-24 UNF-2A GO\/NO GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00998",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-24UNF-2A NO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"00999",
+    "Type":"THREAD RING GAGE",
+    "Description":"M12x1.5-6G GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01000",
+    "Type":"THREAD RING GAGE",
+    "Description":"M12x1.5-6G NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01001",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-32 UN-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01002",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-32 UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01003",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-28 UNEF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01004",
+    "Type":"THREAD RING GAGE",
+    "Description":"7\/16-28 UNEF-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01005",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-16 UNC-3A (LH) GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01006",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-16 UNC-3A (LH) NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01007",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-18 UNC-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01008",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-18 UNC-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01009",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-32 UNEF-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01010",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-32 UNEF-2A NO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01011",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-40 UNS-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01012",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/16-40 UNS-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01013",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-20 UNC-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01014",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-20 UNC-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01015",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-36 UNC-2A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01016",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-36 UNC-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01017",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-28 UNUF-3A GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01018",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-28 UNUF-3A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01083",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/8-18 UNF-2A THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"01109",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-24 UNF-3A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"01110",
+    "Type":"THREAD RING GAGE",
+    "Description":"3\/8-24 UNF-3A NOGO RING GAGE 0"
+  },
+  {
+    "Gage ID":"01111",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-20 UNF-3A GO 274"
+  },
+  {
+    "Gage ID":"01112",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-20 UNF 3A NO GO 274"
+  },
+  {
+    "Gage ID":"01113",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 3\/8-12 UNF 2A Go Ring Gage "
+  },
+  {
+    "Gage ID":"01114",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 3\/8-12 UNF 2A No Go Ring Gage"
+  },
+  {
+    "Gage ID":"01124",
+    "Type":"THREAD RING GAGE",
+    "Description":"2.00-11 1\/2 NPT"
+  },
+  {
+    "Gage ID":"01141",
+    "Type":"THREAD RING GAGE",
+    "Description":"4-40 UNC-3A GO Thread Ring Gage 0"
+  },
+  {
+    "Gage ID":"01142",
+    "Type":"THREAD RING GAGE",
+    "Description":"4-40 UNC-3A NO GO 0"
+  },
+  {
+    "Gage ID":"0161",
+    "Type":"THREAD RING GAGE",
+    "Description":"4-40 UNC-2A GO Ring Gage 0"
+  },
+  {
+    "Gage ID":"0165",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-28 UNF 2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0169",
+    "Type":"THREAD RING GAGE",
+    "Description":"9\/16-18 UNF-2A THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"0200",
+    "Type":"THREAD RING GAGE",
+    "Description":"11\/16-16 UN-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0221",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/2-20 UN GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0232",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/4-40 UN GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0235",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 5\/8-20 UN-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0226",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 5\/8-20 UN GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0230",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 13\/16-20 UN GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0231",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 13\/16-20 UN GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0236",
+    "Type":"THREAD RING GAGE",
+    "Description":"3-48 UNC 2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0244",
+    "Type":"THREAD RING GAGE",
+    "Description":"2 5\/16-20 UNS GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0261",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-20 UN GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0263",
+    "Type":"THREAD RING GAGE",
+    "Description":"1.1875-16 UNS-3A NO GO GAGE (P.D. 1.125) 0"
+  },
+  {
+    "Gage ID":"0264",
+    "Type":"THREAD RING GAGE",
+    "Description":"1.1875-16 UNS-3A GO GAGE (P.D. 1.125) 0"
+  },
+  {
+    "Gage ID":"0278",
+    "Type":"THREAD RING GAGE",
+    "Description":"11\/16-27 UNS-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0279",
+    "Type":"THREAD RING GAGE",
+    "Description":"2-56 UNC-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0280",
+    "Type":"THREAD RING GAGE",
+    "Description":"2-56 UNC 3A NO\/GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0281",
+    "Type":"THREAD RING GAGE",
+    "Description":"2-56 UNC 3A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0282",
+    "Type":"THREAD RING GAGE",
+    "Description":"2-56 UNC 3A NO\/GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0283",
+    "Type":"THREAD RING GAGE",
+    "Description":"3-48 NC-3 GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0284",
+    "Type":"THREAD RING GAGE",
+    "Description":"3-48 UNC 3A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0285",
+    "Type":"THREAD RING GAGE",
+    "Description":"3-48 UNC 3A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0286",
+    "Type":"THREAD RING GAGE",
+    "Description":"4-48 UNF GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0287",
+    "Type":"THREAD RING GAGE",
+    "Description":"4-48 UNF 3A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0288",
+    "Type":"THREAD RING GAGE",
+    "Description":"4-48 UNF 3A NO\/GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0292",
+    "Type":"THREAD RING GAGE",
+    "Description":"6-40 UNF-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0293",
+    "Type":"THREAD RING GAGE",
+    "Description":"6-40 UNF-3A GO GAGE 0"
+  },
+  {
+    "Gage ID":"0294",
+    "Type":"THREAD RING GAGE",
+    "Description":"6-40 UNF-3A NO\/ GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0295",
+    "Type":"THREAD RING GAGE",
+    "Description":"8-32 UNC-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0296",
+    "Type":"THREAD RING GAGE",
+    "Description":"8-32 UNC-3A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0297",
+    "Type":"THREAD RING GAGE",
+    "Description":"8-32 UNC-3A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0298",
+    "Type":"THREAD RING GAGE",
+    "Description":"10-24 UNC 3A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0300",
+    "Type":"THREAD RING GAGE",
+    "Description":"10-40 UNS-2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0301",
+    "Type":"THREAD RING GAGE",
+    "Description":"10-40 UNS-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0302",
+    "Type":"THREAD RING GAGE",
+    "Description":"12-28 UNF-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0304",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/4-20 UNC 3A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0306",
+    "Type":"THREAD RING GAGE",
+    "Description":"6-32 UNC 3A GO GAGE 0"
+  },
+  {
+    "Gage ID":"0314",
+    "Type":"THREAD RING GAGE",
+    "Description":"9\/16-18 UNF-2A NO-GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"0349",
+    "Type":"THREAD RING GAGE",
+    "Description":"1 1\/8-18 UNEF-2A GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0523",
+    "Type":"THREAD RING GAGE",
+    "Description":"5\/8-18 UNF-2A NO GO RING GAGE 0"
+  },
+  {
+    "Gage ID":"0538",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-32 UNR-3A THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"0986",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2-16 UN-2A NO\/GO THREAD RING GAGE 0"
+  },
+  {
+    "Gage ID":"258",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\/2 24 UNS-3A RING GAGE 0"
+  },
+  {
+    "Gage ID":"0072",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\"-8 UNC-2A GO P.D .9168 L\/H"
+  },
+  {
+    "Gage ID":"0073",
+    "Type":"THREAD RING GAGE",
+    "Description":"1\"-8 UNC-2A LO P.D .9100 L\/H"
+  }
+]

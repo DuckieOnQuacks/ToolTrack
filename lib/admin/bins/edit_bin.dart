@@ -24,29 +24,13 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
   bool finished = false;
   bool isLoading = true;
 
-  @override
-  void initState() {
-    super.initState();
-    nameController.text = widget.bin.originalName;
-    locationController.text = widget.bin.location;
-    tools = [];
-    initialTools = [];
-    fetchInitialTools(widget.bin.tools);
-    finished = widget.bin.finished;
-  }
-
-  @override
-  void dispose() {
-    nameController.dispose();
-    locationController.dispose();
-    newToolController.dispose();
-    super.dispose();
-  }
-
   Future<void> fetchInitialTools(List<String?> toolIds) async {
     List<Tool> fetchedTools = [];
     for (var toolId in toolIds) {
-      final toolDoc = await FirebaseFirestore.instance.collection('Tools').doc(toolId).get();
+      final toolDoc = await FirebaseFirestore.instance
+          .collection('Tools')
+          .doc(toolId)
+          .get();
       if (toolDoc.exists) {
         fetchedTools.add(Tool.fromJson(toolDoc.data()!));
       }
@@ -87,8 +71,7 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
               fontSize: 14.0, fontWeight: FontWeight.bold, color: Colors.white),
           children: <TextSpan>[
             TextSpan(
-              text:
-              '${widget.bin.location} -> ${locationController.text}',
+              text: '${widget.bin.location} -> ${locationController.text}',
               style: const TextStyle(fontWeight: FontWeight.normal),
             ),
           ],
@@ -99,9 +82,9 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
     const SizedBox(height: 10);
 
     final addedTools =
-    tools.where((tool) => !initialTools.contains(tool)).toList();
+        tools.where((tool) => !initialTools.contains(tool)).toList();
     final removedTools =
-    initialTools.where((tool) => !tools.contains(tool)).toList();
+        initialTools.where((tool) => !tools.contains(tool)).toList();
 
     if (addedTools.isNotEmpty) {
       changesWidgets.add(Column(
@@ -116,10 +99,10 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
           ),
           const SizedBox(height: 8),
           ...addedTools.map((tool) => Text(
-            tool.gageID,
-            style: const TextStyle(
-                fontWeight: FontWeight.normal, color: Colors.white),
-          )),
+                tool.gageID,
+                style: const TextStyle(
+                    fontWeight: FontWeight.normal, color: Colors.white),
+              )),
         ],
       ));
     }
@@ -137,10 +120,10 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
           ),
           const SizedBox(height: 8),
           ...removedTools.map((tool) => Text(
-            tool.gageID,
-            style: const TextStyle(
-                fontWeight: FontWeight.normal, color: Colors.white),
-          )),
+                tool.gageID,
+                style: const TextStyle(
+                    fontWeight: FontWeight.normal, color: Colors.white),
+              )),
         ],
       ));
     }
@@ -206,13 +189,14 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
                     originalName: nameController.text,
                     location: locationController.text,
                     tools: tools.map((tool) => tool.gageID).toList(),
-                    finished: finished
-                );
+                    finished: finished);
                 await updateBinIfDifferent(widget.bin, newBin);
                 if (context.mounted) {
                   Navigator.of(context).pop(true);
                   Navigator.of(context).pop(true);
-                  showTopSnackBar(context, "Changes Saved Successfully", Colors.green, title: "Success", icon: Icons.check_circle);
+                  showTopSnackBar(
+                      context, "Changes Saved Successfully", Colors.green,
+                      title: "Success", icon: Icons.check_circle);
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -233,12 +217,8 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
       bool alreadyExists = tools.any((tool) => tool.gageID == toolId);
       if (alreadyExists) {
         showTopSnackBar(
-            context,
-            "Tool ID $toolId is already in the list.",
-            Colors.red,
-            title: "Error",
-            icon: Icons.error
-        );
+            context, "Tool ID $toolId is already in the list.", Colors.red,
+            title: "Error", icon: Icons.error);
       } else {
         Tool? validTool = await validateAndFetchTool(context, toolId);
         if (validTool != null) {
@@ -257,25 +237,29 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
     });
   }
 
-  Future<Tool?> validateAndFetchTool(BuildContext context, String toolId) async {
-    final toolDoc = await FirebaseFirestore.instance.collection('Tools').doc(toolId).get();
-    if (toolDoc.exists) {
-      return Tool.fromJson(toolDoc.data()!);
-    } else {
-      showTopSnackBar(
-          context,
-          "Tool ID $toolId does not exist in the database.",
-          Colors.red,
-          title: "Error",
-          icon: Icons.error
-      );
-      return null;
-    }
-  }
-
   void copyToolToClipboard(String tool) {
     Clipboard.setData(ClipboardData(text: tool));
-    showTopSnackBar(context, "Tool ID copied to clipboard", Colors.blue, title: "Note:", icon: Icons.copy);
+    showTopSnackBar(context, "Tool ID copied to clipboard", Colors.blue,
+        title: "Note:", icon: Icons.copy);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    nameController.text = widget.bin.originalName;
+    locationController.text = widget.bin.location;
+    tools = [];
+    initialTools = [];
+    fetchInitialTools(widget.bin.tools);
+    finished = widget.bin.finished;
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    locationController.dispose();
+    newToolController.dispose();
+    super.dispose();
   }
 
   @override
@@ -380,52 +364,73 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
           const SizedBox(height: 8),
           isLoading
               ? Center(
-            child: Lottie.asset(
-              'assets/lottie/loading.json',
-              width: 100,
-              height: 100,
-            ),
-          )
+                  child: Lottie.asset(
+                    'assets/lottie/loading.json',
+                    width: 100,
+                    height: 100,
+                  ),
+                )
               : ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: tools.length,
-            itemBuilder: (context, index) {
-              Tool tool = tools[index];
-              String status = tool.status ?? 'Unknown';
-              Color statusColor = status.toLowerCase() == 'available'
-                  ? Colors.green
-                  : Colors.red;
-              return ListTile(
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(tool.gageID),
-                    Text(
-                      status,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: statusColor,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: tools.length,
+                  itemBuilder: (context, index) {
+                    Tool tool = tools[index];
+                    String status = tool.status;
+                    IconData statusIcon;
+                    Color statusColor;
+
+                    switch (status.toLowerCase()) {
+                      case 'available':
+                        statusIcon = Icons.check_circle_outline;
+                        statusColor = Colors.green;
+                        break;
+                      case 'checked out':
+                        statusIcon = Icons.cancel_outlined;
+                        statusColor = Colors.red;
+                        break;
+                      default:
+                        statusIcon = Icons.help_outline;
+                        statusColor = Colors.grey;
+                    }
+
+                    return ListTile(
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(tool.gageID,
+                              style: const TextStyle(fontSize: 18)),
+                          Row(
+                            children: [
+                              Icon(statusIcon, size: 14, color: statusColor),
+                              const SizedBox(width: 4),
+                              Text(
+                                status,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: statusColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.copy, color: Colors.blue),
+                            onPressed: () => copyToolToClipboard(tool.gageID),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => removeTool(index),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.copy, color: Colors.blue),
-                      onPressed: () => copyToolToClipboard(tool.gageID),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => removeTool(index),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
           const SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.only(left: 16), // Add left padding here

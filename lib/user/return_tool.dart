@@ -23,12 +23,6 @@ class _ReturnToolState extends State<ReturnToolPage> {
   bool _flashEnabled = false;
   Tool? _selectedTool;
 
-  @override
-  void initState() {
-    super.initState();
-    initializeCamera();
-  }
-
   Future<void> initializeCamera() async {
     setState(() {
       _isLoading = true;
@@ -39,12 +33,6 @@ class _ReturnToolState extends State<ReturnToolPage> {
       _isCameraInitialized = true;
       _isLoading = false;
     });
-  }
-
-  @override
-  void dispose() {
-    _cameraManager.disposeCamera();
-    super.dispose();
   }
 
   void handleBarcodeScanning() async {
@@ -301,6 +289,18 @@ class _ReturnToolState extends State<ReturnToolPage> {
         showTopSnackBar(context, "Failed to return. Please try again.", Colors.red, title: "Error", icon: Icons.error);
       }
     }
+  }
+
+  @override
+  void dispose() {
+    _cameraManager.disposeCamera();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initializeCamera();
   }
 
   @override

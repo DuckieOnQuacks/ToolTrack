@@ -120,7 +120,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
             ],
@@ -189,12 +189,6 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => const AdminAddToolPage()),
               );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () {
-              showLogoutConfirmationDialog(context);
             },
           ),
         ],

@@ -22,23 +22,20 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController gageIDController = TextEditingController();
   final TextEditingController gageTypeController = TextEditingController();
-  final TextEditingController gageDescriptionController =
-  TextEditingController();
+  final TextEditingController gageDescriptionController = TextEditingController();
   final TextEditingController checkedOutToController = TextEditingController();
-  final TextEditingController lastCheckedOutController =
-  TextEditingController();
+  final TextEditingController lastCheckedOutController = TextEditingController();
   final TextEditingController statusController = TextEditingController();
-  final TextEditingController calibrationFreqController =
-  TextEditingController();
+  final TextEditingController calibrationFreqController = TextEditingController();
   final TextEditingController daysRemainController = TextEditingController();
   final TextEditingController dateCreatedController = TextEditingController();
-  final TextEditingController calibrationDueController =
-  TextEditingController();
-  final TextEditingController lastCalibratedController =
-  TextEditingController();
+  final TextEditingController calibrationDueController = TextEditingController();
+  final TextEditingController lastCalibratedController = TextEditingController();
   final TextEditingController atMachineController = TextEditingController();
-  final TextEditingController dateCheckedOutController =
-  TextEditingController();
+  final TextEditingController dateCheckedOutController = TextEditingController();
+  final TextEditingController diameterController = TextEditingController();
+  final TextEditingController heightController = TextEditingController();
+
 
   String imagePath = '';
   bool pictureTaken = false;
@@ -367,6 +364,38 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
         ),
       );
     }
+    if (diameterController.text != widget.tool.diameter) {
+      changesWidgets.add(RichText(
+        text: TextSpan(
+            text: 'Diameter: ',
+            style: const TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
+            children: <TextSpan>[
+              TextSpan(
+                  text:
+                  '${widget.tool.diameter} -> ${diameterController.text}',
+                  style: const TextStyle(fontWeight: FontWeight.normal)),
+            ]),
+      ));
+    }
+    if (heightController.text != widget.tool.height) {
+      changesWidgets.add(RichText(
+        text: TextSpan(
+            text: 'Height: ',
+            style: const TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
+            children: <TextSpan>[
+              TextSpan(
+                  text:
+                  '${widget.tool.height} -> ${heightController.text}',
+                  style: const TextStyle(fontWeight: FontWeight.normal)),
+            ]),
+      ));
+    }
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -425,6 +454,8 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                   dateCheckedOut: dateCheckedOutController.text,
                   checkedOutTo: checkedOutToController.text,
                   modeled: isModeled,
+                  diameter: diameterController.text,
+                  height: heightController.text
                 );
                 if ((imagePath != widget.tool.imagePath) &&
                     widget.tool.imagePath != "") {
@@ -570,6 +601,8 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     dateCheckedOutController.text = widget.tool.dateCheckedOut;
     imagePath = widget.tool.imagePath;
     isModeled = widget.tool.modeled;
+    heightController.text = widget.tool.height;
+    diameterController.text = widget.tool.diameter;
     fetchImageUrl();
   }
 
@@ -688,6 +721,16 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                       controller: lastCalibratedController,
                       label: 'Last Completed: ',
                       hintText: 'MM/DD/YYYY',
+                    ),
+                    _buildTextField(
+                      controller: diameterController,
+                      label: 'Diameter (mm): ',
+                      hintText: 'Enter the diameter in mm',
+                    ),
+                    _buildTextField(
+                      controller: heightController,
+                      label: 'Height (mm): ',
+                      hintText: 'Enter the height in mm',
                     ),
                     const SizedBox(height: 20),
                     Center(

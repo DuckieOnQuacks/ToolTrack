@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class Tool {
@@ -21,6 +23,8 @@ class Tool {
   final String dateCheckedOut;
   final String checkedOutTo;
   final bool modeled;
+  final String diameter;
+  final String height;
 
   Tool({
     required this.calibrationFreq,
@@ -38,6 +42,8 @@ class Tool {
     required this.dateCheckedOut,
     required this.checkedOutTo,
     required this.modeled,
+    required this.diameter,
+    required this.height,
   });
 
   // Factory method to create a Tool object from JSON data
@@ -56,7 +62,9 @@ class Tool {
         atMachine: json["At Machine"] as String? ?? '',
         dateCheckedOut: json["Date Checked Out"] as String? ?? '',
         checkedOutTo: json["Checked Out To"] as String? ?? '',
-        modeled: json["modeled"],
+        modeled: json["Modeled"],
+        height: json["Height"],
+        diameter: json["Diameter"]
       );
   // Method to convert a Machine object to JSON data
   Map<String, dynamic> toJson() => {
@@ -73,7 +81,9 @@ class Tool {
         'Last Checked Out By': lastCheckedOutBy,
         'At Machine': atMachine,
         'Checked Out To': checkedOutTo,
-        'modeled': modeled,
+        'Modeled': modeled,
+        'Height': height,
+        'Diameter': diameter
       };
 
   // Function to fetch image URL from Firebase Storage
@@ -91,16 +101,7 @@ class Tool {
 }
 
 /// Adds a new tool to the Firestore database with the provided parameters.
-Future<void> addToolWithParams(
-    String calFreq,
-    String calLast,
-    String calNextDue,
-    String creationDate,
-    String gageID,
-    String gageType,
-    String imagePath,
-    String gageDesc,
-    String daysRemain) async {
+Future<void> addToolWithParams(String calFreq, String calLast, String calNextDue, String creationDate, String gageID, String gageType, String imagePath, String gageDesc, String daysRemain, String height, String diameter) async {
   // Check if the user is signed in.
   final currentUser = FirebaseAuth.instance.currentUser;
   if (currentUser == null) {
@@ -138,15 +139,16 @@ Future<void> addToolWithParams(
     atMachine: "",
     dateCheckedOut: "",
     checkedOutTo: "",
-    modeled: false
+    modeled: false,
+    height: height,
+    diameter: diameter
   );
   final json = orderTable.toJson();
   await docOrder.set(json); // Create document and write data to Firestore.
 }
 
 /// Updates the status of a tool in the Firestore database.
-Future<void> checkoutTool(
-    String toolId, String status, String userWhoCheckedOut, String atMachine) async {
+Future<void> checkoutTool(String toolId, String status, String userWhoCheckedOut, String atMachine) async {
   final toolsCollection = FirebaseFirestore.instance.collection('Tools');
 
   try {
@@ -178,8 +180,8 @@ Future<void> checkoutTool(
   }
 }
 
-Future<void> returnTool(
-    String toolId, String status, String userWhoCheckedOut) async {
+/// Returns the tool and marks the status as checked out and sets the user who checked it out.
+Future<void> returnTool(String toolId, String status, String userWhoCheckedOut) async {
   final toolsCollection = FirebaseFirestore.instance.collection('Tools');
 
   try {
@@ -450,6 +452,12 @@ Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
         modeled: newTool.modeled
             ? newTool.modeled
             : oldTool.modeled,
+        diameter: newTool.diameter.isNotEmpty
+            ? newTool.diameter
+            : oldTool.diameter,
+        height: newTool.height.isNotEmpty
+            ? newTool.height
+            : oldTool.height,
       ).toJson();
 
       await newToolDoc.set(newToolData);
@@ -510,7 +518,13 @@ Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
     updates['Checked Out To'] = newTool.checkedOutTo;
   }
   if (oldTool.modeled != newTool.modeled) {
-    updates['modeled'] = newTool.modeled;
+    updates['Modeled'] = newTool.modeled;
+  }
+  if (oldTool.diameter != newTool.diameter){
+    updates["Diameter"] = newTool.diameter;
+  }
+  if (oldTool.height != newTool.height) {
+    updates['Height'] = newTool.height;
   }
 
   if (updates.isNotEmpty) {
@@ -540,3 +554,51 @@ Future<void> deleteOldImage(String oldImagePath) async {
     debugPrint('Error deleting old image: $e');
   }
 }
+
+Future<void> uploadRingGage(String calFreq, String calLast, String calNextDue, String creationDate, String gageID, String gageType, String imagePath, String gageDesc, String daysRemain) async {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  await firestore.collection('RingGages').doc(gageID).set({
+    'Calibration Frequency': calFreq,
+    'Last Calibrated': calLast,
+    'Calibration Due Date': calNextDue,
+    'Date Created': creationDate,
+    'Gage ID': gageID,
+    'Type of Gage': gageType,
+    'Tool Image Path': imagePath,
+    'Gage Description': gageDesc,
+    'Days Remaining Until Calibration': daysRemain,
+    'Status': "",
+    'Last Checked Out By': "",
+    'At Machine': "",
+    'Checked Out To': "",
+    'modeled': false,
+  });
+}
+
+Future<void> updateToolStatuses() async {
+  final firestoreInstance = FirebaseFirestore.instance;
+  final toolsCollection = firestoreInstance.collection('Tools');
+
+  try {
+    final querySnapshot = await toolsCollection.get();
+
+    final batch = firestoreInstance.batch();
+
+    for (var doc in querySnapshot.docs) {
+      final data = doc.data();
+      if (data['Type of Gage'] == 'THREAD RING GAGE') {
+        final docRef = toolsCollection.doc(doc.id);
+        batch.update(docRef, {'Status': 'Available'});
+        print('Updated Gage ID: ${doc.id}');
+      }
+    }
+
+    await batch.commit();
+    print('Tool statuses updated successfully.');
+  } catch (e) {
+    print('Error updating tool statuses: $e');
+  }
+}
+
+
+

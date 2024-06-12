@@ -44,7 +44,6 @@ class _AdminInspectWorkOrderScreenState
 
   void confirmChanges(BuildContext context) {
     List<Widget> changesWidgets = [];
-
     if (idController.text != widget.workOrder.id) {
       changesWidgets.add(RichText(
         text: TextSpan(
@@ -60,9 +59,7 @@ class _AdminInspectWorkOrderScreenState
         ),
       ));
     }
-
     const SizedBox(height: 10);
-
     if (enteredByController.text != widget.workOrder.enteredBy) {
       changesWidgets.add(RichText(
         text: TextSpan(
@@ -79,14 +76,9 @@ class _AdminInspectWorkOrderScreenState
         ),
       ));
     }
-
     const SizedBox(height: 10);
-
-    final addedTools =
-    tools.where((tool) => !initialTools.contains(tool)).toList();
-    final removedTools =
-    initialTools.where((tool) => !tools.contains(tool)).toList();
-
+    final addedTools = tools.where((tool) => !initialTools.contains(tool)).toList();
+    final removedTools = initialTools.where((tool) => !tools.contains(tool)).toList();
     if (addedTools.isNotEmpty) {
       changesWidgets.add(Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +99,6 @@ class _AdminInspectWorkOrderScreenState
         ],
       ));
     }
-
     if (removedTools.isNotEmpty) {
       changesWidgets.add(Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,7 +119,6 @@ class _AdminInspectWorkOrderScreenState
         ],
       ));
     }
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -215,7 +205,6 @@ class _AdminInspectWorkOrderScreenState
   void copyToolToClipboard(String tool) {
     Clipboard.setData(ClipboardData(text: tool));
     showTopSnackBar(context, "Tool ID copied to clipboard", Colors.blue, title: "Note:", icon: Icons.copy);
-
   }
 
   @override
@@ -243,7 +232,7 @@ class _AdminInspectWorkOrderScreenState
                     _buildTextField(
                       controller: enteredByController,
                       label: 'Entered By: ',
-                      hintText: 'e.g. 12402',
+                      hintText: 'e.g. 1240',
                     ),
                     _buildToolsList(),
                     const SizedBox(height: 20),

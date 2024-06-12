@@ -21,15 +21,6 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
   final TextEditingController newToolController = TextEditingController();
   List<String> tools = [];
 
-  @override
-  void dispose() {
-    _binNameController.dispose();
-    _binLocationController.dispose();
-    _toolsController.dispose();
-    newToolController.dispose();
-    super.dispose();
-  }
-
   Future<void> submitForm() async {
     if (!_formKey.currentState!.validate()) {
       // Show top snackbar warning if any required field is not filled
@@ -90,6 +81,15 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
   }
 
   @override
+  void dispose() {
+    _binNameController.dispose();
+    _binLocationController.dispose();
+    _toolsController.dispose();
+    newToolController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -109,14 +109,14 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
                 _buildTextField(
                   controller: _binNameController,
                   label: 'Enter Bin Name: *',
-                  hintText: 'e.g. Bin A',
+                  hintText: 'e.g. 5/8 - 32',
                   validator: (value) =>
                   value!.isEmpty ? 'This field is required' : null,
                 ),
                 _buildTextField(
                   controller: _binLocationController,
                   label: 'Enter Bin Location: *',
-                  hintText: 'e.g. Shelf 1',
+                  hintText: 'e.g. Drawer 1 Column 2',
                   validator: (value) =>
                   value!.isEmpty ? 'This field is required' : null,
                 ),

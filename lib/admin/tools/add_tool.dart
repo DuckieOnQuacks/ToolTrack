@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mlkit_barcode_scanning/google_mlkit_barcode_scanning.dart';
 import 'package:intl/intl.dart';
 import '../../backend/camera_manager.dart';
 import '../../backend/message_helper.dart';
@@ -26,13 +25,14 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
   final TextEditingController _gageTypeController = TextEditingController();
   final TextEditingController _gageDescController = TextEditingController();
   final TextEditingController _daysRemainController = TextEditingController();
+  final TextEditingController _diameterController = TextEditingController();
+  final TextEditingController _heightController = TextEditingController();
 
   late CameraManager _cameraManager;
   FlashMode _flashMode = FlashMode.off;
   bool isCameraInitialized = false;
   bool isLoading = false;
   String imagePath = '';
-  String imageUrl = '';
   bool pictureTaken = false;
 
   Future<void> initializeCamera() async {
@@ -133,13 +133,14 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
       _dateCreatedController.text,
       _gageIDController.text,
       _gageTypeController.text,
-      imageUrl,
+      imagePath,
       _gageDescController.text,
       _daysRemainController.text,
+      _diameterController.text,
+      _heightController.text
     );
 
     if (context.mounted) {
-      Navigator.of(context).pop(true);
       Navigator.of(context).pop(true);
     }
     Future.delayed(const Duration(milliseconds: 100), () {
@@ -253,10 +254,8 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                 ),
                 _buildDateField(
                   controller: _dateCreatedController,
-                  label: 'Enter Creation Date: *',
+                  label: 'Enter Creation Date:',
                   hintText: 'MM/DD/YYYY',
-                  validator: (value) =>
-                      value!.isEmpty ? 'This field is required' : null,
                 ),
                 _buildTextField(
                   controller: _gageDescController,
@@ -271,7 +270,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                   hintText: 'Select Gage Type',
                   items: [
                     'Thread Plug Gage',
-                    'Ring Gage',
+                    'Thread Ring Gage',
                     'Caliper',
                     'Micrometer'
                   ],
@@ -280,27 +279,33 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                 _buildSectionHeader('Calibration Information'),
                 _buildTextField(
                   controller: _calFreqController,
-                  label: 'Calibration Frequency (days): *',
+                  label: 'Calibration Frequency (days):',
                   hintText: 'e.g. 67',
-                  validator: (value) =>
-                      value!.isEmpty ? 'This field is required' : null,
                 ),
                 _buildDateField(
                   controller: _calNextDueController,
-                  label: 'Calibration Next Due: *',
+                  label: 'Calibration Next Due:',
                   hintText: 'MM/DD/YYYY',
                 ),
                 _buildTextField(
                   controller: _daysRemainController,
-                  label: 'Days Remaining Until Calibration (days): *',
+                  label: 'Days Remaining Until Calibration (days):',
                   hintText: 'e.g. 180',
-                  validator: (value) =>
-                      value!.isEmpty ? 'This field is required' : null,
                 ),
                 _buildDateField(
                   controller: _calLastController,
-                  label: 'Calibration Last Completed: *',
+                  label: 'Calibration Last Completed:',
                   hintText: 'MM/DD/YYYY',
+                ),
+                _buildTextField(
+                  controller: _diameterController,
+                  label: 'Diameter (mm): ',
+                  hintText: 'Enter the diameter in mm',
+                ),
+                _buildTextField(
+                  controller: _heightController,
+                  label: 'Height (mm): ',
+                  hintText: 'Enter the height in mm',
                 ),
                 const SizedBox(height: 20),
                 Center(

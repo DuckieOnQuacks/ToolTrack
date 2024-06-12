@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:vineburgapp/classes/tool_class.dart';
 
 import '../backend/message_helper.dart';
 
@@ -63,7 +64,7 @@ Future<List<Bin>> getAllBins() async {
 Future<void> deleteBin(Bin bin) async {
   final binsCollection = FirebaseFirestore.instance.collection('Bins');
   // Replace '/' with '|'
-  String documentName = bin.originalName.replaceAll('|', '/');
+  String documentName = bin.originalName.replaceAll('/', '|');
   try {
     final binDoc = binsCollection.doc(documentName);
     final docSnapshot = await binDoc.get();
@@ -72,16 +73,16 @@ Future<void> deleteBin(Bin bin) async {
       // Delete the document.
       await binDoc.delete();
       if (kDebugMode) {
-        print('Bin with ID ${bin.originalName} has been deleted.');
+        print('Bin with ID $documentName has been deleted.');
       }
     } else {
       if (kDebugMode) {
-        print('Bin with ID ${bin.originalName} does not exist in the database.');
+        print('Bin with ID $documentName does not exist in the database.');
       }
     }
   } catch (e) {
     if (kDebugMode) {
-      print('Error deleting bin with ID ${bin.originalName}: $e');
+      print('Error deleting bin with ID $documentName: $e');
     }
   }
 }
@@ -200,4 +201,17 @@ Future<void> addBinWithParams(String originalName, String location, List<String>
 String formatBinID(binID) {
   String documentName = binID.replaceAll('/', '|');
   return documentName;
+}
+
+Future<Tool?> validateAndFetchTool(BuildContext context, String toolId) async {
+  final toolDoc =
+  await FirebaseFirestore.instance.collection('Tools').doc(toolId).get();
+  if (toolDoc.exists) {
+    return Tool.fromJson(toolDoc.data()!);
+  } else {
+    showTopSnackBar(context,
+        "Tool ID $toolId does not exist in the database.", Colors.red,
+        title: "Error", icon: Icons.error);
+    return null;
+  }
 }
