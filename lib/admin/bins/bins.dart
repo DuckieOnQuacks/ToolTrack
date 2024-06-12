@@ -126,7 +126,14 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
           IconButton(
             icon: const Icon(Icons.add, color: Colors.white),
             onPressed: () async {
-              await Navigator.of(context).push(MaterialPageRoute(builder: (context) =>const AdminAddBinPage()));
+              var result = await Navigator.of(context)
+                  .push(MaterialPageRoute(
+                builder: (context) =>
+                    const AdminAddBinPage(),
+              ));
+              if (result == true) {
+                refreshBinsList();
+              }
             },
           ),
           IconButton(
@@ -141,36 +148,46 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: searchController,
-              decoration: const InputDecoration(
-                labelText: "Search",
-                hintText: "Search by bin name, location, or tool",
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                ),
-              ),
-              style: const TextStyle(fontSize: 16),
-            ),
-          ),
-          ValueListenableBuilder<int>(
-            valueListenable: binCountNotifier,
-            builder: (context, count, child) {
-              return Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Number of Results: $count',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+            child: ValueListenableBuilder<int>(
+              valueListenable: binCountNotifier,
+              builder: (context, count, child) {
+                return Stack(
+                  alignment: Alignment.centerRight,
+                  children: [
+                    TextField(
+                      controller: searchController,
+                      decoration: const InputDecoration(
+                        labelText: "Search",
+                        hintText: "Search by bin name, location, or tool",
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(25.0)),
+                        ),
+                      ),
+                      style: const TextStyle(fontSize: 16),
                     ),
-                  ),
-                ),
-              );
-            },
+                    Positioned(
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+                        child: Text(
+                          '$count Results',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
           Expanded(
             child: RefreshIndicator(
@@ -280,7 +297,6 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
       builder: (BuildContext context) => DeleteBinDialog(bin: bin),
     );
     if (result != null && result) {
-      // Implement bin deletion logic here
       refreshBinsList();
     }
   }
@@ -350,6 +366,12 @@ class DeleteBinDialog extends StatelessWidget {
 
   const DeleteBinDialog({super.key, required this.bin});
 
+  Future<void> deleteBin(Bin bin) async {
+    // Implement the bin deletion logic here
+    // Example:
+    // await FirebaseFirestore.instance.collection('bins').doc(bin.id).delete();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -363,20 +385,21 @@ class DeleteBinDialog extends StatelessWidget {
           Icon(
             Icons.warning_amber_rounded,
             color: Colors.redAccent,
+            size: 24,
           ),
           SizedBox(width: 10),
           Text(
             'Confirm Delete',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: Colors.white,
             ),
           ),
         ],
       ),
-      content: const Text(
-          'Are you sure you want to remove this bin from the database?'),
+      content: Text(
+        'Remove bin ${bin.originalName} from the database?', style: const TextStyle(fontSize: 16),),
       actions: <Widget>[
         ElevatedButton(
           onPressed: () => Navigator.of(context).pop(false),
@@ -388,8 +411,7 @@ class DeleteBinDialog extends StatelessWidget {
         ),
         ElevatedButton(
           onPressed: () async {
-            // Implement bin deletion logic here
-            deleteBin(bin);
+            await deleteBin(bin);
             Navigator.of(context).pop(true);
           },
           style: ElevatedButton.styleFrom(

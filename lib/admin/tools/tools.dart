@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import '../../classes/tool_class.dart';
@@ -21,7 +22,9 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
   late Future<List<Tool>> filteredTools;
   late List<Color> shuffledColors;
   final ValueNotifier<int> toolCountNotifier = ValueNotifier<int>(0);
+  String selectedFilter = 'All'; // Default filter option
 
+  final List<String> filterOptions = ['All', 'Available', 'Checked Out', 'Modeled'];
   final List<Color> cncShopColors = [
     const Color(0xFF2E7D32), // Green
     const Color(0xFF607D8B), // Blue Grey
@@ -57,17 +60,20 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
 
   void filterSearchResults(String query) {
     setState(() {
-      if (query.isNotEmpty) {
-        filteredTools = tools!.then((allTools) => allTools.where((tool) {
-          return tool.status.toLowerCase().contains(query.toLowerCase()) ||
-              tool.gageID.toLowerCase().contains(query.toLowerCase()) ||
-              tool.gageType.toLowerCase().contains(query.toLowerCase()) ||
-              tool.checkedOutTo.toLowerCase().contains(query.toLowerCase()) ||
-              tool.gageDesc.toLowerCase().contains(query.toLowerCase());
-        }).toList());
-      } else {
-        filteredTools = tools!;
-      }
+      filteredTools = tools!.then((allTools) => allTools.where((tool) {
+        bool matchesQuery =
+            tool.gageID.toLowerCase().contains(query.toLowerCase()) ||
+                tool.gageType.toLowerCase().contains(query.toLowerCase()) ||
+                tool.checkedOutTo.toLowerCase().contains(query.toLowerCase()) ||
+                tool.gageDesc.toLowerCase().contains(query.toLowerCase());
+
+        bool matchesFilter = selectedFilter == 'All' ||
+            (selectedFilter == 'Available' && tool.status == 'Available') ||
+            (selectedFilter == 'Checked Out' && tool.status == 'Checked Out') ||
+            (selectedFilter == 'Modeled' && tool.modeled == true);
+
+        return matchesQuery && matchesFilter;
+      }).toList());
     });
     updateToolCount();
   }
@@ -185,10 +191,15 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.add, color: Colors.white),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const AdminAddToolPage()),
-              );
+            onPressed: () async {
+              var result = await Navigator.of(context)
+                .push(MaterialPageRoute(
+              builder: (context) =>
+                  const AdminAddToolPage(),
+            ));
+            if (result == true) {
+              refreshToolsList();
+            }
             },
           ),
         ],
@@ -197,36 +208,66 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: searchController,
-              decoration: const InputDecoration(
-                labelText: "Search",
-                hintText: "Search by user, tool ID, tool status, tool type, or tool description",
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                ),
-              ),
-              style: TextStyle(fontSize: 16),
+            child: ValueListenableBuilder<int>(
+              valueListenable: toolCountNotifier,
+              builder: (context, count, child) {
+                return Stack(
+                  alignment: Alignment.centerRight,
+                  children: [
+                    TextField(
+                      controller: searchController,
+                      decoration: const InputDecoration(
+                        labelText: "Search",
+                        hintText: "Search by user, tool ID, type, or description",
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(25.0)),
+                        ),
+                      ),
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    Positioned(
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+                        child: Text(
+                          '$count Results',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
-          ValueListenableBuilder<int>(
-            valueListenable: toolCountNotifier,
-            builder: (context, count, child) {
-              return Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Number of Results: $count',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: filterOptions.map((option) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: ChoiceChip(
+                    label: Text(option),
+                    selected: selectedFilter == option,
+                    onSelected: (selected) {
+                      setState(() {
+                        selectedFilter = option;
+                        filterSearchResults(searchController.text);
+                      });
+                    },
                   ),
-                ),
-              );
-            },
+                );
+              }).toList(),
+            ),
           ),
           Expanded(
             child: RefreshIndicator(
@@ -321,7 +362,7 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                   } else {
                     return Center(
                       child: Lottie.asset(
-                        'assets/lottie/error.json',
+                        'assets/lottie/loading.json',
                         width: 200,
                         height: 200,
                       ),
@@ -355,19 +396,20 @@ class DeleteToolDialog extends StatelessWidget {
           Icon(
             Icons.warning_amber_rounded,
             color: Colors.redAccent,
+            size: 24,
           ),
           SizedBox(width: 10),
           Text(
             'Confirm Delete',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: Colors.white,
             ),
           ),
         ],
       ),
-      content: const Text('Are you sure you want to remove this tool from the database?'),
+      content: Text('Remove tool ${tool.gageID} from the database?'),
       actions: <Widget>[
         ElevatedButton(
           onPressed: () => Navigator.of(context).pop(false),

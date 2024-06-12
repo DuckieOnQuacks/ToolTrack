@@ -115,10 +115,8 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
                 ),
                 _buildTextField(
                   controller: _binLocationController,
-                  label: 'Enter Bin Location: *',
+                  label: 'Enter Bin Location: ',
                   hintText: 'e.g. Drawer 1 Column 2',
-                  validator: (value) =>
-                  value!.isEmpty ? 'This field is required' : null,
                 ),
                 _buildToolsList(),
                 const SizedBox(height: 20),

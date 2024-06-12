@@ -53,7 +53,7 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
     EasyDebounce.debounce(
       'search-debouncer', // <-- An identifier for this particular debouncer
       const Duration(milliseconds: 500), // <-- The debounce duration
-      () => filterSearchResults(searchController.text), // <-- The target method
+          () => filterSearchResults(searchController.text), // <-- The target method
     );
   }
 
@@ -62,13 +62,13 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
       if (query.isNotEmpty) {
         filteredWorkOrders = workOrders!
             .then((allWorkOrders) => allWorkOrders.where((workOrder) {
-                  return workOrder.id
-                          .toLowerCase()
-                          .contains(query.toLowerCase()) ||
-                      workOrder.enteredBy
-                          .toLowerCase()
-                          .contains(query.toLowerCase());
-                }).toList());
+          return workOrder.id
+              .toLowerCase()
+              .contains(query.toLowerCase()) ||
+              workOrder.enteredBy
+                  .toLowerCase()
+                  .contains(query.toLowerCase());
+        }).toList());
       } else {
         filteredWorkOrders = workOrders!;
       }
@@ -130,8 +130,7 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
               ),
             ],
           ),
-          content:
-          const Text('Are you sure you want to log out of your account?'),
+          content: const Text('Are you sure you want to log out of your account?'),
           actions: <Widget>[
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -193,7 +192,14 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
           IconButton(
             icon: const Icon(Icons.add, color: Colors.white),
             onPressed: () async {
-              await Navigator.of(context).push(MaterialPageRoute(builder: (context) =>const AdminAddWorkOrderPage()));
+              var result = await Navigator.of(context)
+                  .push(MaterialPageRoute(
+                builder: (context) =>
+                    const AdminAddWorkOrderPage(),
+              ));
+              if (result == true) {
+                refreshWorkOrdersList();
+              }
             },
           ),
         ],
@@ -202,35 +208,46 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: searchController,
-              decoration: const InputDecoration(
-                labelText: "Search",
-                hintText: "Search by ID or entered by",
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
-                ),
-              ),
-            ),
-          ),
-          ValueListenableBuilder<int>(
-            valueListenable: workOrderCountNotifier,
-            builder: (context, count, child) {
-              return Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Number of Results: $count',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+            child: ValueListenableBuilder<int>(
+              valueListenable: workOrderCountNotifier,
+              builder: (context, count, child) {
+                return Stack(
+                  alignment: Alignment.centerRight,
+                  children: [
+                    TextField(
+                      controller: searchController,
+                      decoration: const InputDecoration(
+                        labelText: "Search",
+                        hintText: "Search by ID or entered by",
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(25.0)),
+                        ),
+                      ),
+                      style: const TextStyle(fontSize: 16),
                     ),
-                  ),
-                ),
-              );
-            },
+                    Positioned(
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
+                        child: Text(
+                          '$count Results',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
           Expanded(
             child: RefreshIndicator(
@@ -265,7 +282,7 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
                       itemCount: workOrders.length,
                       itemBuilder: (context, index) {
                         Color tileColor =
-                            shuffledColors[index % shuffledColors.length];
+                        shuffledColors[index % shuffledColors.length];
                         return Card(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -277,7 +294,7 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
                                 color: Colors.black),
                             trailing: IconButton(
                               icon:
-                                  const Icon(Icons.delete, color: Colors.black),
+                              const Icon(Icons.delete, color: Colors.black),
                               onPressed: () =>
                                   onDeletePressed(workOrders[index]),
                             ),
@@ -298,8 +315,8 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
                                 MaterialPageRoute(
                                   builder: (context) =>
                                       AdminInspectWorkOrderScreen(
-                                    workOrder: workOrders[index],
-                                  ),
+                                        workOrder: workOrders[index],
+                                      ),
                                 ),
                               );
                               if (result == true) {
