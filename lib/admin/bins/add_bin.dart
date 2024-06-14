@@ -117,6 +117,26 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
                   value!.isEmpty ? 'This field is required' : null,
                 ),
                 _buildLocationPicker(),
+                const SizedBox(height: 10), // Adding some space before the button
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedCabinet = 0;
+                        selectedDrawer = 0;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.grey[600],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    child: const Text('No Location'),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 _buildToolsList(),
                 const SizedBox(height: 20),
                 Center(
@@ -180,6 +200,7 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
   }
 
   Widget _buildLocationPicker() {
+    int maxDrawers = 15; // maximum number of drawers in any cabinet column
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -189,51 +210,66 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (int cabinet = 1; cabinet <= 4; cabinet++)
-                Expanded(
-                  child: Column(
-                    children: [
-                      Text('Cabinet $cabinet',
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold)),
-                      for (int drawer = 1; drawer <= 10; drawer++)
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedCabinet = cabinet;
-                              selectedDrawer = drawer;
-                            });
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(vertical: 2),
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: (cabinet == selectedCabinet && drawer == selectedDrawer)
-                                  ? Colors.orange
-                                  : Colors.grey[600],
-                              border: Border.all(color: Colors.black, width: 1),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Drawer $drawer',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: (cabinet == selectedCabinet && drawer == selectedDrawer)
-                                      ? Colors.white
-                                      : Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
+              _buildCabinetColumn(1, 9, maxDrawers),
+              _buildCabinetColumn(2, 10, maxDrawers),
+              _buildCabinetColumn(3, 15, maxDrawers),
+              _buildCabinetColumn(4, 13, maxDrawers),
             ],
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCabinetColumn(int cabinetNumber, int drawerCount, int maxDrawers) {
+    return Expanded(
+      child: Column(
+        children: [
+          Text('Cabinet $cabinetNumber',
+              style: const TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.bold)),
+          for (int drawer = 1; drawer <= maxDrawers; drawer++)
+            if (drawer <= drawerCount)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: SizedBox(
+                  height: 40, // Fixed height for each drawer
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedCabinet = cabinetNumber;
+                        selectedDrawer = drawer;
+                      });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: (selectedCabinet == cabinetNumber && selectedDrawer == drawer)
+                            ? Colors.orange
+                            : Colors.grey,
+                        border: Border.all(color: Colors.black, width: 1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Drawer $drawer',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: (selectedCabinet == cabinetNumber && selectedDrawer == drawer)
+                                ? Colors.white
+                                : Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            else
+              const SizedBox(height: 40),
         ],
       ),
     );

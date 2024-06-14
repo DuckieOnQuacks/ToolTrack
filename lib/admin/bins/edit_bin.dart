@@ -278,6 +278,16 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
   }
 
   Widget _buildLocationPicker() {
+    const totalHeight = 550.0; // Total height allocated for drawer boxes
+    const drawerMargin = 4.0;
+    const drawerPadding = 8.0;
+    final heights = [
+      (totalHeight / 9) - drawerMargin, // Cabinet 1: 9 drawers
+      (totalHeight / 10) - drawerMargin, // Cabinet 2: 10 drawers
+      (totalHeight / 15) - drawerMargin, // Cabinet 3: 15 drawers
+      (totalHeight / 13) - drawerMargin, // Cabinet 4: 13 drawers
+    ];
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -287,54 +297,188 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (int cabinet = 1; cabinet <= 4; cabinet++)
-                Expanded(
-                  child: Column(
-                    children: [
-                      Text('Cabinet $cabinet',
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold)),
-                      for (int drawer = 1; drawer <= 10; drawer++)
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedCabinet = cabinet;
-                              selectedDrawer = drawer;
-                              locationController.text =
-                              'Cabinet $selectedCabinet - Drawer $selectedDrawer';
-                              noLocationSelected = false;
-                            });
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(vertical: 2),
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: (cabinet == selectedCabinet &&
-                                  drawer == selectedDrawer)
-                                  ? Colors.orange
-                                  : Colors.grey[600],
-                              border: Border.all(color: Colors.black, width: 1),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'Drawer $drawer',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: (cabinet == selectedCabinet &&
-                                      drawer == selectedDrawer)
-                                      ? Colors.white
-                                      : Colors.white,
-                                ),
+              Expanded(
+                child: Column(
+                  children: [
+                    const Text('Cabinet 1',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    for (int drawer = 1; drawer <= 9; drawer++)
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedCabinet = 1;
+                            selectedDrawer = drawer;
+                            locationController.text =
+                            'Cabinet $selectedCabinet - Drawer $selectedDrawer';
+                            noLocationSelected = false;
+                          });
+                        },
+                        child: Container(
+                          height: heights[0],
+                          margin: const EdgeInsets.symmetric(vertical: drawerMargin / 2),
+                          padding: const EdgeInsets.all(drawerPadding),
+                          decoration: BoxDecoration(
+                            color: (selectedCabinet == 1 && selectedDrawer == drawer)
+                                ? Colors.orange
+                                : Colors.blue,
+                            border: Border.all(color: Colors.black, width: 1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Drawer $drawer',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: (selectedCabinet == 1 && selectedDrawer == drawer)
+                                    ? Colors.white
+                                    : Colors.white,
                               ),
                             ),
                           ),
                         ),
-                    ],
-                  ),
+                      ),
+                  ],
                 ),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    const Text('Cabinet 2',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    for (int drawer = 1; drawer <= 10; drawer++)
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedCabinet = 2;
+                            selectedDrawer = drawer;
+                            locationController.text =
+                            'Cabinet $selectedCabinet - Drawer $selectedDrawer';
+                            noLocationSelected = false;
+                          });
+                        },
+                        child: Container(
+                          height: heights[1],
+                          margin: const EdgeInsets.symmetric(vertical: drawerMargin / 2),
+                          padding: const EdgeInsets.all(drawerPadding),
+                          decoration: BoxDecoration(
+                            color: (selectedCabinet == 2 && selectedDrawer == drawer)
+                                ? Colors.orange
+                                : Colors.grey[700],
+                            border: Border.all(color: Colors.black, width: 1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Drawer $drawer',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: (selectedCabinet == 2 && selectedDrawer == drawer)
+                                    ? Colors.white
+                                    : Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    const Text('Cabinet 3',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    for (int drawer = 1; drawer <= 15; drawer++)
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedCabinet = 3;
+                            selectedDrawer = drawer;
+                            locationController.text =
+                            'Cabinet $selectedCabinet - Drawer $selectedDrawer';
+                            noLocationSelected = false;
+                          });
+                        },
+                        child: Container(
+                          height: heights[2],
+                          margin: const EdgeInsets.symmetric(vertical: drawerMargin / 2),
+                          padding: const EdgeInsets.all(drawerPadding),
+                          decoration: BoxDecoration(
+                            color: (selectedCabinet == 3 && selectedDrawer == drawer)
+                                ? Colors.orange
+                                : Colors.grey[700],
+                            border: Border.all(color: Colors.black, width: 1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Drawer $drawer',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: (selectedCabinet == 3 && selectedDrawer == drawer)
+                                    ? Colors.white
+                                    : Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    const Text('Cabinet 4',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    for (int drawer = 1; drawer <= 13; drawer++)
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedCabinet = 4;
+                            selectedDrawer = drawer;
+                            locationController.text =
+                            'Cabinet $selectedCabinet - Drawer $selectedDrawer';
+                            noLocationSelected = false;
+                          });
+                        },
+                        child: Container(
+                          height: heights[3],
+                          margin: const EdgeInsets.symmetric(vertical: drawerMargin / 2),
+                          padding: const EdgeInsets.all(drawerPadding),
+                          decoration: BoxDecoration(
+                            color: (selectedCabinet == 4 && selectedDrawer == drawer)
+                                ? Colors.orange
+                                : Colors.green,
+                            border: Border.all(color: Colors.black, width: 1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Drawer $drawer',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: (selectedCabinet == 4 && selectedDrawer == drawer)
+                                    ? Colors.white
+                                    : Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
