@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:easy_debounce/easy_debounce.dart';
+import '../../backend/message_helper.dart';
 import '../../classes/tool_class.dart';
 import '../../login.dart';
 import 'add_tool.dart';
@@ -65,7 +66,9 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
             tool.gageID.toLowerCase().contains(query.toLowerCase()) ||
                 tool.gageType.toLowerCase().contains(query.toLowerCase()) ||
                 tool.checkedOutTo.toLowerCase().contains(query.toLowerCase()) ||
-                tool.gageDesc.toLowerCase().contains(query.toLowerCase());
+                tool.gageDesc.toLowerCase().contains(query.toLowerCase()) ||
+                tool.diameter.toLowerCase().contains(query.toLowerCase()) ||
+                tool.height.toLowerCase().contains(query.toLowerCase());
 
         bool matchesFilter = selectedFilter == 'All' ||
             (selectedFilter == 'Available' && tool.status == 'Available') ||
@@ -183,6 +186,12 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.question_mark_sharp, color: Colors.white),
+          onPressed: () {
+            showAdminInstructionsDialog(context, 'Tools');
+          },
+        ),
         title: const Text('Tool Search', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900],
         automaticallyImplyLeading: false,
@@ -192,13 +201,13 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
             icon: const Icon(Icons.add, color: Colors.white),
             onPressed: () async {
               var result = await Navigator.of(context)
-                .push(MaterialPageRoute(
-              builder: (context) =>
-                  const AdminAddToolPage(),
-            ));
-            if (result == true) {
-              refreshToolsList();
-            }
+                  .push(MaterialPageRoute(
+                builder: (context) =>
+                const AdminAddToolPage(),
+              ));
+              if (result == true) {
+                refreshToolsList();
+              }
             },
           ),
         ],

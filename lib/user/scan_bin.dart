@@ -256,6 +256,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.grey[900],
           title: Row(
             children: [
               const Text("Enter Bin Name"),
@@ -266,7 +267,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      content: Image.asset('assets/images/help_image.png'), // Replace with your image path
+                      content: Image.asset('assets/images/binTipImage.jpg'), // Replace with your image path
                     ),
                   );
                 },
@@ -353,12 +354,6 @@ class _ScanToolPageState extends State<ScanToolPage> {
     );
   }
 
-  void toggleFlashMode() {
-    setState(() {
-      flashEnabled = !flashEnabled;
-    });
-  }
-
   @override
   void dispose() {
     _cameraManager.disposeCamera();
@@ -413,15 +408,8 @@ class _ScanToolPageState extends State<ScanToolPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
-                  icon: Icon(flashEnabled ? Icons.flash_on : Icons.flash_off),
-                  onPressed: toggleFlashMode,
-                  color: Colors.yellow,
-                  iconSize: 36,
-                ),
-                const SizedBox(width: 20),
-                IconButton(
                   icon: const Icon(Icons.camera_alt),
-                  iconSize: 50.0,
+                  iconSize: 60.0,
                   onPressed: handleToolBarcodeScanning,
                 ),
               ],

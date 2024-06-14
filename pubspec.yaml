@@ -46,6 +46,7 @@ dependencies:
   csv: ^5.0.1
 
   path_provider:
+  provider:
 
   permission_handler:
 
@@ -90,7 +91,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/Thread_Ring_Gages.json
-    - assets/images/drilling.png
+    - assets/images/
     - assets/lottie/loading.json
     - assets/ic_launcher.png
 

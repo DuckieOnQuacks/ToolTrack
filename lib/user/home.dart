@@ -26,6 +26,7 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.grey[900],
           buttonPadding: const EdgeInsets.all(15),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -48,7 +49,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          content: const Text('Are you sure you want to log out of your account?'),
+          content: const Text('Log out of user account?'),
           actions: <Widget>[
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -85,6 +86,7 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.grey[900],
           title: const Text("Leave a Note"),
           content: TextField(
             controller: helpController,
@@ -135,6 +137,113 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void showInstructionsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          title: const Text(
+            "Help",
+            style: TextStyle(color: Colors.white),
+          ),
+          content: const SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Checkout Tool:",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orangeAccent,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  "1. Select 'Checkout Tool'.",
+                  style: TextStyle(color: Colors.white70),
+                ),
+                Text(
+                  "2. Scan or manually enter workorder ID",
+                  style: TextStyle(color: Colors.white70),
+                ),
+                Text(
+                  "3. Scan or manually enter the Bin name",
+                  style: TextStyle(color: Colors.white70),
+                ),
+                Text(
+                  "4. Enter your employee ID, machine ID and confirm checkout.",
+                  style: TextStyle(color: Colors.white70),
+                ),
+                Text(
+                  "5. Confirm that the tool was checked out successfully",
+                  style: TextStyle(color: Colors.white70),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "Return Tool:",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orangeAccent,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  "1. Select 'Return Tool'.",
+                  style: TextStyle(color: Colors.white70),
+                ),
+                Text(
+                  "2. Scan or manually enter bin QR code.",
+                  style: TextStyle(color: Colors.white70),
+                ),
+                Text(
+                  "3. Select the tool you're returning from the list. If its not there you most likely scanned the wrong bin.",
+                  style: TextStyle(color: Colors.white70),
+                ),
+                Text(
+                  "4. Confirm that the tool was returned successfully.",
+                  style: TextStyle(color: Colors.white70),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "Barcode or QR code not scanning?",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orangeAccent,
+                  ),
+                ),
+                SizedBox(height: 5),
+                Text(
+                  "1. Tap the 'pencil' icon to manually enter Workorder ID or Bin name",
+                  style: TextStyle(color: Colors.white70),
+                ),
+                Text(
+                  "2. Workorders are manually entered by ID",
+                  style: TextStyle(color: Colors.white70),
+                ),
+                Text(
+                  "3. Bins are manually entered by bin name",
+                  style: TextStyle(color: Colors.white70),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.redAccent,
+              ),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -164,11 +273,11 @@ class _HomePageState extends State<HomePage> {
               'assets/lottie/loading.json',
               width: 150,
               height: 150,
-            ) // Show Lottie animation while cameras are being initialized
+            )
                 : Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.build, size: 187.5, color: Colors.orange[800]), // Increased by 50%
+                Icon(Icons.build, size: 187.5, color: Colors.orange[800]),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: cameras == null || cameras!.isEmpty
@@ -179,18 +288,18 @@ class _HomePageState extends State<HomePage> {
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.orange[800], // Text and Icon color
-                    shadowColor: Colors.black, // Shadow color
-                    elevation: 12, // Shadow elevation
-                    textStyle: const TextStyle(fontSize: 27, fontWeight: FontWeight.bold), // Increased font size by 50%
-                    padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 30), // Increased padding by 50%
+                    backgroundColor: Colors.orange[800],
+                    shadowColor: Colors.black,
+                    elevation: 12,
+                    textStyle: const TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
+                    padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 30),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   child: const Text('Checkout Tool'),
                 ),
-                const SizedBox(height: 20), // Add space between buttons
+                const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: cameras == null || cameras!.isEmpty
                       ? null
@@ -200,22 +309,32 @@ class _HomePageState extends State<HomePage> {
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.red[800], // Text and Icon color
-                    shadowColor: Colors.black, // Shadow color
-                    elevation: 12, // Shadow elevation
-                    textStyle: const TextStyle(fontSize: 27, fontWeight: FontWeight.bold), // Increased font size by 50%
-                    padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 30), // Increased padding by 50%
+                    backgroundColor: Colors.red[800],
+                    shadowColor: Colors.black,
+                    elevation: 12,
+                    textStyle: const TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
+                    padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 30),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   child: const Text('Return Tool'),
                 ),
-                ElevatedButton(onPressed: (){updateLocationFieldToNoLocation();}, child: const Text("Here"))
               ],
             ),
           ),
-          // Logout and help buttons in the top-right corner
+          // Instructions button in the top left
+          Positioned(
+            top: 25,
+            left: 5,
+            child: IconButton(
+              icon: const Icon(Icons.info_outline, size: 24),
+              tooltip: 'Instructions',
+              onPressed: () {
+                showInstructionsDialog(context);
+              },
+            ),
+          ),
           Positioned(
             top: 25,
             right: 5,

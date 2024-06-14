@@ -23,6 +23,34 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
   int selectedCabinet = 0;
   int selectedDrawer = 0;
 
+  final Map<int, List<String>> drawerNames = {
+    1: ['Unlabelled', 'Unlabelled',
+      '.0000s-1400s', '.1500s-.2600s',
+      '.2000s-.4370s', 'Unlabelled',
+      'Unlabelled', 'Unlabelled',
+      'Unlabelled'],
+    2: ['Unlabelled', 'Unlabelled',
+      'Gage Pin Sets .011-.060', 'Gage Pin Sets .061-.250',
+      'Gage Pin Sets .061-.250', 'Gage Pin Sets .251-.500',
+      'Gage Pin Sets .251-.500', 'Gage Pin Sets .501-.625',
+      'Gage Pin Sets .626-.750', 'Gage Pin Sets .751-1.000'],
+    3: ['Depth & Groove Mics', 'Pitch Mics',
+      'Mueller Gages/Recess Indicators', '9"-10" Mics',
+      '0"-1" Mics', '3"-4" & 4"-5" Mics',
+      '1"-2" Mics', '2"-3" Mics & Indicator Mics',
+      '5"-6" & 6"-7" Mics', '7"-8" & 8"-9" Mics',
+      'Drop Indicators', 'Bore Gages',
+      'Torque Wrench', 'Unlabelled',
+      'Bore Mics'],
+    4: ['Thread Plug Gages Standard', 'Thread Plug Gages Standard',
+      'Thread Plug Gages Large', 'Thread Plug Gages Large',
+      'Thread Plug Gages Metric', 'Thread Ring Gages',
+      'Pipe Thread Ring Gages', 'Thread Ring Gages Standard',
+      'Thread Ring Gages Standard', 'Large Thread Ring Gages Standard',
+      'Thread Ring Gages Metric', 'Misc & Custom Gage Pins',
+      'Misc & Custom Pin Gages'],
+  };
+
   Future<void> submitForm() async {
     if (!_formKey.currentState!.validate()) {
       // Show top snackbar warning if any required field is not filled
@@ -32,7 +60,7 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
       return;
     }
     try {
-      final location = 'Cabinet $selectedCabinet - Drawer $selectedDrawer';
+      final location = 'Cabinet $selectedCabinet - Drawer ${drawerNames[selectedCabinet]?[selectedDrawer - 1]}';
       // Use the parts as parameters for addBinWithParams
       await addBinWithParams(
           _binNameController.text,
@@ -83,6 +111,264 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
     showTopSnackBar(context, "Tool ID copied to clipboard", Colors.green, title: "Copied", icon: Icons.check_circle);
   }
 
+  void _showDrawerSelectionSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        const totalHeight = 675.0; // Total height allocated for drawer boxes
+        const drawerMargin = 4.0;
+        const drawerPadding = 8.0;
+        final heights = [
+          (totalHeight / 9) - drawerMargin, // Cabinet 1: 9 drawers
+          (totalHeight / 10) - drawerMargin, // Cabinet 2: 10 drawers
+          (totalHeight / 15) - drawerMargin, // Cabinet 3: 15 drawers
+          (totalHeight / 13) - drawerMargin, // Cabinet 4: 13 drawers
+        ];
+
+        return SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        children: [
+                          const Text('Cabinet 1',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          for (int drawer = 1; drawer <= 9; drawer++)
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedCabinet = 1;
+                                  selectedDrawer = drawer;
+                                  _binLocationController.text =
+                                  'Cabinet $selectedCabinet - ${drawerNames[1]?[drawer - 1]}';
+                                });
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                height: heights[0],
+                                margin: const EdgeInsets.symmetric(vertical: drawerMargin / 2),
+                                padding: const EdgeInsets.all(drawerPadding),
+                                decoration: BoxDecoration(
+                                  color: (selectedCabinet == 1 && selectedDrawer == drawer)
+                                      ? Colors.orange
+                                      : Colors.blue,
+                                  border: Border.all(color: Colors.black, width: 1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    drawerNames[1]?[drawer - 1] ?? 'Drawer $drawer',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: (selectedCabinet == 1 && selectedDrawer == drawer)
+                                          ? Colors.white
+                                          : Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          const Text('Cabinet 2',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          for (int drawer = 1; drawer <= 10; drawer++)
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedCabinet = 2;
+                                  selectedDrawer = drawer;
+                                  _binLocationController.text =
+                                  'Cabinet $selectedCabinet - ${drawerNames[2]?[drawer - 1]}';
+                                });
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                height: heights[1],
+                                margin: const EdgeInsets.symmetric(vertical: drawerMargin / 2),
+                                padding: const EdgeInsets.all(drawerPadding),
+                                decoration: BoxDecoration(
+                                  color: (selectedCabinet == 2 && selectedDrawer == drawer)
+                                      ? Colors.orange
+                                      : Colors.grey[700],
+                                  border: Border.all(color: Colors.black, width: 1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    drawerNames[2]?[drawer - 1] ?? 'Drawer $drawer',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: (selectedCabinet == 2 && selectedDrawer == drawer)
+                                          ? Colors.white
+                                          : Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          const Text('Cabinet 3',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          for (int drawer = 1; drawer <= 15; drawer++)
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedCabinet = 3;
+                                  selectedDrawer = drawer;
+                                  _binLocationController.text =
+                                  'Cabinet $selectedCabinet - ${drawerNames[3]?[drawer - 1]}';
+                                });
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                height: heights[2],
+                                margin: const EdgeInsets.symmetric(vertical: drawerMargin / 2),
+                                padding: const EdgeInsets.all(drawerPadding),
+                                decoration: BoxDecoration(
+                                  color: (selectedCabinet == 3 && selectedDrawer == drawer)
+                                      ? Colors.orange
+                                      : Colors.grey[700],
+                                  border: Border.all(color: Colors.black, width: 1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    drawerNames[3]?[drawer - 1] ?? 'Drawer $drawer',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: (selectedCabinet == 3 && selectedDrawer == drawer)
+                                          ? Colors.white
+                                          : Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          const Text('Cabinet 4',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
+                          for (int drawer = 1; drawer <= 13; drawer++)
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedCabinet = 4;
+                                  selectedDrawer = drawer;
+                                  _binLocationController.text =
+                                  'Cabinet $selectedCabinet - ${drawerNames[4]?[drawer - 1]}';
+                                });
+                                Navigator.pop(context);
+                              },
+                              child: Container(
+                                height: heights[3],
+                                margin: const EdgeInsets.symmetric(vertical: drawerMargin / 2),
+                                padding: const EdgeInsets.all(drawerPadding),
+                                decoration: BoxDecoration(
+                                  color: (selectedCabinet == 4 && selectedDrawer == drawer)
+                                      ? Colors.orange
+                                      : Colors.green,
+                                  border: Border.all(color: Colors.black, width: 1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    drawerNames[4]?[drawer - 1] ?? 'Drawer $drawer',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: (selectedCabinet == 4 && selectedDrawer == drawer)
+                                          ? Colors.white
+                                          : Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 150,
+                        height: 35,
+                        margin: const EdgeInsets.symmetric(vertical: 2),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              selectedCabinet = 0;
+                              selectedDrawer = 0;
+                              _binLocationController.text = 'No Location Set';
+                            });
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.grey[600],
+                          ),
+                          child: const Text('No Location'),
+                        ),
+                      ),
+                    ),
+                    Center(
+                      child: Container(
+                        width: 150,
+                        height: 35,
+                        margin: const EdgeInsets.symmetric(vertical: 2),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.redAccent,
+                          ),
+                          child: const Text('Close'),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     _binNameController.dispose();
@@ -107,7 +393,7 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 _buildSectionHeader('Bin Information'),
                 _buildTextField(
                   controller: _binNameController,
@@ -117,28 +403,25 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
                   value!.isEmpty ? 'This field is required' : null,
                 ),
                 _buildLocationPicker(),
-                const SizedBox(height: 10), // Adding some space before the button
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        selectedCabinet = 0;
-                        selectedDrawer = 0;
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.grey[600],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
+                if (_binLocationController.text.isNotEmpty)
+                  Container(
+                    padding: const EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[800],
+                      border: Border.all(color: Colors.black),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      _binLocationController.text,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    child: const Text('No Location'),
                   ),
-                ),
                 const SizedBox(height: 20),
                 _buildToolsList(),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 Center(
                   child: SizedBox(
                     width: double.infinity,
@@ -200,9 +483,8 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
   }
 
   Widget _buildLocationPicker() {
-    int maxDrawers = 15; // maximum number of drawers in any cabinet column
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -210,66 +492,17 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildCabinetColumn(1, 9, maxDrawers),
-              _buildCabinetColumn(2, 10, maxDrawers),
-              _buildCabinetColumn(3, 15, maxDrawers),
-              _buildCabinetColumn(4, 13, maxDrawers),
+              ElevatedButton(
+                onPressed: () => _showDrawerSelectionSheet(context),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.orange,
+                ),
+                child: const Icon(Icons.add),
+              ),
             ],
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCabinetColumn(int cabinetNumber, int drawerCount, int maxDrawers) {
-    return Expanded(
-      child: Column(
-        children: [
-          Text('Cabinet $cabinetNumber',
-              style: const TextStyle(
-                  fontSize: 16, fontWeight: FontWeight.bold)),
-          for (int drawer = 1; drawer <= maxDrawers; drawer++)
-            if (drawer <= drawerCount)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2),
-                child: SizedBox(
-                  height: 40, // Fixed height for each drawer
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedCabinet = cabinetNumber;
-                        selectedDrawer = drawer;
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: (selectedCabinet == cabinetNumber && selectedDrawer == drawer)
-                            ? Colors.orange
-                            : Colors.grey,
-                        border: Border.all(color: Colors.black, width: 1),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Drawer $drawer',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: (selectedCabinet == cabinetNumber && selectedDrawer == drawer)
-                                ? Colors.white
-                                : Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            else
-              const SizedBox(height: 40),
         ],
       ),
     );
@@ -309,9 +542,9 @@ class _AdminAddBinPageState extends State<AdminAddBinPage> {
           ),
           const SizedBox(height: 10),
           Padding(
-            padding: const EdgeInsets.only(left: 16),
+            padding: const EdgeInsets.only(left: 16), // Add left padding here
             child: SizedBox(
-              width: 450,
+              width: 450, // Adjust this width to match the list items
               child: TextFormField(
                 controller: newToolController,
                 decoration: InputDecoration(

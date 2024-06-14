@@ -19,13 +19,7 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
   late CameraManager _cameraManager;
   bool _isCameraInitialized = false;
   bool _isLoading = false;
-  bool _flashEnabled = false;
-
-  @override
-  void initState() {
-    super.initState();
-    initializeCamera();
-  }
+  bool _isScanning = false;
 
   Future<void> initializeCamera() async {
     setState(() {
@@ -37,6 +31,39 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
       _isCameraInitialized = true;
       _isLoading = false;
     });
+    startBarcodeScanning();
+  }
+
+  Future<void> startBarcodeScanning() async {
+    setState(() {
+      _isScanning = true;
+    });
+    while (_isScanning && _isCameraInitialized) {
+      final imagePath = await _cameraManager.takePicture();
+      if (imagePath != null) {
+        final barcodeData = await _cameraManager.scanBarcode(imagePath);
+        if (barcodeData != null) {
+          setState(() {
+            _isScanning = false;
+            _isLoading = false;
+          });
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ScanToolPage(
+                widget.cameras,
+                barcodeData,
+                imagePath,
+                widget.inOrOut,
+                snackbarMessage: "Barcode data $barcodeData retrieved successfully!",
+              ),
+            ),
+          );
+          break;
+        }
+      }
+      await Future.delayed(Duration(milliseconds: 500)); // Adjust delay as needed
+    }
   }
 
   @override
@@ -45,48 +72,18 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
     super.dispose();
   }
 
-  void handleBarcodeScanning() async {
-    setState(() {
-      _isLoading = true;
-    });
-    if (_flashEnabled) {
-      await _cameraManager.controller?.setFlashMode(FlashMode.torch);
-    }
-    final imagePath = await _cameraManager.takePicture();
-    await _cameraManager.controller?.setFlashMode(FlashMode.off);
-    if (imagePath != null) {
-      final barcodeData = await _cameraManager.scanBarcode(imagePath);
-      if (barcodeData != null) {
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ScanToolPage(
-              widget.cameras,
-              barcodeData,
-              imagePath,
-              widget.inOrOut,
-              snackbarMessage: "Barcode data $barcodeData retrieved successfully!",
-            ),
-          ),
-        );
-      } else {
-        setState(() {
-          _isLoading = false;
-        });
-        showTopSnackBar(context, "No barcode found, try again.", Colors.red, title: "Error", icon: Icons.error);
-      }
-    } else {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+  @override
+  void initState() {
+    super.initState();
+    initializeCamera();
   }
 
   void showManualEntryDialog(BuildContext context) {
     TextEditingController controller = TextEditingController();
+
+    setState(() {
+      _isScanning = false;
+    });
 
     showDialog(
       context: context,
@@ -106,7 +103,11 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
               ),
               child: const Text("Cancel"),
               onPressed: () {
+                setState(() {
+                  _isScanning = true;
+                });
                 Navigator.of(context).pop(); // Dismiss the dialog
+                startBarcodeScanning(); // Restart scanning
               },
             ),
             ElevatedButton(
@@ -138,12 +139,11 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
           ],
         );
       },
-    );
-  }
-
-  void toggleFlashMode() {
-    setState(() {
-      _flashEnabled = !_flashEnabled;
+    ).then((_) {
+      setState(() {
+        _isScanning = true;
+      });
+      startBarcodeScanning();
     });
   }
 
@@ -192,23 +192,6 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
                     child: CameraPreview(_cameraManager.controller!),
                   ),
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: Icon(_flashEnabled ? Icons.flash_on : Icons.flash_off),
-                    onPressed: toggleFlashMode,
-                    color: Colors.yellow,
-                    iconSize: 36,
-                  ),
-                  const SizedBox(width: 20),
-                  IconButton(
-                    icon: const Icon(Icons.camera_alt),
-                    iconSize: 50.0,
-                    onPressed: handleBarcodeScanning,
-                  ),
-                ],
               ),
             ],
           ),

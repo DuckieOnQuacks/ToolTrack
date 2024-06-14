@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:vineburgapp/admin/bins/add_bin.dart';
 import 'package:vineburgapp/admin/bins/edit_bin.dart';
+import '../../backend/message_helper.dart';
 import '../../classes/bin_class.dart';
 import '../../login.dart';
 
@@ -180,6 +181,12 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.question_mark_sharp, color: Colors.white),
+          onPressed: () {
+            showAdminInstructionsDialog(context, 'Bins');
+          },
+        ),
         title: const Text('Bin Search', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900],
         automaticallyImplyLeading: false,

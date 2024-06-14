@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:vineburgapp/admin/workorder/add_workorder.dart';
 import 'package:vineburgapp/admin/workorder/edit_workorder.dart';
+import '../../backend/message_helper.dart';
 import '../../classes/workorder_class.dart';
 import '../../login.dart';
 
@@ -183,6 +184,12 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.question_mark_sharp, color: Colors.white),
+          onPressed: () {
+            showAdminInstructionsDialog(context, 'Work Orders');
+          },
+        ),
         title: const Text('Work Order Search',
             style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900],
