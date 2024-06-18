@@ -107,36 +107,34 @@ Future<void> addToolWithParams(String calFreq, String calLast, String calNextDue
     return;
   }
 
-  final FirebaseStorage storage = FirebaseStorage.instance;
   // Upload the image to Firebase Storage
-  final Reference storageReference = storage.ref().child('$gageID.jpg');
-  final UploadTask uploadTask = storageReference.putFile(File(imagePath));
-
-  // Wait for the upload to complete
-  final TaskSnapshot storageSnapshot = await uploadTask.whenComplete(() => {});
-
-  // Get the download URL of the uploaded image
-  final String downloadURL = await storageSnapshot.ref.getDownloadURL();
+  final String? downloadURL = await uploadImageToStorage(imagePath, gageID);
+  if (downloadURL == null) {
+    if (kDebugMode) {
+      print('Image upload failed.');
+    }
+    return;
+  }
 
   // Prepare the tool data and write it to Firestore.
   final docOrder = FirebaseFirestore.instance.collection("Tools").doc(gageID);
   final orderTable = Tool(
-    calibrationFreq: calFreq,
-    calibrationLast: calLast,
-    calibrationNextDue: calNextDue,
-    creationDate: creationDate,
-    gageID: gageID,
-    gageType: gageType,
-    imagePath: downloadURL,
-    gageDesc: gageDesc,
-    dayRemain: daysRemain,
-    status: "Available",
-    lastCheckedOutBy: "",
-    atMachine: "",
-    dateCheckedOut: "",
-    checkedOutTo: "",
-    height: height,
-    diameter: diameter
+      calibrationFreq: calFreq,
+      calibrationLast: calLast,
+      calibrationNextDue: calNextDue,
+      creationDate: creationDate,
+      gageID: gageID,
+      gageType: gageType,
+      imagePath: downloadURL,
+      gageDesc: gageDesc,
+      dayRemain: daysRemain,
+      status: "Available",
+      lastCheckedOutBy: "",
+      atMachine: "",
+      dateCheckedOut: "",
+      checkedOutTo: "",
+      height: height,
+      diameter: diameter
   );
   final json = orderTable.toJson();
   await docOrder.set(json); // Create document and write data to Firestore.
@@ -406,50 +404,26 @@ Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
       final newToolDoc = toolsCollection.doc(newTool.gageID);
       String? newImageUrl;
       if (oldTool.imagePath != newTool.imagePath) {
-        newImageUrl =
-        await uploadImageToStorage(newTool.imagePath, newTool.gageID);
+        newImageUrl = await uploadImageToStorage(newTool.imagePath, newTool.gageID);
+        await deleteOldImage(oldTool.imagePath); // Delete the old image
       }
       final newToolData = Tool(
-        calibrationFreq: newTool.calibrationFreq.isNotEmpty
-            ? newTool.calibrationFreq
-            : oldTool.calibrationFreq,
-        calibrationLast: newTool.calibrationLast.isNotEmpty
-            ? newTool.calibrationLast
-            : oldTool.calibrationLast,
-        calibrationNextDue: newTool.calibrationNextDue.isNotEmpty
-            ? newTool.calibrationNextDue
-            : oldTool.calibrationNextDue,
-        creationDate: newTool.creationDate.isNotEmpty
-            ? newTool.creationDate
-            : oldTool.creationDate,
+        calibrationFreq: newTool.calibrationFreq.isNotEmpty ? newTool.calibrationFreq : oldTool.calibrationFreq,
+        calibrationLast: newTool.calibrationLast.isNotEmpty ? newTool.calibrationLast : oldTool.calibrationLast,
+        calibrationNextDue: newTool.calibrationNextDue.isNotEmpty ? newTool.calibrationNextDue : oldTool.calibrationNextDue,
+        creationDate: newTool.creationDate.isNotEmpty ? newTool.creationDate : oldTool.creationDate,
         gageID: newTool.gageID,
-        gageType:
-        newTool.gageType.isNotEmpty ? newTool.gageType : oldTool.gageType,
+        gageType: newTool.gageType.isNotEmpty ? newTool.gageType : oldTool.gageType,
         imagePath: newImageUrl ?? oldTool.imagePath,
-        gageDesc:
-        newTool.gageDesc.isNotEmpty ? newTool.gageDesc : oldTool.gageDesc,
-        dayRemain: newTool.dayRemain.isNotEmpty
-            ? newTool.dayRemain
-            : oldTool.dayRemain,
+        gageDesc: newTool.gageDesc.isNotEmpty ? newTool.gageDesc : oldTool.gageDesc,
+        dayRemain: newTool.dayRemain.isNotEmpty ? newTool.dayRemain : oldTool.dayRemain,
         status: newTool.status.isNotEmpty ? newTool.status : oldTool.status,
-        lastCheckedOutBy: newTool.lastCheckedOutBy.isNotEmpty
-            ? newTool.lastCheckedOutBy
-            : oldTool.lastCheckedOutBy,
-        atMachine: newTool.atMachine.isNotEmpty
-            ? newTool.atMachine
-            : oldTool.atMachine,
-        dateCheckedOut: newTool.dateCheckedOut.isNotEmpty
-            ? newTool.dateCheckedOut
-            : oldTool.dateCheckedOut,
-        checkedOutTo: newTool.checkedOutTo.isNotEmpty
-            ? newTool.checkedOutTo
-            : oldTool.checkedOutTo,
-        diameter: newTool.diameter.isNotEmpty
-            ? newTool.diameter
-            : oldTool.diameter,
-        height: newTool.height.isNotEmpty
-            ? newTool.height
-            : oldTool.height,
+        lastCheckedOutBy: newTool.lastCheckedOutBy.isNotEmpty ? newTool.lastCheckedOutBy : oldTool.lastCheckedOutBy,
+        atMachine: newTool.atMachine.isNotEmpty ? newTool.atMachine : oldTool.atMachine,
+        dateCheckedOut: newTool.dateCheckedOut.isNotEmpty ? newTool.dateCheckedOut : oldTool.dateCheckedOut,
+        checkedOutTo: newTool.checkedOutTo.isNotEmpty ? newTool.checkedOutTo : oldTool.checkedOutTo,
+        diameter: newTool.diameter.isNotEmpty ? newTool.diameter : oldTool.diameter,
+        height: newTool.height.isNotEmpty ? newTool.height : oldTool.height,
       ).toJson();
 
       await newToolDoc.set(newToolData);
@@ -482,10 +456,10 @@ Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
     updates['Type of Gage'] = newTool.gageType;
   }
   if (oldTool.imagePath != newTool.imagePath) {
-    String? newImageUrl =
-    await uploadImageToStorage(newTool.imagePath, oldTool.gageID);
+    String? newImageUrl = await uploadImageToStorage(newTool.imagePath, oldTool.gageID);
     if (newImageUrl != null) {
       updates['Tool Image Path'] = newImageUrl;
+      await deleteOldImage(oldTool.imagePath); // Delete the old image
     }
   }
   if (oldTool.gageDesc != newTool.gageDesc) {
@@ -520,8 +494,7 @@ Future<void> updateToolIfDifferent(Tool oldTool, Tool newTool) async {
     try {
       await toolDoc.update(updates);
       if (kDebugMode) {
-        print(
-            'Tool with ID ${oldTool.gageID} has been updated with new information.');
+        print('Tool with ID ${oldTool.gageID} has been updated with new information.');
       }
     } catch (e) {
       if (kDebugMode) {

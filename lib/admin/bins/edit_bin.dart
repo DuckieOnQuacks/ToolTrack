@@ -769,6 +769,10 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
                   children: [
                     Text(tool.gageID,
                         style: const TextStyle(fontSize: 18)),
+                    const SizedBox(height: 4),
+                    Text(tool.gageDesc,
+                        style: const TextStyle(fontSize: 14, color: Colors.white70)), // Added for description
+                    const SizedBox(height: 4),
                     Row(
                       children: [
                         Icon(statusIcon, size: 14, color: statusColor),
@@ -822,6 +826,7 @@ class _AdminInspectBinScreenState extends State<AdminInspectBinScreen> {
       ),
     );
   }
+
 
   Widget _buildModeledCheckbox() {
     return Padding(

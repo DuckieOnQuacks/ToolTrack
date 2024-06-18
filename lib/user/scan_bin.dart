@@ -154,7 +154,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
                   ),
                   child: const Text("Confirm"),
                   onPressed: () {
-                    if (selectedTool != null) {
+                    if (selectedTool != null && selectedTool?.status == "Available") {
                       Navigator.of(context).pop();
                       Navigator.push(
                         context,
@@ -167,7 +167,10 @@ class _ScanToolPageState extends State<ScanToolPage> {
                           ),
                         ),
                       );
-                    } else {
+                    } else if(selectedTool?.status == "Checked Out"){
+                      showTopSnackBar(context, "Tool already checked out to ${selectedTool?.checkedOutTo}", Colors.red, title: "Error:", icon: Icons.warning);
+                    }
+                    else{
                       showTopSnackBar(context, "Please select a tool", Colors.orange, title: "Warning", icon: Icons.warning);
                     }
                   },

@@ -52,6 +52,7 @@ dependencies:
 
   google_fonts: 6.1.0
   google_mlkit_barcode_scanning:
+  icon_decoration:
 
   # Snackbar for top of screen
   another_flushbar:

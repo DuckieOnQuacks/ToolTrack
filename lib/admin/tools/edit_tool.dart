@@ -667,7 +667,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                       label: 'Tool Type: ',
                       hintText: 'Enter In Gage Type',
                     ),
-                    _buildDateField(
+                    _buildDateFieldWithClear(
                       controller: dateCreatedController,
                       label: 'Tool Creation Date: ',
                       hintText: 'MM/DD/YYYY',
@@ -702,12 +702,12 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                     ),
                     const SizedBox(height: 20),
                     _buildSectionHeader('Calibration Information'),
-                    _buildDateField(
+                    _buildDateFieldWithClear(
                       controller: calibrationDueController,
                       label: 'Next Due: ',
                       hintText: 'MM/DD/YYYY',
                     ),
-                    _buildDateField(
+                    _buildDateFieldWithClear(
                       controller: lastCalibratedController,
                       label: 'Last Completed: ',
                       hintText: 'MM/DD/YYYY',
@@ -773,42 +773,6 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
     );
   }
 
-  Widget _buildDateField({required TextEditingController controller, required String label, required String hintText,}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: controller,
-            decoration: InputDecoration(
-              border: const OutlineInputBorder(),
-              suffixIcon: const Icon(Icons.calendar_today),
-              hintText: hintText,
-            ),
-            onTap: () async {
-              FocusScope.of(context).requestFocus(FocusNode());
-              DateTime? date = await showDatePicker(
-                context: context,
-                initialDate: DateTime.now(),
-                firstDate: DateTime(2000),
-                lastDate: DateTime(2100),
-              );
-              if (date != null) {
-                controller.text = DateFormat('MM/dd/yyyy').format(date);
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildDateFieldWithClear({required TextEditingController controller, required String label, required String hintText,}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
@@ -844,7 +808,7 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                     },
                   ),
                   IconButton(
-                    icon: const Icon(Icons.clear),
+                    icon: const Icon(Icons.clear, color: Colors.red),
                     onPressed: () {
                       controller.clear();
                     },

@@ -252,7 +252,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                   validator: (value) =>
                       value!.isEmpty ? 'This field is required' : null,
                 ),
-                _buildDateField(
+                _buildDateFieldWithClear(
                   controller: _dateCreatedController,
                   label: 'Enter Creation Date:',
                   hintText: 'MM/DD/YYYY',
@@ -282,7 +282,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                   label: 'Calibration Frequency (days):',
                   hintText: 'e.g. 67',
                 ),
-                _buildDateField(
+                _buildDateFieldWithClear(
                   controller: _calNextDueController,
                   label: 'Calibration Next Due:',
                   hintText: 'MM/DD/YYYY',
@@ -292,7 +292,7 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
                   label: 'Days Remaining Until Calibration (days):',
                   hintText: 'e.g. 180',
                 ),
-                _buildDateField(
+                _buildDateFieldWithClear(
                   controller: _calLastController,
                   label: 'Calibration Last Completed:',
                   hintText: 'MM/DD/YYYY',
@@ -356,44 +356,6 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
       ),
     );
   }
-
-  Widget _buildDateField({required TextEditingController controller, required String label, required String hintText, String? Function(String?)? validator}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: controller,
-            decoration: InputDecoration(
-              border: const OutlineInputBorder(),
-              suffixIcon: const Icon(Icons.calendar_today),
-              hintText: hintText,
-            ),
-            validator: validator,
-            onTap: () async {
-              FocusScope.of(context).requestFocus(FocusNode());
-              DateTime? date = await showDatePicker(
-                context: context,
-                initialDate: DateTime.now(),
-                firstDate: DateTime(2000),
-                lastDate: DateTime(2100),
-              );
-              if (date != null) {
-                controller.text = DateFormat('MM/dd/yyyy').format(date);
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildDropdownField({required TextEditingController controller, required String label, required String hintText, required List<String> items,}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
@@ -435,6 +397,55 @@ class _AdminAddToolPageState extends State<AdminAddToolPage> {
         title,
         style: const TextStyle(
             fontSize: 22, fontWeight: FontWeight.bold, color: Colors.orange),
+      ),
+    );
+  }
+
+  Widget _buildDateFieldWithClear({required TextEditingController controller, required String label, required String hintText,}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: controller,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              hintText: hintText,
+              suffixIcon: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.calendar_today),
+                    onPressed: () async {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      DateTime? date = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      );
+                      if (date != null) {
+                        controller.text = DateFormat('MM/dd/yyyy').format(date);
+                      }
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      controller.clear();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
