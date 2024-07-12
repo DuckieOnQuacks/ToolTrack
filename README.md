@@ -62,5 +62,8 @@ Ensure you have the necessary Flutter environment set up. You can follow the [Fl
 4. **Manage Tools:**
    - Update or delete tool information from your inventory.
    - Keep track of tool usage and availability.
-
+     
+## Screenshots:
 ![Screenshot1](https://github.com/user-attachments/assets/0ef5f278-44ef-4e6d-8ef8-02ac7b4ca58c)
+![Screenshot2](https://github.com/user-attachments/assets/7cb4087c-9257-4403-9021-0e365a378a4e)
+![Screenshot3](https://github.com/user-attachments/assets/9fa80ac1-1d3e-48bd-857e-dbfd4d65ca91)
