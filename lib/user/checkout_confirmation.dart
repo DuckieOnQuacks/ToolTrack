@@ -7,14 +7,12 @@ import '../backend/message_helper.dart';
 class CheckoutConfirmationPage extends StatefulWidget {
   final String workorderId;
   final Tool tool;
-  final String workOrderImagePath;
   final String toolImagePath;
 
   const CheckoutConfirmationPage({
     super.key,
     required this.workorderId,
     required this.tool,
-    required this.workOrderImagePath,
     required this.toolImagePath,
   });
 
@@ -34,7 +32,6 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
         await handleWorkOrderAndCheckout(
           workorderId: widget.workorderId,
           toolId: widget.tool.gageID,
-          imagePath: widget.workOrderImagePath,
           enteredBy: _nameController.text,
         );
         if (widget.tool.status == "Checked Out") {
@@ -200,9 +197,9 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Row(
+                        const Row(
                           children: [
-                            const Text(
+                            Text(
                               'Tool ID:',
                               style: TextStyle(
                                 fontSize: 18,
@@ -210,16 +207,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                                 color: Colors.white,
                               ),
                             ),
-                            const Spacer(),
-                            IconButton(
-                              icon: const Icon(Icons.copy, color: Colors.white),
-                              onPressed: () {
-                                Clipboard.setData(
-                                  ClipboardData(text: widget.tool.gageID),
-                                );
-                                showTopSnackBar(context, "Tool ID copied to clipboard!", Colors.blue, title: "Note:", icon: Icons.copy);
-                              },
-                            ),
+                            Spacer(),
                           ],
                         ),
                         Text(
@@ -230,9 +218,9 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        Row(
+                        const Row(
                           children: [
-                            const Text(
+                            Text(
                               'Work Order ID:',
                               style: TextStyle(
                                 fontSize: 18,
@@ -240,16 +228,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                                 color: Colors.white,
                               ),
                             ),
-                            const Spacer(),
-                            IconButton(
-                              icon: const Icon(Icons.copy, color: Colors.white),
-                              onPressed: () {
-                                Clipboard.setData(
-                                  ClipboardData(text: widget.workorderId),
-                                );
-                                showTopSnackBar(context, "Workorder ID copied to clipboard!", Colors.blue, title: "Note:", icon: Icons.copy);
-                              },
-                            ),
+                            Spacer(),
                           ],
                         ),
                         Text(
@@ -261,7 +240,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                         ),
                         const SizedBox(height: 10),
                         const Text(
-                          'Enter Employee ID *',
+                          'Enter Employee ID: *',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -279,7 +258,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          'Machine Where Tool Is Being Used *',
+                          'Machine Where Tool Is Being Used: *',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

@@ -197,7 +197,6 @@ class _AdminInspectWorkOrderScreenState
                   id: idController.text,
                   enteredBy: enteredByController.text,
                   tool: tools.map((tool) => tool.gageID).toList(),
-                  imagePath: "",
                 );
                 await updateWorkOrderIfDifferent(
                     widget.workOrder, newWorkOrder);

@@ -1,5 +1,6 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void showTopSnackBar(BuildContext context, String message, Color color, {String? title, IconData? icon}) {
   Flushbar(
@@ -117,7 +118,7 @@ Widget buildWorkOrdersInstructions() {
       stepDetail("- Tools must be in database before adding them to a bin."),
       const SizedBox(height: 10),
       sectionHeader("Delete Work Order:"),
-      stepDetail("1. Tap the trashcan icon on the work order you would like to delete."),
+      stepDetail("1. Tap the trashcan icon of the work order you would like to delete."),
       stepDetail("2. Confirm the deletion."),
       note("Note:"),
       stepDetail("- Deleting a work order does not affect the tools within the work order. They will still be checked out or available."),
@@ -142,7 +143,7 @@ Widget buildToolsInstructions() {
       stepDetail("3. Submit the form and confirm that the tool was added successfully."),
 
       sectionHeader("Delete Tool:"),
-      stepDetail("1. Tap the trashcan icon on the tool you would like to delete."),
+      stepDetail("1. Tap the trashcan icon of the tool you would like to delete."),
       stepDetail("2. Confirm the deletion."),
       note("Note:"),
       stepDetail("- Deleting a tool removes it from the database but not the work orders. That needs to be done in the work order page."),
@@ -206,8 +207,78 @@ Widget stepDetail(String text) {
       text,
       style: const TextStyle(
         color: Colors.white70,
-        fontSize: 16,
+        fontSize: 14,
       ),
     ),
+  );
+}
+
+void showInstructionsDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        backgroundColor: Colors.grey[900],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Text(
+          "Help",
+          style: TextStyle(
+            color: Colors.orangeAccent,
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+          ),
+        ),
+        content: Scrollbar(
+          thumbVisibility: true,
+          radius: const Radius.circular(20),
+          thickness: 6,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                sectionHeader("Checkout Tool:"),
+                stepDetail("1. Select 'Checkout Tool'."),
+                stepDetail("2. Scan or manually enter work order ID."),
+                stepDetail("3. Scan or manually enter the Bin name."),
+                stepDetail("4. Enter your employee ID, machine ID and confirm checkout."),
+                stepDetail("5. Confirm that the tool was checked out successfully."),
+
+                const SizedBox(height: 10),
+
+                sectionHeader("Return Tool:"),
+                stepDetail("1. Select 'Return Tool'."),
+                stepDetail("2. Scan or manually enter bin QR code."),
+                stepDetail("3. Select the tool you're returning from the list. If it's not there you most likely scanned the wrong bin."),
+                stepDetail("4. Confirm that the tool was returned successfully."),
+
+                const SizedBox(height: 10),
+
+                sectionHeader("Barcode or QR code not scanning?"),
+                stepDetail("1. On the work order scan page, tap the 'pencil' icon to manually enter Work order ID or Bin name."),
+                stepDetail("2. Work orders are manually entered by ID."),
+                stepDetail("3. Bins are manually entered by bin name."),
+              ],
+            ),
+          ),
+        ),
+        actions: <Widget>[
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.redAccent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            ),
+            child: const Text('Close', style: TextStyle(fontSize: 16)),
+          ),
+        ],
+      );
+    },
   );
 }

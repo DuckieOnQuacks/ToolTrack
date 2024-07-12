@@ -14,9 +14,9 @@ class ScanToolPage extends StatefulWidget {
   final String workorderData;
   final String workOrderImagePath;
   final String inOrOut;
-  final String? snackbarMessage; // Add this line
+  final String? snackbarMessage;
 
-  const ScanToolPage(this.cameras, this.workorderData, this.workOrderImagePath, this.inOrOut, {super.key, this.snackbarMessage}); // Modify this line
+  const ScanToolPage(this.cameras, this.workorderData, this.workOrderImagePath, this.inOrOut, {super.key, this.snackbarMessage});
 
   @override
   State<ScanToolPage> createState() => _ScanToolPageState();
@@ -27,6 +27,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
   bool isCameraInitialized = false;
   bool isLoading = false;
   bool flashEnabled = false;
+  bool _isScanning = false;  // Changed to false initially
   String associatedImageUrl = '';
   Tool? selectedTool;
 
@@ -49,6 +50,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
     });
     _cameraManager = CameraManager(widget.cameras);
     await _cameraManager.initializeCamera();
+    if (!mounted) return;
     setState(() {
       isCameraInitialized = true;
       isLoading = false;
@@ -67,7 +69,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
     }
   }
 
-  void showToolSelectionDialog(BuildContext context, String barcodeData, List<Tool> tools) {
+  void showToolSelectionDialog(BuildContext context, List<Tool> tools) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -126,6 +128,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
                                 onTap: () {
                                   setState(() {
                                     selectedTool = tool;
+                                    associatedImageUrl = tool.imagePath; // Update associated image URL
                                   });
                                 },
                               ),
@@ -163,7 +166,6 @@ class _ScanToolPageState extends State<ScanToolPage> {
                             workorderId: widget.workorderData,
                             tool: selectedTool!,
                             toolImagePath: associatedImageUrl,
-                            workOrderImagePath: widget.workOrderImagePath,
                           ),
                         ),
                       );
@@ -171,9 +173,27 @@ class _ScanToolPageState extends State<ScanToolPage> {
                       showTopSnackBar(context, "Tool already checked out to ${selectedTool?.checkedOutTo}", Colors.red, title: "Error:", icon: Icons.warning);
                     }
                     else{
+                    if (selectedTool != null) {
+                      if (selectedTool!.status == 'Checked Out') {
+                        showTopSnackBar(context, "This tool is already checked out.", Colors.red, title: "Error", icon: Icons.error);
+                      } else {
+                        Navigator.of(context).pop();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CheckoutConfirmationPage(
+                              workorderId: widget.workorderData,
+                              tool: selectedTool!,
+                              toolImagePath: associatedImageUrl,
+                            ),
+                          ),
+                        );
+                      }
+                    } else {
                       showTopSnackBar(context, "Please select a tool", Colors.orange, title: "Warning", icon: Icons.warning);
                     }
-                  },
+                  }
+                  }
                 ),
               ],
               backgroundColor: Colors.grey[900],
@@ -184,9 +204,11 @@ class _ScanToolPageState extends State<ScanToolPage> {
     );
   }
 
+
   Future<void> handleToolBarcodeScanning() async {
     setState(() {
       isLoading = true;
+      _isScanning = true;  // Start scanning on button press
     });
     if (flashEnabled) {
       await _cameraManager.controller?.setFlashMode(FlashMode.torch);
@@ -196,74 +218,86 @@ class _ScanToolPageState extends State<ScanToolPage> {
     if (imagePath != null) {
       final barcodeData = await _cameraManager.scanBarcode(imagePath);
       if (barcodeData != null) {
-        final binID = barcodeData;
-        final binDoc = await FirebaseFirestore.instance.collection('Bins').doc(formatBinID(binID)).get();
-
-        if (binDoc.exists) {
-          final data = binDoc.data();
-          if (data != null && data.containsKey('Tools')) {
-            final toolIDs = List<String>.from(data['Tools']);
-            final tools = <Tool>[];
-
-            for (final toolID in toolIDs) {
-              final toolDoc = await FirebaseFirestore.instance.collection('Tools').doc(toolID).get();
-              if (toolDoc.exists) {
-                final toolData = toolDoc.data();
-                if (toolData != null) {
-                  tools.add(Tool.fromJson(toolData));
-                }
-              }
-            }
-
-            if (tools.isNotEmpty) {
-              setState(() {
-                associatedImageUrl = tools.first.imagePath;
-                isLoading = false;
-              });
-
-              showToolSelectionDialog(context, barcodeData, tools);
-            } else {
-              setState(() {
-                isLoading = false;
-              });
-              showTopSnackBar(context, "No tools found in the bin.", Colors.red, title: "Error", icon: Icons.error);
-            }
-          } else {
-            setState(() {
-              isLoading = false;
-            });
-            showTopSnackBar(context, "Bin exists but no tools found.", Colors.red, title: "Error", icon: Icons.error);
-          }
-        } else {
-          setState(() {
-            isLoading = false;
-          });
-          showTopSnackBar(context, "Bin ID not found in the database.", Colors.red, title: "Error", icon: Icons.error);
-        }
+        await fetchToolsAndShowDialog(barcodeData);
       } else {
         setState(() {
           isLoading = false;
+          _isScanning = false;  // Stop scanning if no QR code found
         });
         showTopSnackBar(context, "No tool QR code found, please scan again.", Colors.red, title: "Error", icon: Icons.error);
       }
     } else {
       setState(() {
         isLoading = false;
+        _isScanning = false;  // Stop scanning if no image path found
       });
+    }
+  }
+
+  Future<void> fetchToolsAndShowDialog(String binID) async {
+    final binDoc = await FirebaseFirestore.instance.collection('Bins').doc(formatBinID(binID)).get();
+
+    if (binDoc.exists) {
+      final data = binDoc.data();
+      if (data != null && data.containsKey('Tools')) {
+        final toolIDs = List<String>.from(data['Tools']);
+        final tools = <Tool>[];
+
+        for (final toolID in toolIDs) {
+          final toolDoc = await FirebaseFirestore.instance.collection('Tools').doc(toolID).get();
+          if (toolDoc.exists) {
+            final toolData = toolDoc.data();
+            if (toolData != null) {
+              tools.add(Tool.fromJson(toolData));
+            }
+          }
+        }
+
+        if (tools.isNotEmpty) {
+          setState(() {
+            isLoading = false;
+            _isScanning = false;  // Stop scanning after successful fetch
+          });
+
+          showToolSelectionDialog(context, tools);
+        } else {
+          setState(() {
+            isLoading = false;
+            _isScanning = false;  // Stop scanning if no tools found
+          });
+          showTopSnackBar(context, "No tools found in the bin.", Colors.red, title: "Error", icon: Icons.error);
+        }
+      } else {
+        setState(() {
+          isLoading = false;
+          _isScanning = false;  // Stop scanning if bin has no tools
+        });
+        showTopSnackBar(context, "Bin exists but no tools found.", Colors.red, title: "Error", icon: Icons.error);
+      }
+    } else {
+      setState(() {
+        isLoading = false;
+        _isScanning = false;  // Stop scanning if bin ID not found
+      });
+      showTopSnackBar(context, "Bin ID not found in the database.", Colors.red, title: "Error", icon: Icons.error);
     }
   }
 
   void showManualEntryDialog(BuildContext context) {
     TextEditingController controller = TextEditingController();
+
+    setState(() {
+      _isScanning = false;
+    });
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.grey[900],
           title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text("Enter Bin Name"),
-              const Spacer(),
               IconButton(
                 icon: const Icon(Icons.help_outline),
                 onPressed: () {
@@ -277,7 +311,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
               ),
             ],
           ),
-          content: SingleChildScrollView( // Add SingleChildScrollView
+          content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -304,50 +338,12 @@ class _ScanToolPageState extends State<ScanToolPage> {
               ),
               child: const Text("Confirm"),
               onPressed: () async {
-                String toolId = controller.text.trim();
-                if (toolId.isNotEmpty) {
-                  setState(() {
-                    isLoading = true;
-                  });
-
-                  final toolDoc = await getToolDocument(toolId);
-                  if (toolDoc != null) {
-                    final data = toolDoc.data();
-                    if (data != null && data is Map<String, dynamic>) {
-                      final storageUrl = data['Tool Image Path'] ?? '';
-                      final tool = Tool.fromJson(data);
-
-                      setState(() {
-                        associatedImageUrl = storageUrl;
-                        isLoading = false;
-                      });
-
-                      bool toolIsInWorkOrder = await isToolInWorkOrder(widget.workorderData, tool.gageID);
-
-                      if (!toolIsInWorkOrder && widget.inOrOut != 'checkout') {
-                        showTopSnackBar(context, "Tool Not Checked Out To WorkOrder ${widget.workorderData}", Colors.red, title: "Error", icon: Icons.error);
-
-                      } else {
-                        if (widget.inOrOut == 'checkout' && tool.status != 'Available') {
-                          showTopSnackBar(context, "Tool ${tool.gageID} is currently checked out to ${tool.checkedOutTo}. Try A Different Tool!", Colors.red, title: "Error", icon: Icons.error);
-                        } else {
-                          showToolSelectionDialog(context, toolId, [tool]);
-                        }
-                      }
-                    } else {
-                      setState(() {
-                        isLoading = false;
-                      });
-                      showTopSnackBar(context, "Bin data is invalid.", Colors.red, title: "Error", icon: Icons.error);
-                    }
-                  } else {
-                    setState(() {
-                      isLoading = false;
-                    });
-                    showTopSnackBar(context, "Bin name not found in the database.", Colors.red, title: "Error", icon: Icons.error);
-                  }
+                String binName = controller.text.trim();
+                if (binName.isNotEmpty) {
+                  Navigator.of(context).pop(); // Dismiss the dialog
+                  await fetchToolsAndShowDialog(formatBinID(binName));
                 } else {
-                  showTopSnackBar(context, "Please enter a valid bin name.", Colors.orange, title: "Warning", icon: Icons.warning);
+                  showTopSnackBar(context, "Please enter a valid bin name.", Colors.red, title: "Error", icon: Icons.error);
                 }
               },
             ),
@@ -356,6 +352,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
       },
     );
   }
+
 
   @override
   void dispose() {
@@ -367,7 +364,7 @@ class _ScanToolPageState extends State<ScanToolPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scan Bin QR Code', style: TextStyle(color: Colors.white)),
+        title: const Text('Take Picture of Bin QR Code', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900],
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -377,47 +374,74 @@ class _ScanToolPageState extends State<ScanToolPage> {
             onPressed: () {
               showManualEntryDialog(context);
             },
-            tooltip: 'Enter Bin ID Manually',
+            tooltip: 'Enter Workorder ID Manually',
           ),
         ],
       ),
-      body: Center(
-        child: isLoading
-            ? Lottie.asset(
-          'assets/lottie/loading.json',
-          width: 150,
-          height: 150,
-        )
-            : !isCameraInitialized
-            ? Lottie.asset(
-          'assets/lottie/loading.json',
-          width: 150,
-          height: 150,
-        ): Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16.0),
-                child: SizedBox(
-                  width: 350,
-                  height: 500,
-                  child: CameraPreview(_cameraManager.controller!),
-                ),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: SingleChildScrollView(
+        child: Center(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            child: isLoading
+                ? Lottie.asset(
+              'assets/lottie/loading.json',
+              width: 200,
+              height: 200,
+            )
+                : !isCameraInitialized
+                ? Lottie.asset(
+              'assets/lottie/loading.json',
+              width: 200,
+              height: 200,
+            )
+                : Stack(
+              alignment: Alignment.center,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.camera_alt),
-                  iconSize: 60.0,
-                  onPressed: handleToolBarcodeScanning,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16.0),
+                        child: SizedBox(
+                          width: 350,
+                          height: 500,
+                          child: CameraPreview(_cameraManager.controller!),
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.camera_alt),
+                      iconSize: 60.0,
+                      onPressed: handleToolBarcodeScanning,
+                    ),
+                  ],
                 ),
+                if (_isScanning)
+                  Positioned(
+                    bottom: 30,
+                    child: Column(
+                      children: [
+                        Lottie.asset(
+                          'assets/lottie/barcodescan.json',
+                          width: 100,
+                          height: 100,
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Scanning for QR code...',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

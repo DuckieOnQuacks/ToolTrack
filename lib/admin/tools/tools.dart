@@ -1,12 +1,11 @@
 import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:easy_debounce/easy_debounce.dart';
+import 'package:vineburgapp/user/home.dart';
 import '../../backend/message_helper.dart';
 import '../../classes/tool_class.dart';
-import '../../login.dart';
 import 'add_tool.dart';
 import 'edit_tool.dart';
 
@@ -106,64 +105,6 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
     }
   }
 
-  void showLogoutConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          buttonPadding: const EdgeInsets.all(15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          elevation: 10,
-          title: const Row(
-            children: [
-              Icon(
-                Icons.warning_amber_rounded,
-                color: Colors.redAccent,
-              ),
-              SizedBox(width: 10),
-              Text(
-                'Confirm Logout',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          content: const Text('Are you sure you want to log out of your account?'),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.black54,
-                backgroundColor: Colors.grey[300],
-              ),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => const LoginPage(),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.redAccent,
-              ),
-              child: const Text('Sign Out'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -208,6 +149,16 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
               if (result == true) {
                 refreshToolsList();
               }
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.admin_panel_settings, color: Colors.white),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) => const HomePage(), // Change to the user home page
+                ),
+              );
             },
           ),
         ],
@@ -342,10 +293,10 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Type: ${tools[index].gageType}',
+                                    tools[index].gageType,
                                     style: const TextStyle(
                                       color: Colors.black87,
-                                      fontSize: 16,
+                                      fontSize: 14,
                                     ),
                                   ),
                                 ],

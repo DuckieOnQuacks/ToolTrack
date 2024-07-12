@@ -4,10 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lottie/lottie.dart';
+import 'package:vineburgapp/admin/bottom_bar.dart';
 import 'package:vineburgapp/backend/message_helper.dart';
 import 'package:vineburgapp/user/return_tool.dart';
-import '../classes/tool_class.dart';
-import '../login.dart';
 import 'scan_workorder.dart';
 
 class HomePage extends StatefulWidget {
@@ -20,65 +19,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<CameraDescription>? cameras;
   bool isLoadingCameras = true;
-
-  void showLogoutConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.grey[900],
-          buttonPadding: const EdgeInsets.all(15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          elevation: 10,
-          title: const Row(
-            children: [
-              Icon(
-                Icons.warning_amber_rounded,
-                color: Colors.redAccent,
-              ),
-              SizedBox(width: 10),
-              Text(
-                'Confirm Logout',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          content: const Text('Log out of user account?'),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.black54,
-                backgroundColor: Colors.grey[300],
-              ),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => const LoginPage(),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.redAccent,
-              ),
-              child: const Text('Sign Out'),
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   void showIssueDialog(BuildContext context) {
     TextEditingController helpController = TextEditingController();
@@ -114,7 +54,7 @@ class _HomePageState extends State<HomePage> {
                       'timestamp': FieldValue.serverTimestamp(),
                     });
                     Navigator.of(context).pop();
-                    showTopSnackBar(context, "Note succesfully submitted!", Colors.green, title: "Success", icon: Icons.check_circle);
+                    showTopSnackBar(context, "Note successfully submitted!", Colors.green, title: "Success", icon: Icons.check_circle);
                   } catch (e) {
                     if (kDebugMode) {
                       print('Error saving note: $e');
@@ -137,96 +77,20 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void showInstructionsDialog(BuildContext context) {
+  void showAdminPasswordDialog(BuildContext context) {
+    TextEditingController passwordController = TextEditingController();
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.grey[900],
-          title: const Text(
-            "Help",
-            style: TextStyle(color: Colors.white),
-          ),
-          content: const SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Checkout Tool:",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orangeAccent,
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  "1. Select 'Checkout Tool'.",
-                  style: TextStyle(color: Colors.white70),
-                ),
-                Text(
-                  "2. Scan or manually enter workorder ID",
-                  style: TextStyle(color: Colors.white70),
-                ),
-                Text(
-                  "3. Scan or manually enter the Bin name",
-                  style: TextStyle(color: Colors.white70),
-                ),
-                Text(
-                  "4. Enter your employee ID, machine ID and confirm checkout.",
-                  style: TextStyle(color: Colors.white70),
-                ),
-                Text(
-                  "5. Confirm that the tool was checked out successfully",
-                  style: TextStyle(color: Colors.white70),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "Return Tool:",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orangeAccent,
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  "1. Select 'Return Tool'.",
-                  style: TextStyle(color: Colors.white70),
-                ),
-                Text(
-                  "2. Scan or manually enter bin QR code.",
-                  style: TextStyle(color: Colors.white70),
-                ),
-                Text(
-                  "3. Select the tool you're returning from the list. If its not there you most likely scanned the wrong bin.",
-                  style: TextStyle(color: Colors.white70),
-                ),
-                Text(
-                  "4. Confirm that the tool was returned successfully.",
-                  style: TextStyle(color: Colors.white70),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  "Barcode or QR code not scanning?",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orangeAccent,
-                  ),
-                ),
-                SizedBox(height: 5),
-                Text(
-                  "1. Tap the 'pencil' icon to manually enter Workorder ID or Bin name",
-                  style: TextStyle(color: Colors.white70),
-                ),
-                Text(
-                  "2. Workorders are manually entered by ID",
-                  style: TextStyle(color: Colors.white70),
-                ),
-                Text(
-                  "3. Bins are manually entered by bin name",
-                  style: TextStyle(color: Colors.white70),
-                ),
-              ],
+          title: const Text("Admin Login"),
+          content: TextField(
+            controller: passwordController,
+            decoration: const InputDecoration(
+              hintText: "Enter admin password",
             ),
+            obscureText: true,
           ),
           actions: <Widget>[
             ElevatedButton(
@@ -235,14 +99,41 @@ class _HomePageState extends State<HomePage> {
                 foregroundColor: Colors.white,
                 backgroundColor: Colors.redAccent,
               ),
-              child: const Text('Close'),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                String password = passwordController.text.trim();
+                try {
+                  UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    email: 'admin@vineburg.com',
+                    password: password,
+                  );
+                  if (userCredential.user != null) {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => const AdminBottomBar(),
+                      ),
+                    );
+                  } else {
+                    showTopSnackBar(context, "Invalid credentials", Colors.red, title: "Error", icon: Icons.error);
+                  }
+                } catch (e) {
+                  showTopSnackBar(context, "Invalid credentials", Colors.red, title: "Error", icon: Icons.error);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.green,
+              ),
+              child: const Text('Submit'),
             ),
           ],
         );
       },
     );
   }
-
 
   @override
   void initState() {
@@ -323,42 +214,57 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          // Instructions button in the top left
+          // Help and Leave a Note combined button in the top left
           Positioned(
             top: 25,
             left: 5,
-            child: IconButton(
-              icon: const Icon(Icons.info_outline, size: 24),
-              tooltip: 'Instructions',
-              onPressed: () {
-                showInstructionsDialog(context);
+            child: PopupMenuButton<String>(
+              icon: const Icon(Icons.menu, size: 28, color: Colors.white),
+              tooltip: 'Help & Note',
+              onSelected: (String result) {
+                switch (result) {
+                  case 'Instructions':
+                    showInstructionsDialog(context);
+                    break;
+                  case 'Leave a Note':
+                    showIssueDialog(context);
+                    break;
+                }
               },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                const PopupMenuItem<String>(
+                  value: 'Instructions',
+                  child: ListTile(
+                    leading: Icon(Icons.info_outline, color: Colors.blue),
+                    title: Text('Instructions'),
+                  ),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'Leave a Note',
+                  child: ListTile(
+                    leading: Icon(Icons.note_add, color: Colors.orange),
+                    title: Text('Leave a Note'),
+                  ),
+                ),
+              ],
+              color: Colors.grey[900],
             ),
           ),
+          // Admin button in the top right
           Positioned(
             top: 25,
             right: 5,
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.report, size: 24),
-                  tooltip: 'Leave an issue report',
-                  onPressed: () {
-                    showIssueDialog(context);
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.logout, size: 24),
-                  tooltip: 'Logout',
-                  onPressed: () {
-                    showLogoutConfirmationDialog(context);
-                  },
-                ),
-              ],
+            child: IconButton(
+              icon: const Icon(Icons.admin_panel_settings, size: 24, color: Colors.white),
+              tooltip: 'Admin Login',
+              onPressed: () {
+                showAdminPasswordDialog(context);
+              },
             ),
           ),
         ],
       ),
+      backgroundColor: Colors.black,
     );
   }
 }

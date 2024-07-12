@@ -7,19 +7,16 @@ import 'package:vineburgapp/classes/tool_class.dart';
 class WorkOrder {
   final String id;
   final List<String>? tool;
-  late String imagePath; // Path to the image of the work order
   final String enteredBy;
 
   WorkOrder(
       {required this.id,
-      required this.imagePath,
       this.tool,
       required this.enteredBy});
 
 // Factory method to create a Machine object from JSON data
   factory WorkOrder.fromJson(Map<String, dynamic> json) => WorkOrder(
         id: json['id'],
-        imagePath: json['ImagePath'],
         tool: List<String>.from(json['Tools'] ?? []),
         enteredBy: json['Entered By'],
       );
@@ -27,7 +24,6 @@ class WorkOrder {
   // Method to convert a Machine object to JSON data
   Map<String, dynamic> toJson() => {
         'id': id,
-        'ImagePath': imagePath,
         'Tools': tool,
         'Entered By': enteredBy,
       };
@@ -123,7 +119,6 @@ Future<void> addWorkOrder({
 Future<void> handleWorkOrderAndCheckout({
   required String workorderId,
   required String toolId,
-  required String imagePath,
   required String enteredBy,
 }) async {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -143,35 +138,10 @@ Future<void> handleWorkOrderAndCheckout({
           'Tool $toolId has been successfully added to work order $workorderId.');
     }
   } else {
-    // Work order does not exist, create a new one
-    final FirebaseStorage storage = FirebaseStorage.instance;
-    String downloadURL = '';
-
-    if (imagePath.isNotEmpty) {
-      try {
-        // Upload the image to Firebase Storage
-        final Reference storageReference =
-        storage.ref().child('WorkOrderImages/$workorderId.jpg');
-        final UploadTask uploadTask = storageReference.putFile(File(imagePath));
-
-        // Wait for the upload to complete
-        final TaskSnapshot storageSnapshot = await uploadTask;
-
-        // Get the download URL of the uploaded image
-        downloadURL = await storageSnapshot.ref.getDownloadURL();
-      } catch (e) {
-        if (kDebugMode) {
-          print(
-              'Error uploading image for work order $workorderId: $e');
-        }
-        rethrow; // Re-throw the error after logging
-      }
-    }
 
     // Create a map with the work order data
     Map<String, dynamic> workOrderData = {
       'id': workorderId,
-      'ImagePath': downloadURL, // Use the download URL or an empty string
       'Tools': [toolId], // Add the single tool ID to a list
       'Entered By': enteredBy,
     };

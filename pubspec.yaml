@@ -93,7 +93,7 @@ flutter:
   assets:
     - assets/Thread_Ring_Gages.json
     - assets/images/
-    - assets/lottie/loading.json
+    - assets/lottie/
     - assets/ic_launcher.png
 
   # An image asset can refer to one or more resolution-specific "variants", see

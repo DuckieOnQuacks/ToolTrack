@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:easy_debounce/easy_debounce.dart';
@@ -7,7 +6,6 @@ import 'package:vineburgapp/admin/bins/add_bin.dart';
 import 'package:vineburgapp/admin/bins/edit_bin.dart';
 import '../../backend/message_helper.dart';
 import '../../classes/bin_class.dart';
-import '../../login.dart';
 
 class AdminBinsPage extends StatefulWidget {
   const AdminBinsPage({super.key});
@@ -100,64 +98,6 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
     }
   }
 
-  void showLogoutConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          buttonPadding: const EdgeInsets.all(15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          elevation: 10,
-          title: const Row(
-            children: [
-              Icon(
-                Icons.warning_amber_rounded,
-                color: Colors.redAccent,
-              ),
-              SizedBox(width: 10),
-              Text(
-                'Confirm Logout',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          content: const Text('Sign out of admin account?'),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.black54,
-                backgroundColor: Colors.grey[300],
-              ),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => const LoginPage(),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.redAccent,
-              ),
-              child: const Text('Sign Out'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -202,12 +142,6 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
               if (result == true) {
                 refreshBinsList();
               }
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () {
-              showLogoutConfirmationDialog(context);
             },
           ),
         ],
@@ -339,8 +273,8 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
                                 ),
                               ),
                               subtitle: Text(
-                                'Location: ${bins[index].location}',
-                                style: const TextStyle(color: Colors.black87, fontSize: 16),
+                                bins[index].location,
+                                style: const TextStyle(color: Colors.black87, fontSize: 13),
                               ),
                               onTap: () async {
                                 var result = await Navigator.of(context).push(
@@ -396,13 +330,12 @@ class DeleteBinDialog extends StatelessWidget {
           Icon(
             Icons.warning_amber_rounded,
             color: Colors.redAccent,
-            size: 24,
           ),
           SizedBox(width: 10),
           Text(
             'Confirm Delete',
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),

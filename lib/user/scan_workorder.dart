@@ -21,6 +21,22 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
   bool _isLoading = false;
   bool _isScanning = false;
 
+  @override
+  void initState() {
+    super.initState();
+    initializeCamera();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_isCameraInitialized) {
+        initializeCamera();
+      }
+    });
+  }
+
   Future<void> initializeCamera() async {
     setState(() {
       _isLoading = true;
@@ -62,29 +78,22 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
           break;
         }
       }
-      await Future.delayed(Duration(milliseconds: 500)); // Adjust delay as needed
+      await Future.delayed(const Duration(milliseconds: 500)); // Adjust delay as needed
     }
   }
 
   @override
   void dispose() {
+    _isScanning = false; // Stop scanning when disposing
     _cameraManager.disposeCamera();
     super.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    initializeCamera();
-  }
-
   void showManualEntryDialog(BuildContext context) {
     TextEditingController controller = TextEditingController();
-
     setState(() {
       _isScanning = false;
     });
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -99,7 +108,7 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
           actions: <Widget>[
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.red,  // Text color
+                foregroundColor: Colors.white, backgroundColor: Colors.red,
               ),
               child: const Text("Cancel"),
               onPressed: () {
@@ -112,7 +121,7 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.green,  // Text color
+                foregroundColor: Colors.white, backgroundColor: Colors.green,
               ),
               child: const Text("Confirm"),
               onPressed: () {
@@ -178,23 +187,49 @@ class _ScanWorkorderPageState extends State<ScanWorkorderPage> {
           width: 200,
           height: 200,
         )
-            : SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16.0),
-                  child: SizedBox(
-                    width: 350,
-                    height: 500,
-                    child: CameraPreview(_cameraManager.controller!),
+            : Stack(
+          alignment: Alignment.center,
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16.0),
+                      child: SizedBox(
+                        width: 350,
+                        height: 500,
+                        child: CameraPreview(_cameraManager.controller!),
+                      ),
+                    ),
                   ),
+                ],
+              ),
+            ),
+            if (_isScanning)
+              Positioned(
+                bottom: 30,
+                child: Column(
+                  children: [
+                    Lottie.asset(
+                      'assets/lottie/barcodescan.json',
+                      width: 100,
+                      height: 100,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Scanning for QR code...',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+          ],
         ),
       ),
     );

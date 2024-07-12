@@ -21,6 +21,7 @@ class _ReturnToolState extends State<ReturnToolPage> {
   bool _isCameraInitialized = false;
   bool _isLoading = false;
   bool _flashEnabled = false;
+  bool _isScanning = false;
   Tool? _selectedTool;
 
   Future<void> initializeCamera() async {
@@ -33,48 +34,40 @@ class _ReturnToolState extends State<ReturnToolPage> {
       _isCameraInitialized = true;
       _isLoading = false;
     });
+    startBarcodeScanning();
   }
 
-  void handleBarcodeScanning() async {
+  Future<void> startBarcodeScanning() async {
     setState(() {
-      _isLoading = true;
+      _isScanning = true;
     });
-    if (_flashEnabled) {
-      await _cameraManager.controller?.setFlashMode(FlashMode.torch);
-    }
-    final imagePath = await _cameraManager.takePicture();
-    await _cameraManager.controller?.setFlashMode(FlashMode.off);
-    if (imagePath != null) {
-      final barcodeData = await _cameraManager.scanBarcode(imagePath);
-      if (barcodeData != null) {
-        bool workOrderExists = await checkWorkOrderExists(barcodeData);
-        if (workOrderExists) {
-          final tools = await fetchToolsFromWorkOrder(barcodeData); // Fetch the tools for the workorder
+    while (_isScanning && _isCameraInitialized) {
+      final imagePath = await _cameraManager.takePicture();
+      if (imagePath != null) {
+        final barcodeData = await _cameraManager.scanBarcode(imagePath);
+        if (barcodeData != null) {
           setState(() {
+            _isScanning = false;
             _isLoading = false;
           });
-          showToolSelectionDialog(context, barcodeData, tools);
-        } else {
-          setState(() {
-            _isLoading = false;
-          });
-          showTopSnackBar(context, "Workorder not found in the database.", Colors.red, title: "Error", icon: Icons.error);
-
+          bool workOrderExists = await checkWorkOrderExists(barcodeData);
+          if (workOrderExists) {
+            final tools = await fetchToolsFromWorkOrder(barcodeData);
+            showToolSelectionDialog(context, barcodeData, tools);
+          } else {
+            showTopSnackBar(context, "Workorder not found in the database.", Colors.red, title: "Error", icon: Icons.error);
+          }
+          break;
         }
-      } else {
-        setState(() {
-          _isLoading = false;
-        });
-        showTopSnackBar(context, "No barcode found, try again.", Colors.red, title: "Error", icon: Icons.error);
       }
-    } else {
-      setState(() {
-        _isLoading = false;
-      });
+      await Future.delayed(const Duration(milliseconds: 500)); // Adjust delay as needed
     }
   }
 
   void showToolSelectionDialog(BuildContext context, String barcodeData, List<Tool> tools) {
+    setState(() {
+      _isScanning = false;
+    });
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -153,6 +146,10 @@ class _ReturnToolState extends State<ReturnToolPage> {
                   child: const Text("Cancel"),
                   onPressed: () {
                     Navigator.of(context).pop();
+                    setState(() {
+                      _isScanning = true;
+                    });
+                    startBarcodeScanning();
                   },
                 ),
                 ElevatedButton(
@@ -163,7 +160,7 @@ class _ReturnToolState extends State<ReturnToolPage> {
                   onPressed: () {
                     if (_selectedTool != null) {
                       Navigator.of(context).pop();
-                      showConfirmationDialog(context, _selectedTool!);
+                      confirmReturn(_selectedTool!);
                     } else {
                       showTopSnackBar(context, "Please select a tool.", Colors.orange, title: "Warning", icon: Icons.warning);
                     }
@@ -175,36 +172,54 @@ class _ReturnToolState extends State<ReturnToolPage> {
           },
         );
       },
-    );
+    ).then((_) {
+      setState(() {
+        _isScanning = true;
+      });
+      startBarcodeScanning();
+    });
   }
 
   void showManualEntryDialog(BuildContext context) {
     TextEditingController controller = TextEditingController();
 
+    setState(() {
+      _isScanning = false;
+    });
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Enter Workorder ID"),
+          title: const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Enter Work Order ID"),
+            ],
+          ),
           content: SingleChildScrollView(
             child: TextField(
               controller: controller,
-              decoration: const InputDecoration(hintText: "Workorder ID"),
+              decoration: const InputDecoration(hintText: "Work Order ID"),
             ),
           ),
           actions: <Widget>[
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.red,  // Text color
+                foregroundColor: Colors.white, backgroundColor: Colors.red,
               ),
               child: const Text("Cancel"),
               onPressed: () {
+                setState(() {
+                  _isScanning = true;
+                });
                 Navigator.of(context).pop(); // Dismiss the dialog
+                startBarcodeScanning(); // Restart scanning
               },
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.green,  // Text color
+                foregroundColor: Colors.white, backgroundColor: Colors.green,
               ),
               child: const Text("Confirm"),
               onPressed: () async {
@@ -219,57 +234,25 @@ class _ReturnToolState extends State<ReturnToolPage> {
                     showTopSnackBar(context, "Workorder not found in the database.", Colors.red, title: "Error", icon: Icons.error);
                   }
                 } else {
-                  showTopSnackBar(context, "Please enter a valid Workorder ID.", Colors.red, title: "Error", icon: Icons.error);
+                  showTopSnackBar(context, "Please enter a valid work order ID.", Colors.red, title: "Error", icon: Icons.error);
                 }
               },
             ),
           ],
         );
       },
-    );
+    ).then((_) {
+      setState(() {
+        _isScanning = true;
+      });
+      startBarcodeScanning();
+    });
   }
 
   void toggleFlashMode() {
     setState(() {
       _flashEnabled = !_flashEnabled;
     });
-  }
-
-  void showConfirmationDialog(BuildContext context, Tool tool) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Confirm Return", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-          content: Text(
-            "Are you sure you want to return ${tool.gageDesc}?",
-            style: const TextStyle(color: Colors.white),
-          ),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          actions: <Widget>[
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.red,
-              ),
-              child: const Text("Cancel"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white, backgroundColor: Colors.green,
-              ),
-              child: const Text("Confirm"),
-              onPressed: () async {
-                Navigator.of(context).pop();
-                confirmReturn(tool);
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void confirmReturn(Tool tool) async {
@@ -283,7 +266,7 @@ class _ReturnToolState extends State<ReturnToolPage> {
         // Navigate back to the first route and show the snackbar
         Navigator.popUntil(context, (route) => route.isFirst);
         Future.delayed(const Duration(milliseconds: 100), () {
-          showTopSnackBar(context, "Return successful!", Colors.green);
+          showTopSnackBar(context, "Return successful!", Colors.green, title: "Success", icon: Icons.check_circle);
         });
       } catch (e) {
         showTopSnackBar(context, "Failed to return. Please try again.", Colors.red, title: "Error", icon: Icons.error);
@@ -293,6 +276,7 @@ class _ReturnToolState extends State<ReturnToolPage> {
 
   @override
   void dispose() {
+    _isScanning = false; // Stop scanning when disposing
     _cameraManager.disposeCamera();
     super.dispose();
   }
@@ -307,7 +291,7 @@ class _ReturnToolState extends State<ReturnToolPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scan Workorder Barcode', style: TextStyle(color: Colors.white)),
+        title: const Text('Scan Work Order Barcode', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.grey[900], // Consistent with the other page
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -317,7 +301,7 @@ class _ReturnToolState extends State<ReturnToolPage> {
             onPressed: () {
               showManualEntryDialog(context);
             },
-            tooltip: 'Enter Workorder ID Manually',
+            tooltip: 'Enter Work Order ID Manually',
           ),
         ],
       ),
@@ -334,40 +318,49 @@ class _ReturnToolState extends State<ReturnToolPage> {
           width: 200,
           height: 200,
         )
-            : SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16.0),
-                  child: SizedBox(
-                    width: 350,
-                    height: 500,
-                    child: CameraPreview(_cameraManager.controller!),
-                  ),
-                ),
-              ),
-              Row(
+            : Stack(
+          alignment: Alignment.center,
+          children: [
+            SingleChildScrollView(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  IconButton(
-                    icon: Icon(_flashEnabled ? Icons.flash_on : Icons.flash_off),
-                    onPressed: toggleFlashMode,
-                    color: Colors.yellow,
-                    iconSize: 36,
-                  ),
-                  const SizedBox(width: 20),
-                  IconButton(
-                    icon: const Icon(Icons.camera_alt),
-                    iconSize: 50.0,
-                    onPressed: handleBarcodeScanning,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16.0),
+                      child: SizedBox(
+                        width: 350,
+                        height: 500,
+                        child: CameraPreview(_cameraManager.controller!),
+                      ),
+                    ),
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+            if (_isScanning)
+              Positioned(
+                bottom: 30,
+                child: Column(
+                  children: [
+                    Lottie.asset(
+                      'assets/lottie/barcodescan.json',
+                      width: 100,
+                      height: 100,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Scanning for QR code...',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
         ),
       ),
     );

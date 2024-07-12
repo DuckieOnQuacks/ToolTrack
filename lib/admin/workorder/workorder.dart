@@ -9,7 +9,6 @@ import 'package:vineburgapp/admin/workorder/add_workorder.dart';
 import 'package:vineburgapp/admin/workorder/edit_workorder.dart';
 import '../../backend/message_helper.dart';
 import '../../classes/workorder_class.dart';
-import '../../login.dart';
 
 class AdminWorkOrdersPage extends StatefulWidget {
   const AdminWorkOrdersPage({super.key});
@@ -102,64 +101,6 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
       // Implement work order deletion logic here
       refreshWorkOrdersList();
     }
-  }
-
-  void showLogoutConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          buttonPadding: const EdgeInsets.all(15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          elevation: 10,
-          title: const Row(
-            children: [
-              Icon(
-                Icons.warning_amber_rounded,
-                color: Colors.redAccent,
-              ),
-              SizedBox(width: 10),
-              Text(
-                'Confirm Logout',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ],
-          ),
-          content: const Text('Are you sure you want to log out of your account?'),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.black54,
-                backgroundColor: Colors.grey[300],
-              ),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => const LoginPage(),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.redAccent,
-              ),
-              child: const Text('Sign Out'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -315,7 +256,7 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
                             ),
                             subtitle: Text(
                               'Entered by: ${workOrders[index].enteredBy}',
-                              style: const TextStyle(color: Colors.black87),
+                              style: const TextStyle(color: Colors.black87,fontSize: 14),
                             ),
                             onTap: () async {
                               var result = await Navigator.of(context).push(
