@@ -1,6 +1,6 @@
 # Tool Track
 
-ToolTrack is a Flutter application designed to help CNC shops track and manage tools efficiently. This app allows users to keep track of what tools were used on what part, facilitating seamless tool check-in and check-out processes via QR code scanning. It supports various platforms, including Android, iOS, Linux, macOS, web, and Windows.
+ToolTrack is a Flutter application designed to help CNC shops track and manage tools efficiently. This app allows users to keep track of what tools were used on what part, facilitating seamless tool check-in and check-out processes via QR code scanning. It currently only supports Android.
 
 **Note:** This project was developed as an internship project for Vineburg Machining to help them gain AS9100 certification.
 
@@ -62,4 +62,8 @@ Ensure you have the necessary Flutter environment set up. You can follow the [Fl
 4. **Manage Tools:**
    - Update or delete tool information from your inventory.
    - Keep track of tool usage and availability.
-
+     
+## Screenshots:
+![Screenshot1](https://github.com/user-attachments/assets/0ef5f278-44ef-4e6d-8ef8-02ac7b4ca58c)
+![Screenshot2](https://github.com/user-attachments/assets/7cb4087c-9257-4403-9021-0e365a378a4e)
+![Screenshot3](https://github.com/user-attachments/assets/9fa80ac1-1d3e-48bd-857e-dbfd4d65ca91)
