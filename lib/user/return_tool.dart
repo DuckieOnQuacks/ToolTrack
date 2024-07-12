@@ -53,7 +53,8 @@ class _ReturnToolState extends State<ReturnToolPage> {
           bool workOrderExists = await checkWorkOrderExists(barcodeData);
           if (workOrderExists) {
             final tools = await fetchToolsFromWorkOrder(barcodeData);
-            showToolSelectionDialog(context, barcodeData, tools);
+            final checkedOutTools = tools.where((tool) => tool.status == 'Checked Out').toList();
+            showToolSelectionDialog(context, barcodeData, checkedOutTools);
           } else {
             showTopSnackBar(context, "Workorder not found in the database.", Colors.red, title: "Error", icon: Icons.error);
           }
@@ -94,7 +95,6 @@ class _ReturnToolState extends State<ReturnToolPage> {
                           itemCount: tools.length,
                           itemBuilder: (context, index) {
                             final tool = tools[index];
-                            bool isAvailable = tool.status == 'Available';
                             return Card(
                               color: _selectedTool == tool ? Colors.black26 : Colors.grey[800],
                               child: ListTile(
@@ -110,14 +110,12 @@ class _ReturnToolState extends State<ReturnToolPage> {
                                       style: const TextStyle(color: Colors.white70),
                                     ),
                                     const SizedBox(width: 10),
-                                    isAvailable
-                                        ? const Icon(Icons.check_circle, color: Colors.green)
-                                        : const Icon(Icons.lock, color: Colors.red),
+                                    const Icon(Icons.lock, color: Colors.red),
                                     const SizedBox(width: 5),
-                                    Text(
-                                      isAvailable ? 'Available' : 'Checked Out',
+                                    const Text(
+                                      'Checked Out',
                                       style: TextStyle(
-                                        color: isAvailable ? Colors.green : Colors.red,
+                                        color: Colors.red,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -228,8 +226,9 @@ class _ReturnToolState extends State<ReturnToolPage> {
                   bool workOrderExists = await checkWorkOrderExists(workOrderId);
                   if (workOrderExists) {
                     final tools = await fetchToolsFromWorkOrder(workOrderId); // Fetch the tools for the workorder
+                    final checkedOutTools = tools.where((tool) => tool.status == 'Checked Out').toList();
                     Navigator.of(context).pop(); // Dismiss the dialog
-                    showToolSelectionDialog(context, workOrderId, tools);
+                    showToolSelectionDialog(context, workOrderId, checkedOutTools);
                   } else {
                     showTopSnackBar(context, "Workorder not found in the database.", Colors.red, title: "Error", icon: Icons.error);
                   }
