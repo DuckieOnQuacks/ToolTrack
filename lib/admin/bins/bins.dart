@@ -127,13 +127,13 @@ class _AdminBinsPageState extends State<AdminBinsPage> {
             showAdminInstructionsDialog(context, 'Bins');
           },
         ),
-        title: const Text('Bin Search', style: TextStyle(color: Colors.white)),
+        title: const Text('Bin Search', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: Colors.grey[900],
         automaticallyImplyLeading: false,
         centerTitle: true,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.add, color: Colors.white),
+            icon: const Icon(Icons.add_circle_outline, color: Colors.white),
             onPressed: () async {
               var result = await Navigator.of(context)
                   .push(MaterialPageRoute(

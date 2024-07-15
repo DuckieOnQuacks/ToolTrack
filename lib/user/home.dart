@@ -79,57 +79,74 @@ class _HomePageState extends State<HomePage> {
 
   void showAdminPasswordDialog(BuildContext context) {
     TextEditingController passwordController = TextEditingController();
+    bool obscureText = true;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.grey[900],
-          title: const Text("Admin Login"),
-          content: TextField(
-            controller: passwordController,
-            decoration: const InputDecoration(
-              hintText: "Enter admin password",
-            ),
-            obscureText: true,
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(),
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.redAccent,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.grey[900],
+              title: const Text("Admin Login"),
+              content: TextField(
+                controller: passwordController,
+                decoration: InputDecoration(
+                  hintText: "Enter admin password",
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscureText ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        obscureText = !obscureText;
+                      });
+                    },
+                  ),
+                ),
+                obscureText: obscureText,
               ),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                String password = passwordController.text.trim();
-                try {
-                  UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-                    email: 'admin@vineburg.com',
-                    password: password,
-                  );
-                  if (userCredential.user != null) {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (BuildContext context) => const AdminBottomBar(),
-                      ),
-                    );
-                  } else {
-                    showTopSnackBar(context, "Invalid credentials", Colors.red, title: "Error", icon: Icons.error);
-                  }
-                } catch (e) {
-                  showTopSnackBar(context, "Invalid credentials", Colors.red, title: "Error", icon: Icons.error);
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.green,
-              ),
-              child: const Text('Submit'),
-            ),
-          ],
+              actions: <Widget>[
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.redAccent,
+                  ),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    String password = passwordController.text.trim();
+                    try {
+                      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                        email: 'admin@vineburg.com',
+                        password: password,
+                      );
+                      if (userCredential.user != null) {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (BuildContext context) => const AdminBottomBar(),
+                          ),
+                        );
+                      } else {
+                        showTopSnackBar(context, "Invalid credentials", Colors.red, title: "Error", icon: Icons.error);
+                      }
+                    } catch (e) {
+                      showTopSnackBar(context, "Invalid credentials", Colors.red, title: "Error", icon: Icons.error);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.green,
+                  ),
+                  child: const Text('Submit'),
+                ),
+              ],
+            );
+          },
         );
       },
     );

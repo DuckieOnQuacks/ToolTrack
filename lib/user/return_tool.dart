@@ -261,7 +261,7 @@ class _ReturnToolState extends State<ReturnToolPage> {
           showTopSnackBar(context, "Tool is marked as already returned.", Colors.red, title: "Error", icon: Icons.error);
           return;
         }
-        await returnTool(tool.gageID, "Available", tool.checkedOutTo);
+        await returnTool(tool.gageID, tool.checkedOutTo);
         // Navigate back to the first route and show the snackbar
         Navigator.popUntil(context, (route) => route.isFirst);
         Future.delayed(const Duration(milliseconds: 100), () {

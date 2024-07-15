@@ -269,7 +269,7 @@ class _CheckoutConfirmationPageState extends State<CheckoutConfirmationPage> {
                           controller: _atMachineController,
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
-                            hintText: "i.e. 234",
+                            hintText: "i.e. 263",
                             prefixIcon: Icon(Icons.build),
                           ),
                           textCapitalization: TextCapitalization.words,

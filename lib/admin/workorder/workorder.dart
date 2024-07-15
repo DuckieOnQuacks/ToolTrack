@@ -132,13 +132,13 @@ class _AdminWorkOrdersPageState extends State<AdminWorkOrdersPage> {
           },
         ),
         title: const Text('Work Order Search',
-            style: TextStyle(color: Colors.white)),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: Colors.grey[900],
         automaticallyImplyLeading: false,
         centerTitle: true,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.add, color: Colors.white),
+            icon: const Icon(Icons.add_circle_outline, color: Colors.white),
             onPressed: () async {
               var result = await Navigator.of(context)
                   .push(MaterialPageRoute(

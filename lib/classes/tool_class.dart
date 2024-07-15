@@ -174,7 +174,7 @@ Future<void> checkoutTool(String toolId, String status, String userWhoCheckedOut
 }
 
 /// Returns the tool and marks the status as checked out and sets the user who checked it out.
-Future<void> returnTool(String toolId, String status, String userWhoCheckedOut) async {
+Future<void> returnTool(String toolId, String userWhoCheckedOut) async {
   final toolsCollection = FirebaseFirestore.instance.collection('Tools');
 
   try {
@@ -184,14 +184,14 @@ Future<void> returnTool(String toolId, String status, String userWhoCheckedOut) 
     if (docSnapshot.exists) {
       // Update the status field of the document.
       await toolDoc.update({
-        'Status': status,
+        'Status': "Available",
         'Checked Out To': "",
         'Date Checked Out': "",
         'At Machine': "",
         'Last Checked Out By': userWhoCheckedOut
       });
       if (kDebugMode) {
-        print('Status of tool with ID $toolId has been updated to $status.');
+        print('Status of tool with ID $toolId has been updated to Available');
       }
     } else {
       if (kDebugMode) {

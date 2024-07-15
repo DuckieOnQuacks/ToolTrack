@@ -38,7 +38,6 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
 
   String imagePath = '';
   bool pictureTaken = false;
-  FlashMode _flashMode = FlashMode.off;
   bool isCameraInitialized = false;
   bool isLoading = false;
   String? imageUrl;
@@ -99,15 +98,6 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        icon: Icon(_flashMode == FlashMode.torch
-                            ? Icons.flash_on
-                            : Icons.flash_off),
-                        onPressed: toggleFlashMode,
-                        color: Colors.yellow,
-                        iconSize: 36,
-                      ),
-                      const SizedBox(width: 20),
-                      IconButton(
                         icon: const Icon(Icons.camera_alt),
                         iconSize: 50.0,
                         onPressed: () async {
@@ -130,14 +120,6 @@ class _AdminInspectToolScreenState extends State<AdminInspectToolScreen> {
         },
       );
     }
-  }
-
-  void toggleFlashMode() {
-    setState(() {
-      _flashMode =
-      _flashMode == FlashMode.off ? FlashMode.torch : FlashMode.off;
-      _cameraManager.controller?.setFlashMode(_flashMode);
-    });
   }
 
   void confirmChanges(BuildContext context) {

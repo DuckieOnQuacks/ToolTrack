@@ -6,6 +6,7 @@ import 'package:easy_debounce/easy_debounce.dart';
 import 'package:vineburgapp/user/home.dart';
 import '../../backend/message_helper.dart';
 import '../../classes/tool_class.dart';
+import '../../user/return_tool.dart';
 import 'add_tool.dart';
 import 'edit_tool.dart';
 
@@ -105,6 +106,21 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
     }
   }
 
+  void confirmReturn(Tool tool) async {
+    if (context.mounted) {
+      try {
+        if (tool.status == "Available") {
+          showTopSnackBar(context, "Tool is marked as already returned.", Colors.red, title: "Error", icon: Icons.error);
+          return;
+        }
+        await returnTool(tool.gageID, tool.checkedOutTo);
+        showTopSnackBar(context, "Return successful!", Colors.green, title: "Success", icon: Icons.check_circle);
+      } catch (e) {
+        showTopSnackBar(context, "Failed to return. Please try again.", Colors.red, title: "Error", icon: Icons.error);
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -133,13 +149,13 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
             showAdminInstructionsDialog(context, 'Tools');
           },
         ),
-        title: const Text('Tool Search', style: TextStyle(color: Colors.white)),
+        title: const Text('Tool Search', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: Colors.grey[900],
         automaticallyImplyLeading: false,
         centerTitle: true,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.add, color: Colors.white),
+            icon: const Icon(Icons.add_circle_outline, color: Colors.white),
             onPressed: () async {
               var result = await Navigator.of(context)
                   .push(MaterialPageRoute(
@@ -277,9 +293,31 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
                             ),
                             child: ListTile(
                               leading: const Icon(Icons.build, color: Colors.black),
-                              trailing: IconButton(
-                                icon: const Icon(Icons.delete, color: Colors.black),
-                                onPressed: () => onDeletePressed(tools[index]),
+                              trailing: PopupMenuButton<int>(
+                                icon: const Icon(Icons.more_vert, color: Colors.black),
+                                onSelected: (int result) {
+                                  if (result == 0) {
+                                    confirmReturn(tools[index]);
+                                  } else if (result == 1) {
+                                    onDeletePressed(tools[index]);
+                                  }
+                                },
+                                itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+                                  const PopupMenuItem<int>(
+                                    value: 0,
+                                    child: ListTile(
+                                      leading: Icon(Icons.assignment_return, color: Colors.white),
+                                      title: Text('Return Tool'),
+                                    ),
+                                  ),
+                                  const PopupMenuItem<int>(
+                                    value: 1,
+                                    child: ListTile(
+                                      leading: Icon(Icons.delete, color: Colors.white),
+                                      title: Text('Delete Tool'),
+                                    ),
+                                  ),
+                                ],
                               ),
                               title: Text(
                                 tools[index].gageID,
