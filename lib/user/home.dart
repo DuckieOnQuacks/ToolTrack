@@ -7,6 +7,7 @@ import 'package:lottie/lottie.dart';
 import 'package:vineburgapp/admin/bottom_bar.dart';
 import 'package:vineburgapp/backend/message_helper.dart';
 import 'package:vineburgapp/user/return_tool.dart';
+import 'package:vineburgapp/user/tool_search.dart';
 import 'scan_workorder.dart';
 
 class HomePage extends StatefulWidget {
@@ -246,6 +247,13 @@ class _HomePageState extends State<HomePage> {
                   case 'Leave a Note':
                     showIssueDialog(context);
                     break;
+                  case 'Tool Search':
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const UserToolsPage(),
+                      ),
+                    );
+                    break;
                 }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -261,6 +269,13 @@ class _HomePageState extends State<HomePage> {
                   child: ListTile(
                     leading: Icon(Icons.note_add, color: Colors.orange),
                     title: Text('Leave a Note'),
+                  ),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'Tool Search',
+                  child: ListTile(
+                    leading: Icon(Icons.build, color: Colors.green),
+                    title: Text('Tool Search'),
                   ),
                 ),
               ],
