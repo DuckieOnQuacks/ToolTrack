@@ -24,8 +24,9 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
   late List<Color> shuffledColors;
   final ValueNotifier<int> toolCountNotifier = ValueNotifier<int>(0);
   String selectedFilter = 'All'; // Default filter option
+  String selectedGageType = 'All';
 
-  final List<String> filterOptions = ['All', 'Available', 'Checked Out'];
+  final List<String> filterOptions = ['All', 'Available', 'Checked Out', 'Ring Gage', "Plug Gage", "Caliper", "Micrometer"];
   final List<Color> cncShopColors = [
     const Color(0xFF2E7D32), // Green
     const Color(0xFF607D8B), // Blue Grey
@@ -72,9 +73,16 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
 
         bool matchesFilter = selectedFilter == 'All' ||
             (selectedFilter == 'Available' && tool.status == 'Available') ||
-            (selectedFilter == 'Checked Out' && tool.status == 'Checked Out');
+            (selectedFilter == 'Checked Out' && tool.status == 'Checked Out') ||
+            (selectedFilter == "Ring Gage" && (tool.gageType == "THREAD RING GAGE" || tool.gageType == "Thread Ring Gage")) ||
+            (selectedFilter == "Plug Gage" && (tool.gageType == "THREAD PLUG GAGE" || tool.gageType == "Thread Plug Gage")) ||
+            (selectedFilter == "Caliper" && tool.gageType == "Caliper") ||
+            (selectedFilter == "Micrometer" && (tool.gageType == "MICROMETER" || tool.gageType == "Micrometer"));
 
-        return matchesQuery && matchesFilter;
+        bool matchesGageType = selectedGageType == 'All' ||
+            tool.gageType == selectedGageType;
+
+        return matchesQuery && matchesFilter && matchesGageType;
       }).toList());
     });
     updateToolCount();
@@ -224,24 +232,35 @@ class _AdminToolsPageState extends State<AdminToolsPage> {
               },
             ),
           ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
             child: Row(
-              children: filterOptions.map((option) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: ChoiceChip(
-                    label: Text(option),
-                    selected: selectedFilter == option,
-                    onSelected: (selected) {
-                      setState(() {
-                        selectedFilter = option;
-                        filterSearchResults(searchController.text);
-                      });
-                    },
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: filterOptions.map((option) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: ChoiceChip(
+                            label: Text(option),
+                            selected: selectedFilter == option,
+                            onSelected: (selected) {
+                              setState(() {
+                                selectedFilter = option;
+                                filterSearchResults(searchController.text);
+                              });
+                            },
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
-                );
-              }).toList(),
+                ),
+                const SizedBox(width: 10),
+              ],
             ),
           ),
           Expanded(
